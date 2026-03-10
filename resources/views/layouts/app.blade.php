@@ -59,7 +59,7 @@
             </div>
             <ul class="space-y-0.5 px-3">
                 <li>
-                    <a href="#"
+                    <a href="{{ route('karyawan.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>👥</span> Kelola Karyawan
                     </a>
