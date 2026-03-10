@@ -51,6 +51,20 @@
                         <span>🕐</span> Absensi
                     </a>
                 </li>
+                <li>
+    <a href="{{ route('izin.index') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+        <span>📋</span> Izin / Cuti
+    </a>
+</li>
+@if(auth()->user()->role_id == 11 || auth()->user()->role_id == 1)
+<li>
+    <a href="{{ route('izin.review') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+        <span>✅</span> Review Izin
+    </a>
+</li>
+@endif
             </ul>
 
             @if(auth()->user()->role_id == 11)
