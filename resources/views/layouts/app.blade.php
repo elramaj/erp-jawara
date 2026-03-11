@@ -65,6 +65,14 @@
     </a>
 </li>
 @endif
+@if(auth()->user()->role_id == 11)
+<li>
+    <a href="{{ route('rekap.index') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+        <span>📊</span> Rekap Absensi
+    </a>
+</li>
+@endif
             </ul>
 
             @if(auth()->user()->role_id == 11)

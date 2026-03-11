@@ -5,6 +5,7 @@ use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\IzinController;
+use App\Http\Controllers\RekapAbsensiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,7 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Karyawan
-    Route::resource('karyawan', KaryawanController::class);
+    Route::resource('karyawan', KaryawanController::class)->parameters(['karyawan' => 'user']);
 
     // Izin & Cuti
     Route::get('/izin', [IzinController::class, 'index'])->name('izin.index');
@@ -34,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/izin', [IzinController::class, 'store'])->name('izin.store');
     Route::get('/izin/review', [IzinController::class, 'review'])->name('izin.review');
     Route::post('/izin/{izin}/status', [IzinController::class, 'updateStatus'])->name('izin.status');
+
+    // Rekap Absensi
+    Route::get('/rekap-absensi', [RekapAbsensiController::class, 'index'])->name('rekap.index');
+    Route::get('/rekap-absensi/{user}', [RekapAbsensiController::class, 'detail'])->name('rekap.detail');
 });
 
 require __DIR__.'/auth.php';

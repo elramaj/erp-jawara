@@ -64,7 +64,7 @@
                             Edit
                         </a>
                         <form method="POST" action="{{ route('karyawan.destroy', $k) }}"
-                              onsubmit="return confirm('Yakin hapus karyawan ini?')">
+                            onsubmit="return confirm('Yakin hapus karyawan ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
