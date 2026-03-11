@@ -7,6 +7,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\RekapAbsensiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfilController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rekap Absensi
     Route::get('/rekap-absensi', [RekapAbsensiController::class, 'index'])->name('rekap.index');
     Route::get('/rekap-absensi/{user}', [RekapAbsensiController::class, 'detail'])->name('rekap.detail');
+
+    // Profil
+    Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
+    Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
+    Route::post('/profil/ganti-password', [ProfilController::class, 'gantiPassword'])->name('profil.password');
 });
 
 require __DIR__.'/auth.php';
