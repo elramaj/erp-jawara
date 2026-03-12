@@ -99,6 +99,12 @@
         <span>👤</span> Profil Saya
     </a>
 </li>
+<li>
+    <a href="{{ route('proyek.index') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+        <span>📁</span> Proyek
+    </a>
+</li>
             </ul>
 
             @if(auth()->user()->role_id == 11)

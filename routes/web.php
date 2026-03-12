@@ -8,6 +8,7 @@ use App\Http\Controllers\IzinController;
 use App\Http\Controllers\RekapAbsensiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\ProyekController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -46,6 +47,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
     Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
     Route::post('/profil/ganti-password', [ProfilController::class, 'gantiPassword'])->name('profil.password');
+
+    // Proyek
+    Route::resource('proyek', ProyekController::class)->except(['edit', 'update']);
+    Route::post('/proyek/{proyek}/progress', [ProyekController::class, 'updateProgress'])->name('proyek.progress');
+    Route::post('/proyek/{proyek}/milestone', [ProyekController::class, 'storeMilestone'])->name('proyek.milestone');
+    Route::post('/milestone/{milestone}/status', [ProyekController::class, 'updateMilestone'])->name('milestone.status');
+    Route::post('/proyek/{proyek}/dokumen', [ProyekController::class, 'uploadDokumen'])->name('proyek.dokumen');
 });
 
 require __DIR__.'/auth.php';
