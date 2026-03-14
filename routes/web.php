@@ -9,6 +9,7 @@ use App\Http\Controllers\RekapAbsensiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProyekController;
+use App\Http\Controllers\GudangController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +55,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/proyek/{proyek}/milestone', [ProyekController::class, 'storeMilestone'])->name('proyek.milestone');
     Route::post('/milestone/{milestone}/status', [ProyekController::class, 'updateMilestone'])->name('milestone.status');
     Route::post('/proyek/{proyek}/dokumen', [ProyekController::class, 'uploadDokumen'])->name('proyek.dokumen');
+
+    // Gudang
+    Route::get('/gudang', [GudangController::class, 'index'])->name('gudang.index');
+    Route::get('/gudang/barang/create', [GudangController::class, 'createBarang'])->name('gudang.barang.create');
+    Route::post('/gudang/barang', [GudangController::class, 'storeBarang'])->name('gudang.barang.store');
+    Route::get('/gudang/barang/{barang}', [GudangController::class, 'showBarang'])->name('gudang.barang.show');
+    Route::post('/gudang/barang/{barang}/masuk', [GudangController::class, 'storeMasuk'])->name('gudang.masuk');
+    Route::post('/gudang/barang/{barang}/keluar', [GudangController::class, 'storeKeluar'])->name('gudang.keluar');
+    Route::get('/gudang/opname', [GudangController::class, 'opname'])->name('gudang.opname');
+    Route::post('/gudang/opname', [GudangController::class, 'storeOpname'])->name('gudang.opname.store');
+    Route::delete('/gudang/barang/{barang}/hapus', [GudangController::class, 'destroyBarang'])->name('gudang.barang.destroy');
 });
 
 require __DIR__.'/auth.php';

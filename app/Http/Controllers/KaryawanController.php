@@ -88,13 +88,25 @@ class KaryawanController extends Controller
     }
 
     public function destroy(User $user)
-    {
-        if ($user->id === auth()->id()) {
-            return redirect()->route('karyawan.index')
-                ->with('error', 'Tidak bisa menghapus akun sendiri!');
-        }
-        $user->delete();
+{
+    if ($user->id === auth()->id()) {
         return redirect()->route('karyawan.index')
-            ->with('success', 'Karyawan berhasil dihapus!');
+            ->with('error', 'Tidak bisa menghapus akun sendiri!');
     }
+
+    // Hapus semua data terkait dulu
+    \App\Models\Absensi::where('user_id', $user->id)->delete();
+    \App\Models\PengajuanIzin::where('user_id', $user->id)->delete();
+    \App\Models\ProyekAnggota::where('user_id', $user->id)->delete();
+
+    // Hapus dari gudang (created_by)
+    \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => auth()->id()]);
+    \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => auth()->id()]);
+
+    // Hapus user
+    $user->delete();
+
+    return redirect()->route('karyawan.index')
+        ->with('success', 'Karyawan berhasil dihapus!');
+}
 }
