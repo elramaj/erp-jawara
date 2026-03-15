@@ -10,6 +10,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\GudangController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SoController;
+use App\Http\Controllers\PoController;
+use App\Http\Controllers\LaporanKeuanganController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,6 +71,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/gudang/opname', [GudangController::class, 'opname'])->name('gudang.opname');
     Route::post('/gudang/opname', [GudangController::class, 'storeOpname'])->name('gudang.opname.store');
     Route::delete('/gudang/barang/{barang}/hapus', [GudangController::class, 'destroyBarang'])->name('gudang.barang.destroy');
+
+    // Master Data
+    Route::resource('customer', CustomerController::class);
+    Route::resource('supplier', SupplierController::class);
+
+    // Penjualan (SO)
+    Route::resource('so', SoController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('/so/{so}/sj', [SoController::class, 'storeSj'])->name('so.sj.store');
+    Route::post('/so/{so}/fj', [SoController::class, 'storeFj'])->name('so.fj.store');
+    Route::post('/fj/{fj}/bayar', [SoController::class, 'storeBayarFj'])->name('fj.bayar');
+
+    // Pembelian (PO)
+    Route::resource('po', PoController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('/po/{po}/barang-datang', [PoController::class, 'storeBarangDatang'])->name('po.barang_datang');
+    Route::post('/po/{po}/fb', [PoController::class, 'storeFb'])->name('po.fb.store');
+    Route::post('/fb/{fb}/bayar', [PoController::class, 'storeBayarFb'])->name('fb.bayar');
+
+    // Laporan Keuangan
+    Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan.keuangan');
+
 });
 
 require __DIR__.'/auth.php';
