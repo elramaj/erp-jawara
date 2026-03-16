@@ -118,41 +118,47 @@
             </ul>
 
             {{-- Keuangan --}}
-            @if(in_array(auth()->user()->role_id, [1, 2, 11]))
+            @if(in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]))
             <div class="px-4 py-3 mt-4 mb-2">
                 <p class="text-xs text-gray-500 uppercase tracking-widest font-semibold">Keuangan</p>
             </div>
             <ul class="space-y-0.5 px-3">
+                {{-- SO hanya untuk finance, po, bos, admin --}}
+                @if(in_array(auth()->user()->role_id, [1, 2, 3, 11]))
                 <li>
                     <a href="{{ route('so.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>🛒</span> Sales Order
                     </a>
                 </li>
+                @endif
                 <li>
                     <a href="{{ route('po.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>🛍️</span> Purchase Order
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('customer.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>👥</span> Customer
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('supplier.index') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>🏪</span> Supplier
                     </a>
                 </li>
+                {{-- Laporan hanya untuk finance, bos, admin --}}
+                @if(in_array(auth()->user()->role_id, [1, 2, 11]))
                 <li>
                     <a href="{{ route('laporan.keuangan') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
                         <span>📊</span> Laporan
                     </a>
                 </li>
+                @endif
             </ul>
             @endif
 

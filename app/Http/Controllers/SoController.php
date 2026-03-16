@@ -18,9 +18,9 @@ use Illuminate\Http\Request;
 
 class SoController extends Controller
 {
-    private function cekAkses()
+        private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+        if (!in_array(auth()->user()->role_id, [1, 2, 3, 11])) {
             abort(403, 'Akses ditolak.');
         }
     }

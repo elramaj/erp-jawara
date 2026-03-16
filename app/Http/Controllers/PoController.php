@@ -15,11 +15,11 @@ use Illuminate\Http\Request;
 class PoController extends Controller
 {
     private function cekAkses()
-    {
-        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
-            abort(403, 'Akses ditolak.');
-        }
+{
+    if (!in_array(auth()->user()->role_id, [1, 2, 3, 11, 14])) {
+        abort(403, 'Akses ditolak.');
     }
+}
 
     public function index()
     {
