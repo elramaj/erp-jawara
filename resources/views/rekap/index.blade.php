@@ -32,6 +32,28 @@
     </form>
 </div>
 
+{{-- Export Excel --}}
+<div class="bg-white rounded-xl shadow p-4 mb-6">
+    <p class="text-sm font-semibold text-gray-700 mb-3">📥 Export Rekap Absensi</p>
+    <form method="POST" action="{{ route('rekap.export') }}" class="flex gap-3 items-end">
+        @csrf
+        <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Tanggal Mulai</label>
+            <input type="date" name="tanggal_mulai" value="{{ date('Y-m-01') }}"
+                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        </div>
+        <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Tanggal Selesai</label>
+            <input type="date" name="tanggal_selesai" value="{{ date('Y-m-d') }}"
+                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        </div>
+        <button type="submit"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+            📥 Download Excel
+        </button>
+    </form>
+</div>
+
 {{-- Tabel Rekap --}}
 <div class="bg-white rounded-xl shadow overflow-hidden">
     <table class="w-full text-sm">

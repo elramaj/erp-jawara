@@ -6,6 +6,8 @@ use App\Models\Absensi;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Exports\AbsensiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RekapAbsensiController extends Controller
 {
@@ -55,5 +57,23 @@ class RekapAbsensiController extends Controller
             $awal->addDay();
         }
         return $hari;
+    }
+
+    public function export(Request $request)
+    {
+        if (auth()->user()->role_id != 11) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $request->validate([
+            'tanggal_mulai'  => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $mulai   = $request->tanggal_mulai;
+        $selesai = $request->tanggal_selesai;
+        $filename = 'rekap-absensi_' . $mulai . '_' . $selesai . '.xlsx';
+
+        return Excel::download(new AbsensiExport($mulai, $selesai), $filename);
     }
 }

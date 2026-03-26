@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rekap Absensi
     Route::get('/rekap-absensi', [RekapAbsensiController::class, 'index'])->name('rekap.index');
     Route::get('/rekap-absensi/{user}', [RekapAbsensiController::class, 'detail'])->name('rekap.detail');
+    Route::post('/rekap-absensi/export', [RekapAbsensiController::class, 'export'])->name('rekap.export');
 
     // Profil
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
