@@ -15,6 +15,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SoController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
+use App\Http\Controllers\PengaturanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -91,6 +92,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Laporan Keuangan
     Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan.keuangan');
+
+    // Pengaturan
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::post('/pengaturan/department', [PengaturanController::class, 'storeDepartment'])->name('pengaturan.department.store');
+    Route::put('/pengaturan/department/{department}', [PengaturanController::class, 'updateDepartment'])->name('pengaturan.department.update');
+    Route::delete('/pengaturan/department/{department}', [PengaturanController::class, 'destroyDepartment'])->name('pengaturan.department.destroy');
+    Route::post('/pengaturan/jam-kerja', [PengaturanController::class, 'updateJamKerja'])->name('pengaturan.jamkerja');
 
 });
 
