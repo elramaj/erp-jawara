@@ -16,6 +16,7 @@ use App\Http\Controllers\SoController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\KomplainController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,6 +100,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/pengaturan/department/{department}', [PengaturanController::class, 'updateDepartment'])->name('pengaturan.department.update');
     Route::delete('/pengaturan/department/{department}', [PengaturanController::class, 'destroyDepartment'])->name('pengaturan.department.destroy');
     Route::post('/pengaturan/jam-kerja', [PengaturanController::class, 'updateJamKerja'])->name('pengaturan.jamkerja');
+
+    // Komplain
+Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);
+Route::post('/komplain/{komplain}/status', [KomplainController::class, 'updateStatus'])->name('komplain.status');
 
 });
 

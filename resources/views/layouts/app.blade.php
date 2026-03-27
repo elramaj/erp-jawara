@@ -107,6 +107,14 @@
                         <span>📁</span> Proyek
                     </a>
                 </li>
+                @if(in_array(auth()->user()->role_id, [1, 4, 5, 7, 11]))
+                <li>
+                    <a href="{{ route('komplain.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition">
+                        <span>⚠️</span> Komplain
+                    </a>
+                </li>
+                @endif
                 @if(in_array(auth()->user()->role_id, [1, 2, 3, 4, 11]))
                 <li>
                     <a href="{{ route('gudang.index') }}"
