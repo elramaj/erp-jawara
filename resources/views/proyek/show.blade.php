@@ -32,10 +32,11 @@
                     <p class="text-xs text-gray-400">Status</p>
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold mt-1 inline-block
                         {{ $proyek->status == 'aktif' ? 'bg-green-100 text-green-700' : '' }}
+                        {{ $proyek->status == 'bola_liar' ? 'bg-orange-100 text-orange-700' : '' }}
                         {{ $proyek->status == 'draft' ? 'bg-gray-100 text-gray-600' : '' }}
                         {{ $proyek->status == 'selesai' ? 'bg-blue-100 text-blue-700' : '' }}
                         {{ $proyek->status == 'dibatalkan' ? 'bg-red-100 text-red-700' : '' }}">
-                        {{ ucfirst($proyek->status) }}
+                        {{ $proyek->status == 'bola_liar' ? '🎱 Bola Liar' : ucfirst($proyek->status) }}
                     </span>
                 </div>
                 <div>
@@ -57,6 +58,14 @@
                     </p>
                 </div>
             </div>
+
+            {{-- Alert Bola Liar --}}
+            @if($proyek->status == 'bola_liar')
+            <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-4 flex items-center gap-2">
+                <span class="text-xl">🎱</span>
+                <p class="text-sm text-orange-700 font-medium">Proyek ini berstatus <strong>Bola Liar</strong> — belum ada sales yang handle. Segera tentukan sales PIC!</p>
+            </div>
+            @endif
 
             {{-- Progress Bar --}}
             <div class="mb-2">
@@ -90,8 +99,8 @@
                         <label class="text-xs text-gray-500">Status</label>
                         <select name="status"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                            @foreach(['draft','aktif','selesai','dibatalkan'] as $s)
-                            <option value="{{ $s }}" {{ $proyek->status == $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                            @foreach(['draft' => 'Draft', 'bola_liar' => '🎱 Bola Liar', 'aktif' => 'Aktif', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
+                            <option value="{{ $val }}" {{ $proyek->status == $val ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>

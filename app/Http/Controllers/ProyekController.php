@@ -35,7 +35,7 @@ class ProyekController extends Controller
     public function create()
     {
         if (!in_array(auth()->user()->role_id, [1, 10, 11])) {
-    abort(403, 'Akses ditolak.');
+            abort(403, 'Akses ditolak.');
         }
 
         $karyawan = User::where('is_active', 1)->orderBy('name')->get();
@@ -52,7 +52,7 @@ class ProyekController extends Controller
             'nilai_kontrak'=> 'nullable|numeric',
             'tanggal_mulai'=> 'nullable|date',
             'deadline'     => 'nullable|date',
-            'status'       => 'required|in:draft,aktif,selesai,dibatalkan',
+            'status'       => 'required|in:draft,bola_liar,aktif,selesai,dibatalkan',
             'deskripsi'    => 'nullable|string',
             'anggota'      => 'nullable|array',
         ]);
@@ -108,7 +108,7 @@ class ProyekController extends Controller
     {
         $request->validate([
             'progress' => 'required|integer|min:0|max:100',
-            'status'   => 'required|in:draft,aktif,selesai,dibatalkan',
+            'status'   => 'required|in:draft,bola_liar,aktif,selesai,dibatalkan',
         ]);
 
         $proyek->update([
@@ -163,7 +163,7 @@ class ProyekController extends Controller
         $request->validate([
             'nama_dokumen' => 'required|string|max:255',
             'jenis'        => 'nullable|string|max:100',
-            'file'         => 'required|file|max:10240', // max 10MB
+            'file'         => 'required|file|max:10240',
         ]);
 
         $path = $request->file('file')->store('dokumen-proyek', 'public');

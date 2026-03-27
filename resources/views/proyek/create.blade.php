@@ -22,6 +22,7 @@
                 <select name="status"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                     <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="bola_liar" {{ old('status') == 'bola_liar' ? 'selected' : '' }}>🎱 Bola Liar</option>
                     <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="selesai" {{ old('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                     <option value="dibatalkan" {{ old('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>

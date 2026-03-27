@@ -19,7 +19,7 @@
 
 {{-- Filter Status --}}
 <div class="flex gap-2 mb-4">
-    @foreach(['semua' => 'Semua', 'aktif' => 'Aktif', 'draft' => 'Draft', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
+@foreach(['semua' => 'Semua', 'bola_liar' => '🎱 Bola Liar', 'aktif' => 'Aktif', 'draft' => 'Draft', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
     <button onclick="filterProyek('{{ $val }}')"
         class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition {{ $val == 'semua' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:border-indigo-400' }}"
         data-filter="{{ $val }}">
@@ -37,10 +37,11 @@
                 <span class="text-xs font-mono text-gray-400">{{ $p->kode_proyek }}</span>
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold
                     {{ $p->status == 'aktif' ? 'bg-green-100 text-green-700' : '' }}
+                    {{ $p->status == 'bola_liar' ? 'bg-orange-100 text-orange-700' : '' }}
                     {{ $p->status == 'draft' ? 'bg-gray-100 text-gray-600' : '' }}
                     {{ $p->status == 'selesai' ? 'bg-blue-100 text-blue-700' : '' }}
                     {{ $p->status == 'dibatalkan' ? 'bg-red-100 text-red-700' : '' }}">
-                    {{ ucfirst($p->status) }}
+                    {{ $p->status == 'bola_liar' ? '🎱 Bola Liar' : ucfirst($p->status) }}
                 </span>
             </div>
             <h3 class="font-semibold text-gray-800 mb-1">{{ $p->nama_proyek }}</h3>
