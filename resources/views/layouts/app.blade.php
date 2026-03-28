@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name') }} - ERP</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -16,20 +17,78 @@
         </div>
         <div class="flex items-center gap-4">
 
-            {{-- Notifikasi (khusus admin) --}}
-            @if(auth()->user()->role_id == 11)
-            @php $notifCount = \App\Models\PengajuanIzin::where('status','pending')->count(); @endphp
-            <a href="{{ route('izin.review') }}" class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-200 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                @if($notifCount > 0)
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                    {{ $notifCount }}
-                </span>
-                @endif
-            </a>
-            @endif
+            {{-- Notifikasi --}}
+            @php
+                $notifIzin = 0;
+                if (in_array(auth()->user()->role_id, [1, 11])) {
+                    $notifIzin = \App\Models\PengajuanIzin::where('status','pending')->count();
+                }
+                $notifDeadline = \App\Models\Proyek::whereNotIn('status', ['selesai','dibatalkan'])
+                    ->whereNotNull('deadline')
+                    ->where('deadline', '<=', now()->addDays(7))
+                    ->count();
+                $totalNotif = $notifIzin + $notifDeadline;
+            @endphp
+            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                <button @click="open = !open" class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-200 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    @if($totalNotif > 0)
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                        {{ $totalNotif }}
+                    </span>
+                    @endif
+                </button>
+
+                {{-- Dropdown Notifikasi --}}
+                <div x-show="open" x-transition
+                    class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 overflow-hidden"
+                    style="display:none;">
+                    <div class="px-4 py-3 bg-indigo-600 text-white font-semibold text-sm">
+                        🔔 Notifikasi
+                    </div>
+                    <div class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+
+                        {{-- Izin Pending --}}
+                        @if(in_array(auth()->user()->role_id, [1, 11]) && $notifIzin > 0)
+                        <a href="{{ route('izin.review') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition">
+                            <span class="text-xl mt-0.5">📋</span>
+                            <div>
+                                <p class="text-sm font-medium text-gray-800">{{ $notifIzin }} Pengajuan Izin</p>
+                                <p class="text-xs text-gray-400">Menunggu review</p>
+                            </div>
+                        </a>
+                        @endif
+
+                        {{-- Deadline Proyek --}}
+                        @php
+                        $proyekDeadline = \App\Models\Proyek::whereNotIn('status', ['selesai','dibatalkan'])
+                            ->whereNotNull('deadline')
+                            ->where('deadline', '<=', now()->addDays(7))
+                            ->orderBy('deadline')
+                            ->get();
+                        @endphp
+                        @foreach($proyekDeadline as $pd)
+                        <a href="{{ route('proyek.show', $pd) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition">
+                            <span class="text-xl mt-0.5">{{ $pd->deadline->isPast() ? '🔴' : '⚠️' }}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $pd->nama_proyek }}</p>
+                                <p class="text-xs {{ $pd->deadline->isPast() ? 'text-red-500 font-semibold' : 'text-orange-500' }}">
+                                    {{ $pd->deadline->isPast() ? 'Deadline terlewat!' : 'Deadline ' . $pd->deadline->diffForHumans() }}
+                                </p>
+                            </div>
+                        </a>
+                        @endforeach
+
+                        @if($totalNotif == 0)
+                        <div class="px-4 py-6 text-center text-gray-400 text-sm">
+                            Tidak ada notifikasi
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
             <div class="text-right">
                 <p class="text-sm font-semibold">{{ auth()->user()->name }}</p>
@@ -131,7 +190,6 @@
                 <p class="text-xs text-gray-500 uppercase tracking-widest font-semibold">Keuangan</p>
             </div>
             <ul class="space-y-0.5 px-3">
-                {{-- SO hanya untuk finance, po, bos, admin --}}
                 @if(in_array(auth()->user()->role_id, [1, 2, 3, 11]))
                 <li>
                     <a href="{{ route('so.index') }}"
@@ -158,7 +216,6 @@
                         <span>🏪</span> Supplier
                     </a>
                 </li>
-                {{-- Laporan hanya untuk finance, bos, admin --}}
                 @if(in_array(auth()->user()->role_id, [1, 2, 11]))
                 <li>
                     <a href="{{ route('laporan.keuangan') }}"
