@@ -115,42 +115,58 @@
 
         {{-- Timeline / Milestone --}}
         <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="font-semibold text-gray-700 mb-4">🗓️ Timeline & Milestone</h2>
+            <h2 class="font-semibold text-gray-700 mb-5">🗓️ Timeline Proyek</h2>
 
             {{-- List Milestone --}}
-            <div class="space-y-3 mb-5">
+            <div class="relative">
                 @forelse($proyek->milestone as $m)
-                <div class="flex items-start gap-3 p-3 border rounded-lg
-                    {{ $m->status == 'selesai' ? 'border-green-200 bg-green-50' : '' }}
-                    {{ $m->status == 'proses' ? 'border-yellow-200 bg-yellow-50' : '' }}
-                    {{ $m->status == 'belum' ? 'border-gray-200' : '' }}">
-                    <div class="mt-0.5">
-                        @if($m->status == 'selesai') <span class="text-green-500 text-lg">✅</span>
-                        @elseif($m->status == 'proses') <span class="text-yellow-500 text-lg">🔄</span>
-                        @else <span class="text-gray-300 text-lg">⭕</span>
+                <div class="flex gap-4 mb-4">
+                    {{-- Icon & garis --}}
+                    <div class="flex flex-col items-center">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2
+                            {{ $m->status == 'selesai' ? 'bg-green-500 border-green-500 text-white' : '' }}
+                            {{ $m->status == 'proses' ? 'bg-yellow-400 border-yellow-400 text-white' : '' }}
+                            {{ $m->status == 'belum' ? 'bg-white border-gray-300 text-gray-400' : '' }}">
+                            @if($m->status == 'selesai') ✓
+                            @elseif($m->status == 'proses') ⟳
+                            @else {{ $m->urutan }}
+                            @endif
+                        </div>
+                        @if(!$loop->last)
+                        <div class="w-0.5 h-full min-h-6 {{ $m->status == 'selesai' ? 'bg-green-400' : 'bg-gray-200' }} mt-1"></div>
                         @endif
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-semibold text-gray-700">{{ $m->judul }}</p>
-                        @if($m->deskripsi)
-                        <p class="text-xs text-gray-400 mt-0.5">{{ $m->deskripsi }}</p>
-                        @endif
-                        <p class="text-xs text-gray-400 mt-1">
+                    {{-- Konten --}}
+                    <div class="flex-1 pb-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <p class="text-sm font-semibold
+                                {{ $m->status == 'selesai' ? 'text-green-700' : ($m->status == 'proses' ? 'text-yellow-700' : 'text-gray-500') }}">
+                                {{ $m->judul }}
+                            </p>
+                            <form method="POST" action="{{ route('milestone.status', $m) }}">
+                                @csrf
+                                <select name="status" onchange="this.form.submit()"
+                                        style="padding-right: 1.5rem;"
+                                        class="border rounded px-2 py-1 text-xs focus:outline-none
+                                        {{ $m->status == 'selesai' ? 'border-green-300 bg-green-50 text-green-700' : '' }}
+                                        {{ $m->status == 'proses' ? 'border-yellow-300 bg-yellow-50 text-yellow-700' : '' }}
+                                        {{ $m->status == 'belum' ? 'border-gray-200 text-gray-500' : '' }}">
+                                    <option value="belum" {{ $m->status == 'belum' ? 'selected' : '' }}>Belum</option>
+                                    <option value="proses" {{ $m->status == 'proses' ? 'selected' : '' }}>Proses</option>
+                                    <option value="selesai" {{ $m->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                </select>
+                            </form>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-0.5">
                             Target: {{ $m->tanggal_target->format('d M Y') }}
                             @if($m->tanggal_selesai)
-                            | Selesai: {{ $m->tanggal_selesai->format('d M Y') }}
+                            <span class="text-green-500 ml-2">✓ Selesai: {{ $m->tanggal_selesai->format('d M Y') }}</span>
                             @endif
                         </p>
+                        @if($m->deskripsi)
+                        <p class="text-xs text-gray-500 mt-1">{{ $m->deskripsi }}</p>
+                        @endif
                     </div>
-                    <form method="POST" action="{{ route('milestone.status', $m) }}">
-                        @csrf
-                        <select name="status" onchange="this.form.submit()"
-                            class="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none">
-                            <option value="belum" {{ $m->status == 'belum' ? 'selected' : '' }}>Belum</option>
-                            <option value="proses" {{ $m->status == 'proses' ? 'selected' : '' }}>Proses</option>
-                            <option value="selesai" {{ $m->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                        </select>
-                    </form>
                 </div>
                 @empty
                 <p class="text-sm text-gray-400 text-center py-3">Belum ada milestone.</p>
@@ -159,7 +175,7 @@
 
             {{-- Tambah Milestone --}}
             @if(in_array(auth()->user()->role_id, [1, 10, 11]))
-            <div class="border-t pt-4">
+            <div class="border-t pt-4 mt-2">
                 <p class="text-sm font-medium text-gray-700 mb-2">+ Tambah Milestone</p>
                 <form method="POST" action="{{ route('proyek.milestone', $proyek) }}">
                     @csrf

@@ -16,7 +16,6 @@ class ProyekController extends Controller
     {
         $user = auth()->user();
 
-        // Bos & admin lihat semua, lainnya hanya yang ditugaskan
         if (in_array($user->role_id, [1, 10, 11])) {
             $proyek = Proyek::with(['creator', 'anggota'])->orderBy('created_at', 'desc')->get();
         } else {
@@ -81,6 +80,31 @@ class ProyekController extends Controller
             }
         }
 
+        // Buat milestone otomatis sesuai alur kerja
+        $milestones = [
+            ['judul' => '📦 Paket Baru Masuk',       'urutan' => 1],
+            ['judul' => '📞 Respon & Koordinasi',     'urutan' => 2],
+            ['judul' => '🛒 Purchase Order (PO)',      'urutan' => 3],
+            ['judul' => '📊 Monitor Barang PO',        'urutan' => 4],
+            ['judul' => '📥 Barang Diterima Gudang',   'urutan' => 5],
+            ['judul' => '🔧 Uji Fungsi',               'urutan' => 6],
+            ['judul' => '🚚 Pengiriman ke Customer',   'urutan' => 7],
+            ['judul' => '📄 Dokumen (BAST & Invoice)', 'urutan' => 8],
+            ['judul' => '💰 Pembayaran',               'urutan' => 9],
+            ['judul' => '✅ Selesai',                  'urutan' => 10],
+        ];
+
+        foreach ($milestones as $m) {
+            ProyekMilestone::create([
+                'proyek_id'      => $proyek->id,
+                'judul'          => $m['judul'],
+                'deskripsi'      => null,
+                'tanggal_target' => $request->deadline ?? now()->addDays(30),
+                'status'         => 'belum',
+                'urutan'         => $m['urutan'],
+            ]);
+        }
+
         return redirect()->route('proyek.show', $proyek)
             ->with('success', 'Proyek berhasil dibuat!');
     }
@@ -90,7 +114,6 @@ class ProyekController extends Controller
     {
         $user = auth()->user();
 
-        // Cek akses
         if (!in_array($user->role_id, [1, 10, 11])) {
             $isAnggota = ProyekAnggota::where('proyek_id', $proyek->id)
                 ->where('user_id', $user->id)->exists();
