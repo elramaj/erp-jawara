@@ -12,23 +12,26 @@ use Illuminate\Http\Request;
 class ProyekController extends Controller
 {
     // Daftar proyek
-    public function index()
-    {
-        $user = auth()->user();
+public function index()
+{
+    $user = auth()->user();
+    $companyId = $user->company_id;
 
-        if (in_array($user->role_id, [1, 10, 11])) {
-            $proyek = Proyek::with(['creator', 'anggota'])->orderBy('created_at', 'desc')->get();
-        } else {
-            $proyek = Proyek::with(['creator', 'anggota'])
-                ->whereHas('anggota', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })
-                ->orderBy('created_at', 'desc')
-                ->get();
-        }
-
-        return view('proyek.index', compact('proyek'));
+    if (in_array($user->role_id, [1, 10, 11])) {
+        $proyek = Proyek::with(['creator', 'anggota'])
+            ->where('company_id', $companyId)
+            ->orderBy('created_at', 'desc')->get();
+    } else {
+        $proyek = Proyek::with(['creator', 'anggota'])
+            ->where('company_id', $companyId)
+            ->whereHas('anggota', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->orderBy('created_at', 'desc')->get();
     }
+
+    return view('proyek.index', compact('proyek'));
+}
 
     // Form tambah proyek
     public function create()
@@ -57,6 +60,7 @@ class ProyekController extends Controller
         ]);
 
         $proyek = Proyek::create([
+            'company_id'    => auth()->user()->company_id,
             'kode_proyek'   => $request->kode_proyek,
             'nama_proyek'   => $request->nama_proyek,
             'klien'         => $request->klien,

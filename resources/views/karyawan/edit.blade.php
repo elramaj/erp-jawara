@@ -35,6 +35,20 @@
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
             </div>
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">PT / Perusahaan *</label>
+                <select name="company_id"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    required>
+                    <option value="">-- Pilih PT --</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}" {{ old('company_id', $user->company_id) == $company->id ? 'selected' : '' }}>
+                            {{ $company->kode }} - {{ $company->nama }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('company_id')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
                 <select name="role_id"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"

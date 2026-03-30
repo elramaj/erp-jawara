@@ -15,6 +15,11 @@ class GudangBarang extends Model
         return $this->belongsTo(GudangKategori::class, 'kategori_id');
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function stokMasuk()
     {
         return $this->hasMany(GudangStokMasuk::class, 'barang_id');

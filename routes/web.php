@@ -17,6 +17,7 @@ use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\KomplainController;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -104,9 +105,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/pengaturan/jam-kerja', [PengaturanController::class, 'updateJamKerja'])->name('pengaturan.jamkerja');
 
     // Komplain
-Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);
-Route::post('/komplain/{komplain}/status', [KomplainController::class, 'updateStatus'])->name('komplain.status');
+    Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('/komplain/{komplain}/status', [KomplainController::class, 'updateStatus'])->name('komplain.status');
 
+    // Company
+    Route::resource('company', CompanyController::class);
 });
 
 require __DIR__.'/auth.php';

@@ -11,16 +11,8 @@ class User extends Authenticatable
     use Notifiable, HasRoles;
 
     protected $fillable = [
-        'role_id',
-        'department_id',
-        'name',
-        'email',
-        'password',
-        'phone',
-        'photo',
-        'employee_id',
-        'join_date',
-        'is_active',
+    'company_id', 'role_id', 'department_id', 'name', 'email',
+    'password', 'phone', 'photo', 'employee_id', 'join_date', 'is_active',
     ];
 
     protected $hidden = [
@@ -51,5 +43,15 @@ class User extends Authenticatable
     public function absensi()
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function getCompanyIdAttribute($value)
+    {
+        return $value;
     }
 }

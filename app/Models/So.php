@@ -5,7 +5,10 @@ use Illuminate\Database\Eloquent\Model;
 class So extends Model
 {
     protected $table = 'so';
-    protected $fillable = ['no_so', 'tanggal', 'customer_id', 'proyek_id', 'status', 'catatan', 'created_by'];
+    protected $fillable = [
+    'company_id', 'no_so', 'tanggal', 'customer_id',
+    'proyek_id', 'status', 'catatan', 'created_by'
+    ];
     protected $casts = ['tanggal' => 'date'];
 
     public function customer() { return $this->belongsTo(Customer::class); }

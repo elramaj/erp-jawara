@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 
 class SoController extends Controller
 {
-        private function cekAkses()
+    private function cekAkses()
     {
         if (!in_array(auth()->user()->role_id, [1, 2, 3, 11])) {
             abort(403, 'Akses ditolak.');
@@ -28,19 +28,25 @@ class SoController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $so = So::with(['customer', 'creator'])->orderBy('created_at', 'desc')->get();
+        $so = So::with(['customer', 'creator'])
+            ->where('company_id', auth()->user()->company_id)
+            ->orderBy('created_at', 'desc')->get();
         return view('keuangan.so.index', compact('so'));
     }
 
     public function create()
     {
         $this->cekAkses();
+        $companyId = auth()->user()->company_id;
         $customers = Customer::where('is_active', 1)->orderBy('nama')->get();
-        $proyek    = Proyek::where('status', 'aktif')->orderBy('nama_proyek')->get();
-        $barang    = GudangBarang::orderBy('nama_barang')->get()->map(function($b) {
-            $b->stok = $b->total_stok;
-            return $b;
-        });
+        $proyek    = Proyek::where('status', 'aktif')
+            ->where('company_id', $companyId)
+            ->orderBy('nama_proyek')->get();
+        $barang    = GudangBarang::where('company_id', $companyId)
+            ->orderBy('nama_barang')->get()->map(function($b) {
+                $b->stok = $b->total_stok;
+                return $b;
+            });
         $no_so = 'SO-' . date('Ymd') . '-' . str_pad(So::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
         return view('keuangan.so.create', compact('customers', 'proyek', 'barang', 'no_so'));
     }
@@ -58,6 +64,7 @@ class SoController extends Controller
         ]);
 
         $so = So::create([
+            'company_id'  => auth()->user()->company_id,
             'no_so'       => $request->no_so,
             'tanggal'     => $request->tanggal,
             'customer_id' => $request->customer_id,
@@ -117,8 +124,6 @@ class SoController extends Controller
                 'jumlah'    => $jumlah,
             ]);
 
-            // Auto kurangi stok gudang via FIFO
-            $barang = GudangBarang::find($barangId);
             $keluar = GudangStokKeluar::create([
                 'barang_id'  => $barangId,
                 'tanggal'    => $request->tanggal,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 
 class PengaturanController extends Controller
 {
@@ -20,7 +21,8 @@ class PengaturanController extends Controller
         $this->cekAkses();
         $departments = Department::orderBy('name')->get();
         $jamKerja    = DB::table('jam_kerja')->orderBy('id')->get();
-        return view('pengaturan.index', compact('departments', 'jamKerja'));
+        $companies   = Company::withCount('users')->orderBy('nama')->get();
+        return view('pengaturan.index', compact('departments', 'jamKerja', 'companies'));
     }
 
     // Department

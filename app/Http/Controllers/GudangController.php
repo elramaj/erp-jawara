@@ -25,10 +25,13 @@ class GudangController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $barang = GudangBarang::with('kategori')->get()->map(function($b) {
-            $b->total_stok = $b->total_stok;
-            return $b;
-        });
+        $companyId = auth()->user()->company_id;
+        $barang = GudangBarang::with('kategori')
+            ->where('company_id', $companyId)
+            ->get()->map(function($b) {
+                $b->total_stok = $b->total_stok;
+                return $b;
+            });
         $alertStok = $barang->filter(fn($b) => $b->total_stok <= $b->stok_minimum && $b->stok_minimum > 0);
         return view('gudang.index', compact('barang', 'alertStok'));
     }
@@ -54,6 +57,7 @@ class GudangController extends Controller
         ]);
 
         GudangBarang::create([
+            'company_id'   => auth()->user()->company_id,
             'kode_barang'  => $request->kode_barang,
             'nama_barang'  => $request->nama_barang,
             'kategori_id'  => $request->kategori_id,
@@ -77,7 +81,9 @@ class GudangController extends Controller
         $stokKeluar = GudangStokKeluar::where('barang_id', $barang->id)
             ->with(['proyek', 'creator'])
             ->orderBy('tanggal', 'desc')->get();
-        $proyek = Proyek::where('status', 'aktif')->orderBy('nama_proyek')->get();
+        $proyek = Proyek::where('status', 'aktif')
+            ->where('company_id', auth()->user()->company_id)
+            ->orderBy('nama_proyek')->get();
 
         return view('gudang.barang-show', compact('barang', 'stokMasuk', 'stokKeluar', 'proyek'));
     }
@@ -108,7 +114,6 @@ class GudangController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        // Simpan SN jika barang punya SN
         if ($barang->has_sn && $request->filled('serial_numbers')) {
             $sns = array_filter(array_map('trim', explode("\n", $request->serial_numbers)));
             foreach ($sns as $sn) {
@@ -145,7 +150,6 @@ class GudangController extends Controller
             return back()->withErrors(['jumlah' => "Stok tidak cukup! Stok tersedia: {$totalStok} {$barang->satuan}"]);
         }
 
-        // Validasi SN jika barang punya SN
         if ($barang->has_sn) {
             $snDipilih = $request->serial_numbers ?? [];
             if (count($snDipilih) != $request->jumlah) {
@@ -165,12 +169,10 @@ class GudangController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        // Proses FIFO — ambil dari batch paling lama dulu
         $sisaKeluar = $request->jumlah;
         $batches = GudangStokMasuk::where('barang_id', $barang->id)
             ->where('sisa', '>', 0)
-            ->orderBy('tanggal')->orderBy('id')
-            ->get();
+            ->orderBy('tanggal')->orderBy('id')->get();
 
         foreach ($batches as $batch) {
             if ($sisaKeluar <= 0) break;
@@ -184,7 +186,6 @@ class GudangController extends Controller
             $sisaKeluar -= $ambil;
         }
 
-        // Update status SN yang keluar
         if ($barang->has_sn && !empty($request->serial_numbers)) {
             GudangSerialNumber::whereIn('id', $request->serial_numbers)
                 ->update([
@@ -200,10 +201,13 @@ class GudangController extends Controller
     public function opname()
     {
         $this->cekAkses();
-        $barang = GudangBarang::with('kategori')->get()->map(function($b) {
-            $b->total_stok = $b->total_stok;
-            return $b;
-        });
+        $companyId = auth()->user()->company_id;
+        $barang = GudangBarang::with('kategori')
+            ->where('company_id', $companyId)
+            ->get()->map(function($b) {
+                $b->total_stok = $b->total_stok;
+                return $b;
+            });
         return view('gudang.opname', compact('barang'));
     }
 
@@ -224,7 +228,6 @@ class GudangController extends Controller
 
             if ($selisih != 0) {
                 if ($selisih > 0) {
-                    // Stok fisik lebih banyak → tambah batch penyesuaian
                     GudangStokMasuk::create([
                         'barang_id'  => $barangId,
                         'tanggal'    => now()->toDateString(),
@@ -234,7 +237,6 @@ class GudangController extends Controller
                         'created_by' => auth()->id(),
                     ]);
                 } else {
-                    // Stok fisik lebih sedikit → kurangi via FIFO
                     $keluar = GudangStokKeluar::create([
                         'barang_id'  => $barangId,
                         'tanggal'    => now()->toDateString(),
@@ -266,24 +268,24 @@ class GudangController extends Controller
         return redirect()->route('gudang.index')
             ->with('success', 'Stok opname berhasil disimpan!');
     }
+
     // Hapus barang permanen
-public function destroyBarang(GudangBarang $barang)
-{
-    $this->cekAkses();
+    public function destroyBarang(GudangBarang $barang)
+    {
+        $this->cekAkses();
 
-    // Hapus semua data terkait dulu
-    $masukIds = GudangStokMasuk::where('barang_id', $barang->id)->pluck('id');
-    $keluarIds = GudangStokKeluar::where('barang_id', $barang->id)->pluck('id');
+        $masukIds  = GudangStokMasuk::where('barang_id', $barang->id)->pluck('id');
+        $keluarIds = GudangStokKeluar::where('barang_id', $barang->id)->pluck('id');
 
-    GudangFifoDetail::whereIn('masuk_id', $masukIds)->delete();
-    GudangFifoDetail::whereIn('keluar_id', $keluarIds)->delete();
-    GudangSerialNumber::where('barang_id', $barang->id)->delete();
-    GudangStokMasuk::where('barang_id', $barang->id)->delete();
-    GudangStokKeluar::where('barang_id', $barang->id)->delete();
+        GudangFifoDetail::whereIn('masuk_id', $masukIds)->delete();
+        GudangFifoDetail::whereIn('keluar_id', $keluarIds)->delete();
+        GudangSerialNumber::where('barang_id', $barang->id)->delete();
+        GudangStokMasuk::where('barang_id', $barang->id)->delete();
+        GudangStokKeluar::where('barang_id', $barang->id)->delete();
 
-    $barang->delete();
+        $barang->delete();
 
-    return redirect()->route('gudang.index')
-        ->with('success', 'Barang berhasil dihapus!');
-}
+        return redirect()->route('gudang.index')
+            ->with('success', 'Barang berhasil dihapus!');
+    }
 }

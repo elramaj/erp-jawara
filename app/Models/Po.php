@@ -5,7 +5,10 @@ use Illuminate\Database\Eloquent\Model;
 class Po extends Model
 {
     protected $table = 'po';
-    protected $fillable = ['no_po', 'tanggal', 'supplier_id', 'proyek_id', 'status', 'catatan', 'created_by'];
+    protected $fillable = [
+    'company_id', 'no_po', 'tanggal', 'supplier_id',
+    'proyek_id', 'status', 'catatan', 'created_by'
+    ];
     protected $casts = ['tanggal' => 'date'];
 
     public function supplier() { return $this->belongsTo(Supplier::class); }

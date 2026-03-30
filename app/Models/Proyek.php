@@ -9,9 +9,9 @@ class Proyek extends Model
     protected $table = 'proyek';
 
     protected $fillable = [
-        'kode_proyek', 'nama_proyek', 'klien',
-        'nilai_kontrak', 'tanggal_mulai', 'tanggal_selesai',
-        'deadline', 'status', 'progress', 'deskripsi', 'created_by',
+    'company_id', 'kode_proyek', 'nama_proyek', 'klien',
+    'nilai_kontrak', 'tanggal_mulai', 'tanggal_selesai',
+    'deadline', 'status', 'progress', 'deskripsi', 'created_by',
     ];
 
     protected $casts = [
@@ -46,5 +46,10 @@ class Proyek extends Model
         return $this->belongsToMany(User::class, 'proyek_anggota')
             ->withPivot('peran')
             ->withTimestamps();
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }
