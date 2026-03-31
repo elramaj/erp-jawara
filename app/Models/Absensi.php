@@ -9,18 +9,11 @@ class Absensi extends Model
     protected $table = 'absensi';
 
     protected $fillable = [
-        'user_id',
-        'tanggal',
-        'jam_masuk',
-        'jam_keluar',
-        'status',
-        'foto_masuk',
-        'foto_keluar',
-        'lokasi_masuk',
-        'lokasi_keluar',
-        'keterangan',
-        'approved_by',
-        'approved_at',
+    'user_id', 'tanggal', 'jam_masuk', 'jam_keluar',
+    'status', 'foto_masuk', 'foto_keluar',
+    'lat_masuk', 'lng_masuk', 'lat_keluar', 'lng_keluar',
+    'lokasi_valid', 'lokasi_masuk', 'lokasi_keluar',
+    'keterangan', 'approved_by', 'approved_at',
     ];
 
     protected $casts = [

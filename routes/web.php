@@ -33,6 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/absensi/checkin', [AbsensiController::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
 
+    // Absensi Mobile
+    Route::get('/absensi/mobile', [AbsensiController::class, 'mobile'])->name('absensi.mobile');
+    Route::post('/absensi/checkin-mobile', [AbsensiController::class, 'checkInMobile'])->name('absensi.checkin.mobile');
+    Route::post('/absensi/checkout-mobile', [AbsensiController::class, 'checkOutMobile'])->name('absensi.checkout.mobile');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
