@@ -25,18 +25,21 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+        ->middleware(['auth', 'verified'])
+        ->name('dashboard');
 
-    // Absensi
-    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-    Route::post('/absensi/checkin', [AbsensiController::class, 'checkIn'])->name('absensi.checkin');
-    Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+    // Absensi — redirect ke mobile (GPS + Foto wajib)
+    Route::get('/absensi', function () {
+        return redirect()->route('absensi.mobile');
+    })->name('absensi.index');
 
-    // Absensi Mobile
+    // Absensi Mobile (GPS + Foto)
     Route::get('/absensi/mobile', [AbsensiController::class, 'mobile'])->name('absensi.mobile');
     Route::post('/absensi/checkin-mobile', [AbsensiController::class, 'checkInMobile'])->name('absensi.checkin.mobile');
     Route::post('/absensi/checkout-mobile', [AbsensiController::class, 'checkOutMobile'])->name('absensi.checkout.mobile');
+
+    // Absensi desktop (tetap ada untuk rekap & riwayat)
+    Route::get('/absensi/riwayat', [AbsensiController::class, 'index'])->name('absensi.riwayat');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -108,6 +111,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/pengaturan/department/{department}', [PengaturanController::class, 'updateDepartment'])->name('pengaturan.department.update');
     Route::delete('/pengaturan/department/{department}', [PengaturanController::class, 'destroyDepartment'])->name('pengaturan.department.destroy');
     Route::post('/pengaturan/jam-kerja', [PengaturanController::class, 'updateJamKerja'])->name('pengaturan.jamkerja');
+    Route::post('/pengaturan/lokasi', [PengaturanController::class, 'updateLokasi'])->name('pengaturan.lokasi');
 
     // Komplain
     Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);

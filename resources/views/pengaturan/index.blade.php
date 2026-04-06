@@ -20,7 +20,6 @@
     {{-- Departemen --}}
     <div class="bg-white rounded-xl shadow p-6">
         <h2 class="font-semibold text-gray-700 mb-4">🏢 Manajemen Departemen</h2>
-
         <div class="space-y-2 mb-4">
             @forelse($departments as $d)
             <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
@@ -32,15 +31,11 @@
                 </div>
                 <div class="flex gap-2">
                     <button onclick="editDepartment({{ $d->id }}, '{{ $d->name }}', '{{ $d->description }}')"
-                        class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">
-                        Edit
-                    </button>
+                        class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                     <form method="POST" action="{{ route('pengaturan.department.destroy', $d) }}"
                         onsubmit="return confirm('Yakin hapus departemen ini?')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="bg-red-100 text-red-700 hover:bg-red-200 px-2 py-1 rounded text-xs font-semibold transition">
-                            Hapus
-                        </button>
+                        <button type="submit" class="bg-red-100 text-red-700 hover:bg-red-200 px-2 py-1 rounded text-xs font-semibold transition">Hapus</button>
                     </form>
                 </div>
             </div>
@@ -48,7 +43,6 @@
             <p class="text-sm text-gray-400 text-center py-3">Belum ada departemen.</p>
             @endforelse
         </div>
-
         <div class="border-t pt-4" id="form-department">
             <p class="text-sm font-medium text-gray-700 mb-2" id="form-dept-title">+ Tambah Departemen</p>
             <form method="POST" id="dept-form" action="{{ route('pengaturan.department.store') }}">
@@ -62,14 +56,8 @@
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
                 <div class="flex gap-2 mt-3">
-                    <button type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Simpan
-                    </button>
-                    <button type="button" onclick="resetDeptForm()"
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Reset
-                    </button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Simpan</button>
+                    <button type="button" onclick="resetDeptForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Reset</button>
                 </div>
             </form>
         </div>
@@ -163,16 +151,36 @@
                         <input type="text" name="alamat" id="pt-alamat"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                     </div>
+
+                    {{-- Lokasi Kantor per PT --}}
+                    <div class="md:col-span-3">
+                        <p class="text-xs font-semibold text-gray-600 mb-2 mt-1 border-t pt-3">📍 Lokasi Kantor (untuk Absensi GPS)</p>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Latitude</label>
+                        <input type="text" name="latitude" id="pt-latitude" placeholder="-7.2575"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Longitude</label>
+                        <input type="text" name="longitude" id="pt-longitude" placeholder="112.7521"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Radius Absensi (meter)</label>
+                        <input type="number" name="radius_meter" id="pt-radius" value="100" min="10" max="5000"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    </div>
+                    <div class="md:col-span-3">
+                        <p class="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-lg p-2">
+                            💡 Ambil koordinat dari <a href="https://maps.google.com" target="_blank" class="underline font-semibold">Google Maps</a>
+                            → klik kanan lokasi kantor → "What's here?" → salin angka koordinatnya.
+                        </p>
+                    </div>
                 </div>
                 <div class="flex gap-2 mt-3">
-                    <button type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Simpan
-                    </button>
-                    <button type="button" onclick="resetFormPT()"
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Batal
-                    </button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Simpan</button>
+                    <button type="button" onclick="resetFormPT()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Batal</button>
                 </div>
             </form>
         </div>
@@ -185,8 +193,8 @@
                         <th class="px-4 py-3 text-left">Kode</th>
                         <th class="px-4 py-3 text-left">Nama PT</th>
                         <th class="px-4 py-3 text-left">Telepon</th>
-                        <th class="px-4 py-3 text-left">Email</th>
                         <th class="px-4 py-3 text-center">Karyawan</th>
+                        <th class="px-4 py-3 text-center">Lokasi GPS</th>
                         <th class="px-4 py-3 text-center">Status</th>
                         <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
@@ -197,11 +205,19 @@
                         <td class="px-4 py-3 font-mono text-xs text-gray-400">{{ $c->kode }}</td>
                         <td class="px-4 py-3 font-medium text-gray-800">{{ $c->nama }}</td>
                         <td class="px-4 py-3 text-gray-500">{{ $c->telepon ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ $c->email ?? '-' }}</td>
                         <td class="px-4 py-3 text-center">
                             <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold">
                                 {{ $c->users_count }} orang
                             </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            @if($c->latitude)
+                            <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                                ✅ {{ $c->radius_meter }}m
+                            </span>
+                            @else
+                            <span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full text-xs">Belum diset</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $c->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
@@ -210,16 +226,12 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex gap-2 justify-center">
-                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ $c->nama }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ $c->alamat }}')"
-                                    class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">
-                                    Edit
-                                </button>
+                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ $c->nama }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ $c->alamat }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}')"
+                                    class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
                                     onsubmit="return confirm('Yakin hapus PT ini?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="bg-red-100 text-red-700 hover:bg-red-200 px-2 py-1 rounded text-xs font-semibold transition">
-                                        Hapus
-                                    </button>
+                                    <button type="submit" class="bg-red-100 text-red-700 hover:bg-red-200 px-2 py-1 rounded text-xs font-semibold transition">Hapus</button>
                                 </form>
                             </div>
                         </td>
@@ -265,6 +277,9 @@ function toggleHari(checkbox, id) {
 function toggleFormPT() {
     const form = document.getElementById('form-pt');
     form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 function resetFormPT() {
@@ -276,10 +291,13 @@ function resetFormPT() {
     document.getElementById('pt-telepon').value = '';
     document.getElementById('pt-email').value = '';
     document.getElementById('pt-alamat').value = '';
+    document.getElementById('pt-latitude').value = '';
+    document.getElementById('pt-longitude').value = '';
+    document.getElementById('pt-radius').value = '100';
     document.getElementById('form-pt').classList.add('hidden');
 }
 
-function editPT(id, kode, nama, telepon, email, alamat) {
+function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius) {
     document.getElementById('form-pt-title').textContent = '✏️ Edit PT';
     document.getElementById('pt-form').action = '/company/' + id;
     document.getElementById('pt-method').value = 'PUT';
@@ -288,6 +306,9 @@ function editPT(id, kode, nama, telepon, email, alamat) {
     document.getElementById('pt-telepon').value = telepon ?? '';
     document.getElementById('pt-email').value = email ?? '';
     document.getElementById('pt-alamat').value = alamat ?? '';
+    document.getElementById('pt-latitude').value = latitude ?? '';
+    document.getElementById('pt-longitude').value = longitude ?? '';
+    document.getElementById('pt-radius').value = radius ?? 100;
     document.getElementById('form-pt').classList.remove('hidden');
     document.getElementById('form-pt').scrollIntoView({ behavior: 'smooth' });
 }

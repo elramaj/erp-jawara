@@ -19,10 +19,11 @@ class PengaturanController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $departments = Department::orderBy('name')->get();
-        $jamKerja    = DB::table('jam_kerja')->orderBy('id')->get();
-        $companies   = Company::withCount('users')->orderBy('nama')->get();
-        return view('pengaturan.index', compact('departments', 'jamKerja', 'companies'));
+        $departments  = Department::orderBy('name')->get();
+        $jamKerja     = DB::table('jam_kerja')->orderBy('id')->get();
+        $companies    = Company::withCount('users')->orderBy('nama')->get();
+        $lokasiKantor = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
+        return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor'));
     }
 
     // Department
@@ -54,11 +55,11 @@ class PengaturanController extends Controller
     {
         $this->cekAkses();
         $request->validate([
-            'jam_kerja_id'     => 'required|array',
-            'jam_masuk'        => 'required|array',
-            'jam_keluar'       => 'required|array',
-            'toleransi_menit'  => 'required|array',
-            'is_libur'         => 'nullable|array',
+            'jam_kerja_id'    => 'required|array',
+            'jam_masuk'       => 'required|array',
+            'jam_keluar'      => 'required|array',
+            'toleransi_menit' => 'required|array',
+            'is_libur'        => 'nullable|array',
         ]);
 
         foreach ($request->jam_kerja_id as $i => $id) {
@@ -71,5 +72,41 @@ class PengaturanController extends Controller
         }
 
         return back()->with('success', 'Jam kerja berhasil diupdate!');
+    }
+
+    // Lokasi Kantor
+    public function updateLokasi(Request $request)
+    {
+        $this->cekAkses();
+        $request->validate([
+            'nama'         => 'required|string|max:100',
+            'latitude'     => 'required|numeric|between:-90,90',
+            'longitude'    => 'required|numeric|between:-180,180',
+            'radius_meter' => 'required|integer|min:10|max:5000',
+        ]);
+
+        $lokasi = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
+
+        if ($lokasi) {
+            DB::table('pengaturan_lokasi')->where('id', $lokasi->id)->update([
+                'nama'         => $request->nama,
+                'latitude'     => $request->latitude,
+                'longitude'    => $request->longitude,
+                'radius_meter' => $request->radius_meter,
+                'updated_at'   => now(),
+            ]);
+        } else {
+            DB::table('pengaturan_lokasi')->insert([
+                'nama'         => $request->nama,
+                'latitude'     => $request->latitude,
+                'longitude'    => $request->longitude,
+                'radius_meter' => $request->radius_meter,
+                'is_active'    => 1,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Lokasi kantor berhasil diupdate!');
     }
 }

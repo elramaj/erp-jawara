@@ -32,14 +32,20 @@ class CompanyController extends Controller
     {
         $this->cekAkses();
         $request->validate([
-            'nama' => 'required|string|max:150',
-            'kode' => 'required|unique:companies,kode|max:20',
-            'telepon' => 'nullable|string|max:20',
-            'email'   => 'nullable|email|max:100',
-            'alamat'  => 'nullable|string',
+            'nama'         => 'required|string|max:150',
+            'kode'         => 'required|unique:companies,kode|max:20',
+            'telepon'      => 'nullable|string|max:20',
+            'email'        => 'nullable|email|max:100',
+            'alamat'       => 'nullable|string',
+            'latitude'     => 'nullable|numeric|between:-90,90',
+            'longitude'    => 'nullable|numeric|between:-180,180',
+            'radius_meter' => 'nullable|integer|min:10|max:5000',
         ]);
 
-        Company::create($request->only(['nama', 'kode', 'alamat', 'telepon', 'email']) + ['is_active' => 1]);
+        Company::create($request->only([
+            'nama', 'kode', 'alamat', 'telepon', 'email',
+            'latitude', 'longitude', 'radius_meter',
+        ]) + ['is_active' => 1]);
 
         return redirect()->route('company.index')->with('success', 'PT berhasil ditambahkan!');
     }
@@ -55,11 +61,17 @@ class CompanyController extends Controller
     {
         $this->cekAkses();
         $request->validate([
-            'nama' => 'required|string|max:150',
-            'kode' => 'required|unique:companies,kode,' . $company->id,
+            'nama'         => 'required|string|max:150',
+            'kode'         => 'required|unique:companies,kode,' . $company->id,
+            'latitude'     => 'nullable|numeric|between:-90,90',
+            'longitude'    => 'nullable|numeric|between:-180,180',
+            'radius_meter' => 'nullable|integer|min:10|max:5000',
         ]);
 
-        $company->update($request->only(['nama', 'kode', 'alamat', 'telepon', 'email']) + [
+        $company->update($request->only([
+            'nama', 'kode', 'alamat', 'telepon', 'email',
+            'latitude', 'longitude', 'radius_meter',
+        ]) + [
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 

@@ -5,7 +5,10 @@ use Illuminate\Database\Eloquent\Model;
 class Company extends Model
 {
     protected $table = 'companies';
-    protected $fillable = ['nama', 'kode', 'alamat', 'telepon', 'email', 'logo', 'is_active'];
+    protected $fillable = [
+    'nama', 'kode', 'alamat', 'telepon', 'email',
+    'latitude', 'longitude', 'radius_meter', 'is_active'
+    ];
 
     public function users()
     {

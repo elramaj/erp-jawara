@@ -9,15 +9,9 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('absensi.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition {{ request()->routeIs('absensi.index') ? 'bg-indigo-600 text-white' : '' }}">
-            <span>🕐</span> Absensi
-        </a>
-    </li>
-    <li>
         <a href="{{ route('absensi.mobile') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition {{ request()->routeIs('absensi.mobile') ? 'bg-indigo-600 text-white' : '' }}">
-            <span>📱</span> Absensi Mobile
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-700 hover:text-white transition {{ request()->routeIs('absensi.*') ? 'bg-indigo-600 text-white' : '' }}">
+            <span>🕐</span> Absensi
         </a>
     </li>
     <li>
