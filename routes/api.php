@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AbsensiController;
 use App\Http\Controllers\Api\GudangController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\IzinController;
 
 // Auth
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,4 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/gudang/{id}', [GudangController::class, 'show']);
     Route::post('/gudang/masuk', [GudangController::class, 'storeMasuk']);
     Route::post('/gudang/keluar', [GudangController::class, 'storeKeluar']);
+
+    // tambahkan di dalam group middleware auth:sanctum
+    Route::get('/izin', [IzinController::class, 'index']);
+    Route::post('/izin', [IzinController::class, 'store']);
 });

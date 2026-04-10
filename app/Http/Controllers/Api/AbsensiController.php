@@ -15,8 +15,28 @@ class AbsensiController extends Controller
         $user  = $request->user();
         $today = Carbon::today();
 
-        $absensi = Absensi::where('user_id', $user->id)
-            ->whereDate('tanggal', $today)->first();
+        // Absensi utama (masuk kantor/wfh)
+        $absensiUtama = Absensi::where('user_id', $user->id)
+            ->whereDate('tanggal', $today)
+            ->whereIn('tipe', ['masuk_kantor', 'wfh'])
+            ->whereNull('parent_id')
+            ->first();
+
+        // Semua visit hari ini
+        $visitHariIni = Absensi::where('user_id', $user->id)
+            ->whereDate('tanggal', $today)
+            ->where('tipe', 'visit')
+            ->orderBy('urutan_visit')
+            ->get()
+            ->map(fn($a) => [
+                'id'           => $a->id,
+                'urutan'       => $a->urutan_visit,
+                'nama_tujuan'  => $a->nama_tujuan,
+                'jam_masuk'    => $a->jam_masuk,
+                'jam_keluar'   => $a->jam_keluar,
+                'catatan'      => $a->catatan,
+                'lokasi_valid' => $a->lokasi_valid,
+            ]);
 
         $lokasiKantor = null;
         if ($user->company_id) {
@@ -42,18 +62,21 @@ class AbsensiController extends Controller
         }
 
         return response()->json([
-            'success'       => true,
-            'absensi'       => $absensi ? [
-                'id'           => $absensi->id,
-                'tanggal'      => $absensi->tanggal,
-                'jam_masuk'    => $absensi->jam_masuk,
-                'jam_keluar'   => $absensi->jam_keluar,
-                'status'       => $absensi->status,
-                'lokasi_valid' => $absensi->lokasi_valid,
-                'foto_masuk'   => $absensi->foto_masuk ? Storage::url($absensi->foto_masuk) : null,
-                'foto_keluar'  => $absensi->foto_keluar ? Storage::url($absensi->foto_keluar) : null,
+            'success'        => true,
+            'absensi'        => $absensiUtama ? [
+                'id'           => $absensiUtama->id,
+                'tanggal'      => $absensiUtama->tanggal,
+                'jam_masuk'    => $absensiUtama->jam_masuk,
+                'jam_keluar'   => $absensiUtama->jam_keluar,
+                'status'       => $absensiUtama->status,
+                'tipe'         => $absensiUtama->tipe,
+                'catatan'      => $absensiUtama->catatan,
+                'nama_tujuan'  => $absensiUtama->nama_tujuan,
+                'lokasi_valid' => $absensiUtama->lokasi_valid,
             ] : null,
-            'lokasi_kantor' => $lokasiKantor,
+            'visit_hari_ini' => $visitHariIni,
+            'total_visit'    => $visitHariIni->count(),
+            'lokasi_kantor'  => $lokasiKantor,
         ]);
     }
 
@@ -61,9 +84,27 @@ class AbsensiController extends Controller
     {
         $user  = $request->user();
         $today = Carbon::today();
+        $tipe  = $request->tipe ?? 'masuk_kantor';
 
-        if (Absensi::where('user_id', $user->id)->whereDate('tanggal', $today)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Sudah check-in hari ini!'], 400);
+        // Cek duplikat untuk non-visit
+        if (in_array($tipe, ['masuk_kantor', 'wfh'])) {
+            if (Absensi::where('user_id', $user->id)
+                ->whereDate('tanggal', $today)
+                ->whereIn('tipe', ['masuk_kantor', 'wfh'])
+                ->whereNull('parent_id')
+                ->exists()) {
+                return response()->json(['success' => false,
+                    'message' => 'Sudah check-in hari ini!'], 400);
+            }
+        }
+
+        // Hitung urutan visit
+        $urutanVisit = 1;
+        if ($tipe === 'visit') {
+            $urutanVisit = Absensi::where('user_id', $user->id)
+                ->whereDate('tanggal', $today)
+                ->where('tipe', 'visit')
+                ->count() + 1;
         }
 
         // Simpan foto
@@ -77,25 +118,33 @@ class AbsensiController extends Controller
 
         $jamSekarang = Carbon::now();
         $toleransi   = Carbon::today()->setTimeFromTimeString('08:15:00');
-        $status      = $jamSekarang->lte($toleransi) ? 'hadir' : 'terlambat';
-        $keterangan  = $request->lokasi_valid == 0 ? 'Absen di luar area kantor (WFH/Dinas Luar)' : null;
+        $status      = ($tipe === 'masuk_kantor' && $jamSekarang->gt($toleransi)) ? 'terlambat' : 'hadir';
 
-        $absensi = Absensi::create([
+        Absensi::create([
             'user_id'      => $user->id,
             'tanggal'      => $today,
             'jam_masuk'    => $jamSekarang->format('H:i:s'),
             'status'       => $status,
+            'tipe'         => $tipe,
+            'catatan'      => $request->catatan,
+            'nama_tujuan'  => $request->nama_tujuan,
+            'urutan_visit' => $urutanVisit,
             'foto_masuk'   => $fotoPath,
             'lat_masuk'    => $request->lat,
             'lng_masuk'    => $request->lng,
             'lokasi_valid' => $request->lokasi_valid ?? 0,
-            'keterangan'   => $keterangan,
         ]);
 
+        $pesan = $tipe === 'visit'
+            ? "Check-in Visit #{$urutanVisit} berhasil! Jam: " . $jamSekarang->format('H:i')
+            : "Check-in berhasil! Jam: " . $jamSekarang->format('H:i');
+
         return response()->json([
-            'success' => true,
-            'message' => 'Check-in berhasil! Jam: ' . $jamSekarang->format('H:i'),
-            'status'  => $status,
+            'success'      => true,
+            'message'      => $pesan,
+            'status'       => $status,
+            'tipe'         => $tipe,
+            'urutan_visit' => $urutanVisit,
         ]);
     }
 
@@ -103,14 +152,37 @@ class AbsensiController extends Controller
     {
         $user    = $request->user();
         $today   = Carbon::today();
-        $absensi = Absensi::where('user_id', $user->id)->whereDate('tanggal', $today)->first();
+        $tipe    = $request->tipe ?? 'masuk_kantor';
 
-        if (!$absensi) {
-            return response()->json(['success' => false, 'message' => 'Belum check-in hari ini!'], 400);
-        }
+        if ($tipe === 'visit') {
+            // Checkout visit — berdasarkan ID visit
+            $visitId = $request->visit_id;
+            $absensi = Absensi::where('id', $visitId)
+                ->where('user_id', $user->id)
+                ->where('tipe', 'visit')
+                ->whereNull('jam_keluar')
+                ->first();
 
-        if ($absensi->jam_keluar) {
-            return response()->json(['success' => false, 'message' => 'Sudah check-out hari ini!'], 400);
+            if (!$absensi) {
+                return response()->json(['success' => false,
+                    'message' => 'Visit tidak ditemukan atau sudah checkout!'], 400);
+            }
+        } else {
+            $absensi = Absensi::where('user_id', $user->id)
+                ->whereDate('tanggal', $today)
+                ->whereIn('tipe', ['masuk_kantor', 'wfh'])
+                ->whereNull('parent_id')
+                ->first();
+
+            if (!$absensi) {
+                return response()->json(['success' => false,
+                    'message' => 'Belum check-in hari ini!'], 400);
+            }
+
+            if ($absensi->jam_keluar) {
+                return response()->json(['success' => false,
+                    'message' => 'Sudah check-out hari ini!'], 400);
+            }
         }
 
         $fotoPath = null;
@@ -129,23 +201,26 @@ class AbsensiController extends Controller
             'lng_keluar'  => $request->lng,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Check-out berhasil! Jam: ' . $jamSekarang->format('H:i'),
-        ]);
+        $pesan = $tipe === 'visit'
+            ? "Checkout Visit #{$absensi->urutan_visit} berhasil! Jam: " . $jamSekarang->format('H:i')
+            : "Check-out berhasil! Jam: " . $jamSekarang->format('H:i');
+
+        return response()->json(['success' => true, 'message' => $pesan]);
     }
 
     public function riwayat(Request $request)
     {
         $riwayat = Absensi::where('user_id', $request->user()->id)
-            ->orderBy('tanggal', 'desc')
-            ->take(30)
-            ->get()
+            ->orderBy('tanggal', 'desc')->orderBy('urutan_visit')
+            ->take(30)->get()
             ->map(fn($a) => [
                 'tanggal'      => $a->tanggal->format('d M Y'),
                 'jam_masuk'    => $a->jam_masuk ?? '-',
                 'jam_keluar'   => $a->jam_keluar ?? '-',
                 'status'       => $a->status,
+                'tipe'         => $a->tipe,
+                'nama_tujuan'  => $a->nama_tujuan,
+                'urutan_visit' => $a->urutan_visit,
                 'lokasi_valid' => $a->lokasi_valid,
             ]);
 

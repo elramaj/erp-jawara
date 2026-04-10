@@ -6,8 +6,8 @@ class GudangBarang extends Model
 {
     protected $table = 'gudang_barang';
     protected $fillable = [
-        'kode_barang', 'nama_barang', 'kategori_id',
-        'satuan', 'stok_minimum', 'has_sn', 'deskripsi',
+    'company_id', 'kode_barang', 'nama_barang', 'kategori_id',
+    'satuan', 'stok_minimum', 'has_sn', 'deskripsi',
     ];
 
     public function kategori()

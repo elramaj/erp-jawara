@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Exports\AbsensiExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class RekapAbsensiController extends Controller
 {
@@ -44,14 +45,37 @@ class RekapAbsensiController extends Controller
             ->orderBy('tanggal')
             ->get();
 
-        return view('rekap.detail', compact('user', 'absensi', 'bulan', 'tahun'));
+        // Siapkan data JSON untuk JavaScript (hindari arrow function di Blade)
+        $absensiJson = $absensi->keyBy('id')->map(function($a) {
+            return [
+                'id'           => $a->id,
+                'tanggal'      => $a->tanggal->format('d M Y'),
+                'hari'         => $a->tanggal->translatedFormat('l'),
+                'tipe'         => $a->tipe ?? 'masuk_kantor',
+                'nama_tujuan'  => $a->nama_tujuan,
+                'catatan'      => $a->catatan,
+                'jam_masuk'    => $a->jam_masuk,
+                'jam_keluar'   => $a->jam_keluar,
+                'status'       => $a->status,
+                'lokasi_valid' => $a->lokasi_valid,
+                'lat_masuk'    => $a->lat_masuk,
+                'lng_masuk'    => $a->lng_masuk,
+                'lat_keluar'   => $a->lat_keluar,
+                'lng_keluar'   => $a->lng_keluar,
+                'foto_masuk'   => $a->foto_masuk ? Storage::url($a->foto_masuk) : null,
+                'foto_keluar'  => $a->foto_keluar ? Storage::url($a->foto_keluar) : null,
+                'keterangan'   => $a->keterangan,
+            ];
+        });
+
+        return view('rekap.detail', compact('user', 'absensi', 'bulan', 'tahun', 'absensiJson'));
     }
 
     private function hitungHariKerja($bulan, $tahun)
     {
-        $awal = Carbon::createFromDate($tahun, $bulan, 1);
+        $awal  = Carbon::createFromDate($tahun, $bulan, 1);
         $akhir = $awal->copy()->endOfMonth();
-        $hari = 0;
+        $hari  = 0;
         while ($awal->lte($akhir)) {
             if (!$awal->isWeekend()) $hari++;
             $awal->addDay();
@@ -66,12 +90,12 @@ class RekapAbsensiController extends Controller
         }
 
         $request->validate([
-            'tanggal_mulai'  => 'required|date',
+            'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
         ]);
 
-        $mulai   = $request->tanggal_mulai;
-        $selesai = $request->tanggal_selesai;
+        $mulai    = $request->tanggal_mulai;
+        $selesai  = $request->tanggal_selesai;
         $filename = 'rekap-absensi_' . $mulai . '_' . $selesai . '.xlsx';
 
         return Excel::download(new AbsensiExport($mulai, $selesai), $filename);
