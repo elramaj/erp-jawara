@@ -38,8 +38,8 @@ class AuthController extends Controller
                 'name'       => $user->name,
                 'email'      => $user->email,
                 'role'       => $user->role->name ?? '-',
-                'role_id'    => $user->role_id,
-                'company_id' => $user->company_id,
+                'role_id'    => (int) $user->role_id,
+                'company_id' => (int) $user->company_id,
                 'company'    => $user->company->nama ?? '-',
             ]
         ]);
@@ -61,8 +61,8 @@ class AuthController extends Controller
                 'name'       => $user->name,
                 'email'      => $user->email,
                 'role'       => $user->role->name ?? '-',
-                'role_id'    => $user->role_id,
-                'company_id' => $user->company_id,
+                'role_id'    => (int) $user->role_id,
+                'company_id' => (int) $user->company_id,
                 'company'    => $user->company->nama ?? '-',
             ]
         ]);
