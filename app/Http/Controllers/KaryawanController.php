@@ -107,7 +107,7 @@ class KaryawanController extends Controller
 
         \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => auth()->id()]);
         \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => auth()->id()]);
-
+\App\Models\Komplain::where('created_by', $user->id)->update(['created_by' => auth()->id()]);
         $user->delete();
 
         return redirect()->route('karyawan.index')
