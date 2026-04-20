@@ -95,36 +95,27 @@ class KaryawanController extends Controller
             ->with('success', 'Data karyawan berhasil diupdate!');
     }
 
-    public function destroy(User $user)
-    {
-        if ($user->id === auth()->id()) {
-            return redirect()->route('karyawan.index')
-                ->with('error', 'Tidak bisa menghapus akun sendiri!');
-        }
-
-        $adminId = auth()->id();
-
-        // Hapus relasi langsung ke user
-        \App\Models\Absensi::where('user_id', $user->id)->delete();
-        \App\Models\PengajuanIzin::where('user_id', $user->id)->delete();
-        \App\Models\ProyekAnggota::where('user_id', $user->id)->delete();
-
-        // Update created_by ke admin yang sedang login
-        \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => $adminId]);
-        \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => $adminId]);
-        \App\Models\Komplain::where('created_by', $user->id)->update(['created_by' => $adminId]);
-
-        // Update tabel-tabel lain yang punya foreign key ke users
-        DB::table('komplain_timeline')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-        DB::table('proyek')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-        DB::table('sales_order')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-        DB::table('purchase_order')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-        DB::table('invoice')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-        DB::table('delivery_order')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-
-        $user->delete();
-
+public function destroy(User $user)
+{
+    if ($user->id === auth()->id()) {
         return redirect()->route('karyawan.index')
-            ->with('success', 'Karyawan berhasil dihapus!');
+            ->with('error', 'Tidak bisa menghapus akun sendiri!');
     }
+
+    $adminId = auth()->id();
+
+    \App\Models\Absensi::where('user_id', $user->id)->delete();
+    \App\Models\PengajuanIzin::where('user_id', $user->id)->delete();
+    \App\Models\ProyekAnggota::where('user_id', $user->id)->delete();
+    \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => $adminId]);
+    \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => $adminId]);
+    \App\Models\Komplain::where('created_by', $user->id)->update(['created_by' => $adminId]);
+    DB::table('komplain_timeline')->where('created_by', $user->id)->update(['created_by' => $adminId]);
+    DB::table('proyek')->where('created_by', $user->id)->update(['created_by' => $adminId]);
+
+    $user->delete();
+
+    return redirect()->route('karyawan.index')
+        ->with('success', 'Karyawan berhasil dihapus!');
+}
 }
