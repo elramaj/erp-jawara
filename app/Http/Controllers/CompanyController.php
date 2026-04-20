@@ -47,7 +47,7 @@ class CompanyController extends Controller
             'latitude', 'longitude', 'radius_meter',
         ]) + ['is_active' => 1]);
 
-        return redirect()->route('company.index')->with('success', 'PT berhasil ditambahkan!');
+        return redirect()->route('pengaturan.index')->with('success', 'PT berhasil ditambahkan!');
     }
 
     public function edit(Company $company)
@@ -75,17 +75,17 @@ class CompanyController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
-        return redirect()->route('company.index')->with('success', 'PT berhasil diupdate!');
+        return redirect()->route('pengaturan.index')->with('success', 'PT berhasil diupdate!');
     }
 
     public function destroy(Company $company)
     {
         $this->cekAkses();
         if ($company->users()->count() > 0) {
-            return redirect()->route('company.index')
+            return redirect()->route('pengaturan.index')
                 ->with('error', 'Tidak bisa hapus PT yang masih punya karyawan!');
         }
         $company->delete();
-        return redirect()->route('company.index')->with('success', 'PT berhasil dihapus!');
+        return redirect()->route('pengaturan.index')->with('success', 'PT berhasil dihapus!');
     }
 }
