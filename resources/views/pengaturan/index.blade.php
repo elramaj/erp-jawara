@@ -11,10 +11,13 @@
 @if(session('error'))
 <div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300">❌ {{ session('error') }}</div>
 @endif
+@if($errors->any())
+<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300">❌ {{ $errors->first() }}</div>
+@endif
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    {{-- Manajemen Departemen --}}
+    {{-- Departemen --}}
     <div class="bg-white rounded-xl shadow p-6">
         <h2 class="font-semibold text-gray-700 mb-4">🏢 Manajemen Departemen</h2>
         <div class="space-y-2 mb-4">
@@ -60,8 +63,54 @@
         </div>
     </div>
 
-    {{-- Manajemen PT --}}
+    {{-- Jam Kerja --}}
     <div class="bg-white rounded-xl shadow p-6">
+        <h2 class="font-semibold text-gray-700 mb-4">🕐 Pengaturan Jam Kerja</h2>
+        <form method="POST" action="{{ route('pengaturan.jamkerja') }}">
+            @csrf
+            <div class="space-y-3">
+                @foreach($jamKerja as $j)
+                <div class="border border-gray-100 rounded-lg p-3 {{ $j->is_libur ? 'bg-gray-50' : '' }}">
+                    <input type="hidden" name="jam_kerja_id[]" value="{{ $j->id }}">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-semibold text-gray-700">{{ ucfirst($j->hari) }}</p>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="is_libur[]" value="{{ $j->id }}"
+                                {{ $j->is_libur ? 'checked' : '' }}
+                                class="w-4 h-4 text-indigo-600 rounded"
+                                onchange="toggleHari(this, {{ $j->id }})">
+                            <span class="text-xs text-gray-500">Hari Libur</span>
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 hari-inputs-{{ $j->id }} {{ $j->is_libur ? 'opacity-40 pointer-events-none' : '' }}">
+                        <div>
+                            <label class="text-xs text-gray-400">Jam Masuk</label>
+                            <input type="time" name="jam_masuk[]" value="{{ $j->jam_masuk }}"
+                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400">Jam Keluar</label>
+                            <input type="time" name="jam_keluar[]" value="{{ $j->jam_keluar }}"
+                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400">Toleransi (menit)</label>
+                            <input type="number" name="toleransi_menit[]" value="{{ $j->toleransi_menit }}" min="0"
+                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            <button type="submit"
+                class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition">
+                Simpan Jam Kerja
+            </button>
+        </form>
+    </div>
+
+    {{-- Manajemen PT --}}
+    <div class="bg-white rounded-xl shadow p-6 lg:col-span-2">
         <div class="flex justify-between items-center mb-4">
             <h2 class="font-semibold text-gray-700">🏭 Manajemen PT / Perusahaan</h2>
             <button onclick="toggleFormPT()"
@@ -129,7 +178,7 @@
                         </p>
                     </div>
 
-                    {{-- Status Aktif --}}
+                    {{-- ✅ TAMBAHAN: Status Aktif --}}
                     <div class="md:col-span-3 border-t pt-3">
                         <input type="hidden" name="is_active" value="0">
                         <label class="flex items-center gap-3 cursor-pointer">
@@ -187,7 +236,7 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex gap-2 justify-center">
-                                {{-- ✅ FIX: tambah parameter is_active --}}
+                                {{-- ✅ TAMBAHAN: parameter is_active --}}
                                 <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }})"
                                     class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
@@ -227,6 +276,15 @@ function resetDeptForm() {
     document.getElementById('dept-desc').value = '';
 }
 
+function toggleHari(checkbox, id) {
+    const inputs = document.querySelector('.hari-inputs-' + id);
+    if (checkbox.checked) {
+        inputs.classList.add('opacity-40', 'pointer-events-none');
+    } else {
+        inputs.classList.remove('opacity-40', 'pointer-events-none');
+    }
+}
+
 function toggleFormPT() {
     const form = document.getElementById('form-pt');
     form.classList.toggle('hidden');
@@ -247,11 +305,12 @@ function resetFormPT() {
     document.getElementById('pt-latitude').value = '';
     document.getElementById('pt-longitude').value = '';
     document.getElementById('pt-radius').value = '100';
+    {{-- ✅ TAMBAHAN: reset checkbox --}}
     document.getElementById('pt-is-active').checked = true;
     document.getElementById('form-pt').classList.add('hidden');
 }
 
-// ✅ FIX: tambah parameter isActive
+{{-- ✅ TAMBAHAN: parameter isActive --}}
 function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive) {
     document.getElementById('form-pt-title').textContent = '✏️ Edit PT';
     document.getElementById('pt-form').action = '/company/' + id;
