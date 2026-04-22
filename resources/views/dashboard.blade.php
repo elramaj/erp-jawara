@@ -29,16 +29,6 @@
                 <p class="text-base font-bold text-red-500 mt-1">⚠️ Belum Absen!</p>
             @endif
         </div>
-        <div class="flex flex-col gap-1 flex-shrink-0">
-            <a href="{{ route('absensi.index') }}"
-               class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition text-center">
-                {{ $absensiHariIni ? 'Lihat' : 'Absen' }}
-            </a>
-            <a href="{{ route('absensi.mobile') }}"
-               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition text-center">
-                📱 Mobile
-            </a>
-        </div>
     </div>
 </div>
 
