@@ -11,24 +11,6 @@
             <span>📊</span> Dashboard
         </a>
     </li>
-    <li>
-        <a href="{{ route('absensi.mobile') }}"
-           style="{{ request()->routeIs('absensi.*') ? 'background:#dc2626;color:white;' : '' }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
-           onmouseover="{{ request()->routeIs('absensi.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
-           onmouseout="{{ request()->routeIs('absensi.*') ? '' : "this.style.background=''" }}">
-            <span>🕐</span> Absensi
-        </a>
-    </li>
-    <li>
-        <a href="{{ route('izin.index') }}"
-           style="{{ request()->routeIs('izin.index') ? 'background:#dc2626;color:white;' : '' }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
-           onmouseover="{{ request()->routeIs('izin.index') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
-           onmouseout="{{ request()->routeIs('izin.index') ? '' : "this.style.background=''" }}">
-            <span>📋</span> Izin / Cuti
-        </a>
-    </li>
     @if(auth()->user()->role_id == 11 || auth()->user()->role_id == 1)
     <li>
         <a href="{{ route('izin.review') }}"
