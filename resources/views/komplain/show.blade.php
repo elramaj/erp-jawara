@@ -102,6 +102,12 @@
                             @endforeach
                         </select>
                     </div>
+                                        <div class="md:col-span-2">
+                        <label class="text-xs text-gray-500">No. Servisan <span class="text-gray-400">(opsional, isi kalau barang sudah dikirim ke service center)</span></label>
+                        <input type="text" name="no_servisan" value="{{ $komplain->no_servisan }}"
+                            placeholder="Misal: SC-20260820-001"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    </div>
                     <div class="md:col-span-2">
                         <label class="text-xs text-gray-500">Keterangan Update *</label>
                         <textarea name="keterangan" rows="2" required
@@ -161,10 +167,16 @@
         <div class="bg-white rounded-xl shadow p-6">
             <h2 class="font-semibold text-gray-700 mb-4">ℹ️ Info Singkat</h2>
             <div class="space-y-3 text-sm">
-                <div>
+                                <div>
                     <p class="text-xs text-gray-400">No. Komplain</p>
                     <p class="font-mono font-semibold text-indigo-600">{{ $komplain->no_komplain }}</p>
                 </div>
+                @if($komplain->no_servisan)
+                <div>
+                    <p class="text-xs text-gray-400">No. Servisan</p>
+                    <p class="font-mono font-semibold text-gray-700">{{ $komplain->no_servisan }}</p>
+                </div>
+                @endif
                 <div>
                     <p class="text-xs text-gray-400">Jenis</p>
                     <p class="font-medium text-gray-700">{{ $komplain->jenis == 'barang' ? '📦 Barang' : '📄 Dokumen' }}</p>

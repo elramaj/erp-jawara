@@ -98,24 +98,31 @@ class KomplainController extends Controller
         return view('komplain.show', compact('komplain', 'users'));
     }
 
-    public function updateStatus(Request $request, Komplain $komplain)
+        public function updateStatus(Request $request, Komplain $komplain)
     {
         $this->cekAkses();
         $request->validate([
-            'status'     => 'required|in:open,in_progress,resolved',
-            'keterangan' => 'required|string',
-            'handled_by' => 'nullable|exists:users,id',
+            'status'      => 'required|in:open,in_progress,resolved',
+            'keterangan'  => 'required|string',
+            'handled_by'  => 'nullable|exists:users,id',
+            'no_servisan' => 'nullable|string|max:100',
         ]);
 
         $data = ['status' => $request->status];
         if ($request->handled_by) $data['handled_by'] = $request->handled_by;
         if ($request->status == 'resolved') $data['resolved_at'] = now();
+        if ($request->filled('no_servisan')) $data['no_servisan'] = $request->no_servisan;
 
         $komplain->update($data);
 
+        $keterangan = $request->keterangan;
+        if ($request->filled('no_servisan')) {
+            $keterangan .= " (No. Servisan: {$request->no_servisan})";
+        }
+
         KomplainTimeline::create([
             'komplain_id' => $komplain->id,
-            'keterangan'  => $request->keterangan,
+            'keterangan'  => $keterangan,
             'status_baru' => $request->status,
             'created_by'  => auth()->id(),
         ]);

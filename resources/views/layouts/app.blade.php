@@ -12,13 +12,16 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif !important; }
 
-        /* Sidebar */
-        .sidebar { width: 256px; }
+                /* Sidebar */
+        .sidebar { width: 256px; transition: transform 0.25s ease; }
+        .sidebar.collapsed { transform: translateX(-256px); }
+        .main-content { transition: margin-left 0.25s ease; }
 
         @media (max-width: 767px) {
             .sidebar { display: none; }
             .main-content { margin-left: 0 !important; }
             .hide-mobile { display: none !important; }
+            .desktop-toggle { display: none !important; }
         }
 
         @media (min-width: 768px) {
@@ -56,13 +59,13 @@
         }
     </style>
 </head>
-<body class="bg-gray-100" x-data="{ menuOpen: false }">
+<body class="bg-gray-100" x-data="{ menuOpen: false, sidebarCollapsed: false }">
 
     {{-- NAVBAR --}}
     <nav style="background:#dc2626;" class="text-white px-4 py-3 flex justify-between items-center shadow-lg fixed w-full z-30">
         <div class="flex items-center gap-3">
-            <button class="hamburger p-1 rounded transition" style="hover:background:rgba(0,0,0,0.1);"
-                @click="menuOpen = !menuOpen">
+                        <button class="desktop-toggle p-1 rounded transition" style="hover:background:rgba(0,0,0,0.1);"
+                @click="sidebarCollapsed = !sidebarCollapsed" title="Sembunyikan/tampilkan menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -74,7 +77,7 @@
         <div class="flex items-center gap-2">
 
             {{-- Notifikasi --}}
-            @php
+                        @php
                 $notifIzin = 0;
                 if (in_array(auth()->user()->role_id, [1, 11])) {
                     $notifIzin = \App\Models\PengajuanIzin::where('status','pending')->count();
@@ -83,7 +86,10 @@
                     ->whereNotNull('deadline')
                     ->where('deadline', '<=', now()->addDays(7))
                     ->count();
-                $totalNotif = $notifIzin + $notifDeadline;
+                $notifKomplain = \App\Models\Komplain::where('handled_by', auth()->id())
+                    ->where('status', '!=', 'resolved')
+                    ->count();
+                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain;
             @endphp
             <div class="relative" x-data="{ open: false }" @click.away="open = false">
                 <button @click="open = !open" class="relative p-1">
@@ -121,6 +127,20 @@
                                 <p class="text-xs {{ $pd->deadline->isPast() ? 'text-red-500 font-semibold' : 'text-orange-500' }}">
                                     {{ $pd->deadline->isPast() ? 'Deadline terlewat!' : 'Deadline ' . $pd->deadline->diffForHumans() }}
                                 </p>
+                            </div>
+                        </a>
+                        @endforeach
+                                                @php
+                        $komplainSaya = \App\Models\Komplain::where('handled_by', auth()->id())
+                            ->where('status', '!=', 'resolved')
+                            ->orderBy('created_at', 'desc')->get();
+                        @endphp
+                        @foreach($komplainSaya as $k)
+                        <a href="{{ route('komplain.show', $k) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <span class="text-xl">🎫</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $k->judul }}</p>
+                                <p class="text-xs text-gray-400">{{ $k->no_komplain }} · {{ ucfirst(str_replace('_',' ',$k->status)) }}</p>
                             </div>
                         </a>
                         @endforeach
@@ -171,12 +191,12 @@
     <div class="flex pt-14 min-h-screen">
 
         {{-- Sidebar desktop --}}
-        <aside class="sidebar fixed top-14 bottom-0 overflow-y-auto shadow-xl z-10 text-gray-300" style="background:#1a0a0a;">
+                <aside class="sidebar fixed top-14 bottom-0 overflow-y-auto shadow-xl z-10 text-gray-300" :class="{ 'collapsed': sidebarCollapsed }" style="background:#1a0a0a;">
             @include('layouts.sidebar-menu')
         </aside>
 
         {{-- Konten --}}
-        <main class="main-content flex-1 ml-64 p-4 md:p-6 min-w-0">
+                <main class="main-content flex-1 p-4 md:p-6 min-w-0" :style="sidebarCollapsed ? 'margin-left:0' : 'margin-left:16rem'">
             @isset($header)
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">{{ $header }}</h1>
