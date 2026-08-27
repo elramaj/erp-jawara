@@ -24,6 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/gudang/scan', [GudangController::class, 'scan']);
     Route::get('/gudang', [GudangController::class, 'index']);
     Route::get('/gudang/{id}', [GudangController::class, 'show']);
+    Route::get('/gudang/kategori', [GudangController::class, 'kategoriList']);
+    Route::post('/gudang/barang', [GudangController::class, 'storeBarang']);
     Route::post('/gudang/masuk', [GudangController::class, 'storeMasuk']);
     Route::post('/gudang/keluar', [GudangController::class, 'storeKeluar']);
 

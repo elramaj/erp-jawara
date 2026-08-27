@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\GudangBarang;
+use App\Models\GudangKategori;
 use App\Models\GudangSerialNumber;
 use App\Models\GudangStokMasuk;
 use App\Models\GudangStokKeluar;
@@ -31,6 +32,50 @@ class GudangController extends Controller
             ]);
 
         return response()->json(['success' => true, 'data' => $barang]);
+    }
+
+        // Daftar kategori (buat dropdown form tambah barang)
+    public function kategoriList(Request $request)
+    {
+        $kategori = GudangKategori::orderBy('nama')->get(['id', 'nama']);
+        return response()->json(['success' => true, 'data' => $kategori]);
+    }
+
+    // Tambah barang baru langsung dari mobile (misal hasil scan yang belum terdaftar)
+    public function storeBarang(Request $request)
+    {
+        $request->validate([
+            'kode_barang'  => 'required|string|max:100|unique:gudang_barang,kode_barang',
+            'nama_barang'  => 'required|string|max:255',
+            'kategori_id'  => 'nullable|exists:gudang_kategori,id',
+            'satuan'       => 'required|string|max:50',
+            'stok_minimum' => 'nullable|integer|min:0',
+            'has_sn'       => 'nullable|boolean',
+        ]);
+
+        $barang = GudangBarang::create([
+            'company_id'   => $request->user()->company_id,
+            'kode_barang'  => $request->kode_barang,
+            'nama_barang'  => $request->nama_barang,
+            'kategori_id'  => $request->kategori_id,
+            'satuan'       => $request->satuan,
+            'stok_minimum' => $request->stok_minimum ?? 0,
+            'has_sn'       => $request->boolean('has_sn'),
+            'deskripsi'    => $request->deskripsi,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barang baru berhasil didaftarkan!',
+            'data'    => [
+                'id'     => $barang->id,
+                'kode'   => $barang->kode_barang,
+                'nama'   => $barang->nama_barang,
+                'satuan' => $barang->satuan,
+                'stok'   => 0,
+                'has_sn' => $barang->has_sn,
+            ],
+        ]);
     }
 
     // Detail barang + SN tersedia
