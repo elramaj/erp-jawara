@@ -24,8 +24,7 @@ class PoController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $po = Po::with(['supplier', 'creator'])
-            ->where('company_id', auth()->user()->company_id)
+        $po = Po::with(['supplier', 'creator', 'company'])
             ->orderBy('created_at', 'desc')->get();
         return view('keuangan.po.index', compact('po'));
     }
@@ -33,13 +32,10 @@ class PoController extends Controller
     public function create()
     {
         $this->cekAkses();
-        $companyId = auth()->user()->company_id;
         $suppliers = Supplier::where('is_active', 1)->orderBy('nama')->get();
         $proyek    = Proyek::where('status', 'aktif')
-            ->where('company_id', $companyId)
             ->orderBy('nama_proyek')->get();
-        $barang    = GudangBarang::where('company_id', $companyId)
-            ->orderBy('nama_barang')->get();
+        $barang    = GudangBarang::orderBy('nama_barang')->get();
         $no_po     = 'PO-' . date('Ymd') . '-' . str_pad(Po::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
         return view('keuangan.po.create', compact('suppliers', 'proyek', 'barang', 'no_po'));
     }

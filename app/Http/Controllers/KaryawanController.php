@@ -13,7 +13,9 @@ class KaryawanController extends Controller
 {
     public function index()
     {
-        $karyawan = User::with(['role', 'department', 'company'])->orderBy('name')->get();
+        $karyawan = User::with(['role', 'department', 'company'])
+            ->forCurrentCompany()
+            ->orderBy('name')->get();
         return view('karyawan.index', compact('karyawan'));
     }
 
@@ -21,7 +23,9 @@ class KaryawanController extends Controller
     {
         $roles       = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
-        $companies   = Company::where('is_active', 1)->orderBy('nama')->get();
+        $companies   = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : Company::where('id', auth()->user()->company_id)->get();
         return view('karyawan.create', compact('roles', 'departments', 'companies'));
     }
 
@@ -58,7 +62,9 @@ class KaryawanController extends Controller
     {
         $roles       = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
-        $companies   = Company::where('is_active', 1)->orderBy('nama')->get();
+        $companies   = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : Company::where('id', auth()->user()->company_id)->get();
         return view('karyawan.edit', compact('user', 'roles', 'departments', 'companies'));
     }
 

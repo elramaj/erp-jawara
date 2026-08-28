@@ -17,6 +17,12 @@
 </div>
 @endif
 
+@if(auth()->user()->isSuperAdmin())
+<div class="bg-purple-50 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg mb-4 text-sm font-semibold">
+    👑 Mode Super Admin — menampilkan data gabungan dari SEMUA company.
+</div>
+@endif
+
 {{-- Filter Status --}}
 <div class="flex gap-2 mb-4">
 @foreach(['semua' => 'Semua', 'bola_liar' => '🎱 Bola Liar', 'aktif' => 'Aktif', 'draft' => 'Draft', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
@@ -46,6 +52,11 @@
             </div>
             <h3 class="font-semibold text-gray-800 mb-1">{{ $p->nama_proyek }}</h3>
             <p class="text-sm text-gray-500 mb-3">🏢 {{ $p->klien }}</p>
+            @if(auth()->user()->isSuperAdmin())
+            <span class="inline-block mb-3 bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                {{ $p->company->nama ?? '-' }}
+            </span>
+            @endif
 
             {{-- Progress Bar --}}
             <div class="mb-3">

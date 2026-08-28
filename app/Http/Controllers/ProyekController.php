@@ -15,15 +15,12 @@ class ProyekController extends Controller
 public function index()
 {
     $user = auth()->user();
-    $companyId = $user->company_id;
 
     if (in_array($user->role_id, [1, 10, 11])) {
-        $proyek = Proyek::with(['creator', 'anggota'])
-            ->where('company_id', $companyId)
+        $proyek = Proyek::with(['creator', 'anggota', 'company'])
             ->orderBy('created_at', 'desc')->get();
     } else {
-        $proyek = Proyek::with(['creator', 'anggota'])
-            ->where('company_id', $companyId)
+        $proyek = Proyek::with(['creator', 'anggota', 'company'])
             ->whereHas('anggota', function($q) use ($user) {
                 $q->where('user_id', $user->id);
             })
@@ -40,7 +37,7 @@ public function index()
             abort(403, 'Akses ditolak.');
         }
 
-        $karyawan = User::where('is_active', 1)->orderBy('name')->get();
+        $karyawan = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
         return view('proyek.create', compact('karyawan'));
     }
 
@@ -125,7 +122,7 @@ public function index()
         }
 
         $proyek->load(['creator', 'anggota.user', 'milestone', 'dokumen.uploader']);
-        $karyawan = User::where('is_active', 1)->orderBy('name')->get();
+        $karyawan = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
 
         return view('proyek.show', compact('proyek', 'karyawan'));
     }

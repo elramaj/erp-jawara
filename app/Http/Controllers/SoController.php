@@ -28,8 +28,7 @@ class SoController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $so = So::with(['customer', 'creator'])
-            ->where('company_id', auth()->user()->company_id)
+        $so = So::with(['customer', 'creator', 'company'])
             ->orderBy('created_at', 'desc')->get();
         return view('keuangan.so.index', compact('so'));
     }
@@ -37,13 +36,10 @@ class SoController extends Controller
     public function create()
     {
         $this->cekAkses();
-        $companyId = auth()->user()->company_id;
         $customers = Customer::where('is_active', 1)->orderBy('nama')->get();
         $proyek    = Proyek::where('status', 'aktif')
-            ->where('company_id', $companyId)
             ->orderBy('nama_proyek')->get();
-        $barang    = GudangBarang::where('company_id', $companyId)
-            ->orderBy('nama_barang')->get()->map(function($b) {
+        $barang    = GudangBarang::orderBy('nama_barang')->get()->map(function($b) {
                 $b->stok = $b->total_stok;
                 return $b;
             });

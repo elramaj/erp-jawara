@@ -20,12 +20,21 @@
 </div>
 @endif
 
+@if(auth()->user()->isSuperAdmin())
+<div class="bg-purple-50 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg mb-4 text-sm font-semibold">
+    👑 Mode Super Admin — menampilkan data gabungan dari SEMUA company.
+</div>
+@endif
+
 <div class="bg-white rounded-xl shadow overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
                 <th class="px-4 py-3 text-left">Nama</th>
                 <th class="px-4 py-3 text-left">Email</th>
+                @if(auth()->user()->isSuperAdmin())
+                <th class="px-4 py-3 text-left">Company</th>
+                @endif
                 <th class="px-4 py-3 text-left">Role</th>
                 <th class="px-4 py-3 text-left">Departemen</th>
                 <th class="px-4 py-3 text-left">Status</th>
@@ -44,6 +53,13 @@
                     </div>
                 </td>
                 <td class="px-4 py-3 text-gray-500">{{ $k->email }}</td>
+                @if(auth()->user()->isSuperAdmin())
+                <td class="px-4 py-3">
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        {{ $k->company->nama ?? '-' }}
+                    </span>
+                </td>
+                @endif
                 <td class="px-4 py-3">
                     <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold capitalize">
                         {{ $k->role->name ?? '-' }}
@@ -77,7 +93,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada karyawan.</td>
+                <td colspan="{{ auth()->user()->isSuperAdmin() ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-400">Belum ada karyawan.</td>
             </tr>
             @endforelse
         </tbody>

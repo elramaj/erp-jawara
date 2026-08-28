@@ -1,9 +1,12 @@
 <?php
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Po extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'po';
     protected $fillable = [
     'company_id', 'no_po', 'tanggal', 'supplier_id',

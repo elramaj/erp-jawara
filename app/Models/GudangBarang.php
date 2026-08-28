@@ -1,9 +1,12 @@
 <?php
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class GudangBarang extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'gudang_barang';
     protected $fillable = [
     'company_id', 'kode_barang', 'nama_barang', 'kategori_id',

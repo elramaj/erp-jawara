@@ -15,6 +15,12 @@
     </div>
 </div>
 
+@if(auth()->user()->isSuperAdmin())
+<div class="bg-purple-50 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg mb-4 text-sm font-semibold">
+    👑 Mode Super Admin — menampilkan data gabungan dari SEMUA company.
+</div>
+@endif
+
 @if(session('success'))
 <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300">✅ {{ session('success') }}</div>
 @endif
@@ -41,6 +47,9 @@
             <tr>
                 <th class="px-4 py-3 text-left">Kode</th>
                 <th class="px-4 py-3 text-left">Nama Barang</th>
+                @if(auth()->user()->isSuperAdmin())
+                <th class="px-4 py-3 text-left">Company</th>
+                @endif
                 <th class="px-4 py-3 text-left">Kategori</th>
                 <th class="px-4 py-3 text-center">Stok</th>
                 <th class="px-4 py-3 text-center">Min.</th>
@@ -56,6 +65,13 @@
                     <p class="font-medium text-gray-800">{{ $b->nama_barang }}</p>
                     <p class="text-xs text-gray-400">{{ $b->satuan }}</p>
                 </td>
+                @if(auth()->user()->isSuperAdmin())
+                <td class="px-4 py-3">
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        {{ $b->company->nama ?? '-' }}
+                    </span>
+                </td>
+                @endif
                 <td class="px-4 py-3 text-gray-500">{{ $b->kategori->nama ?? '-' }}</td>
                 <td class="px-4 py-3 text-center">
                     <span class="text-lg font-bold {{ $b->total_stok <= $b->stok_minimum ? 'text-red-600' : 'text-gray-800' }}">
@@ -86,7 +102,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada barang.</td></tr>
+            <tr><td colspan="{{ auth()->user()->isSuperAdmin() ? 8 : 7 }}" class="px-4 py-8 text-center text-gray-400">Belum ada barang.</td></tr>
             @endforelse
         </tbody>
     </table>
@@ -101,6 +117,11 @@
                 <p class="font-mono text-xs text-gray-400">{{ $b->kode_barang }}</p>
                 <p class="font-semibold text-gray-800 mt-0.5">{{ $b->nama_barang }}</p>
                 <p class="text-xs text-gray-400 mt-0.5">{{ $b->kategori->nama ?? '-' }} • {{ $b->satuan }}</p>
+                @if(auth()->user()->isSuperAdmin())
+                <span class="inline-block mt-1 bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                    {{ $b->company->nama ?? '-' }}
+                </span>
+                @endif
             </div>
             <div class="text-right flex-shrink-0">
                 <p class="text-2xl font-bold {{ $b->total_stok <= $b->stok_minimum ? 'text-red-600' : 'text-indigo-600' }}">

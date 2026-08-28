@@ -12,11 +12,20 @@
 <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300">✅ {{ session('success') }}</div>
 @endif
 
+@if(auth()->user()->isSuperAdmin())
+<div class="bg-purple-50 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg mb-4 text-sm font-semibold">
+    👑 Mode Super Admin — menampilkan data gabungan dari SEMUA company.
+</div>
+@endif
+
 <div class="bg-white rounded-xl shadow overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
                 <th class="px-4 py-3 text-left">No SO</th>
+                @if(auth()->user()->isSuperAdmin())
+                <th class="px-4 py-3 text-left">Company</th>
+                @endif
                 <th class="px-4 py-3 text-left">Tanggal</th>
                 <th class="px-4 py-3 text-left">Customer</th>
                 <th class="px-4 py-3 text-left">Proyek</th>
@@ -29,6 +38,13 @@
             @forelse($so as $s)
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3 font-mono text-xs font-semibold text-indigo-600">{{ $s->no_so }}</td>
+                @if(auth()->user()->isSuperAdmin())
+                <td class="px-4 py-3">
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        {{ $s->company->nama ?? '-' }}
+                    </span>
+                </td>
+                @endif
                 <td class="px-4 py-3 text-gray-500">{{ $s->tanggal->format('d M Y') }}</td>
                 <td class="px-4 py-3 font-medium text-gray-800">{{ $s->customer->nama ?? '-' }}</td>
                 <td class="px-4 py-3 text-gray-500 text-xs">{{ $s->proyek->nama_proyek ?? '-' }}</td>
@@ -53,7 +69,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada Sales Order.</td></tr>
+            <tr><td colspan="{{ auth()->user()->isSuperAdmin() ? 8 : 7 }}" class="px-4 py-8 text-center text-gray-400">Belum ada Sales Order.</td></tr>
             @endforelse
         </tbody>
     </table>

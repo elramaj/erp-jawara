@@ -25,9 +25,7 @@ class GudangController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $companyId = auth()->user()->company_id;
-        $barang = GudangBarang::with('kategori')
-            ->where('company_id', $companyId)
+        $barang = GudangBarang::with(['kategori', 'company'])
             ->get()->map(function($b) {
                 $b->total_stok = $b->total_stok;
                 return $b;
@@ -82,7 +80,6 @@ class GudangController extends Controller
             ->with(['proyek', 'creator'])
             ->orderBy('tanggal', 'desc')->get();
         $proyek = Proyek::where('status', 'aktif')
-            ->where('company_id', auth()->user()->company_id)
             ->orderBy('nama_proyek')->get();
 
         return view('gudang.barang-show', compact('barang', 'stokMasuk', 'stokKeluar', 'proyek'));
@@ -201,9 +198,7 @@ class GudangController extends Controller
     public function opname()
     {
         $this->cekAkses();
-        $companyId = auth()->user()->company_id;
-        $barang = GudangBarang::with('kategori')
-            ->where('company_id', $companyId)
+        $barang = GudangBarang::with(['kategori', 'company'])
             ->get()->map(function($b) {
                 $b->total_stok = $b->total_stok;
                 return $b;

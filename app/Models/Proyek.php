@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Proyek extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'proyek';
 
     protected $fillable = [
