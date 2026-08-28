@@ -103,11 +103,14 @@
                 <div x-show="open" x-transition
                     class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 overflow-hidden"
                     style="display:none;">
-                    <div class="px-4 py-3 text-white font-semibold text-sm" style="background:#dc2626;">🔔 Notifikasi</div>
+                    <div class="px-4 py-3 text-white font-semibold text-sm flex items-center gap-2" style="background:#dc2626;">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                        Notifikasi
+                    </div>
                     <div class="max-h-72 overflow-y-auto divide-y divide-gray-100">
                         @if(in_array(auth()->user()->role_id, [1, 11]) && $notifIzin > 0)
                         <a href="{{ route('izin.review') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                            <span class="text-xl">📋</span>
+                            <svg class="w-5 h-5 flex-shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             <div>
                                 <p class="text-sm font-medium text-gray-800">{{ $notifIzin }} Pengajuan Izin</p>
                                 <p class="text-xs text-gray-400">Menunggu review</p>
@@ -121,7 +124,7 @@
                         @endphp
                         @foreach($proyekDeadline as $pd)
                         <a href="{{ route('proyek.show', $pd) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                            <span class="text-xl">{{ $pd->deadline->isPast() ? '🔴' : '⚠️' }}</span>
+                            <svg class="w-5 h-5 flex-shrink-0 {{ $pd->deadline->isPast() ? 'text-red-500' : 'text-orange-500' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $pd->nama_proyek }}</p>
                                 <p class="text-xs {{ $pd->deadline->isPast() ? 'text-red-500 font-semibold' : 'text-orange-500' }}">
@@ -137,7 +140,7 @@
                         @endphp
                         @foreach($komplainSaya as $k)
                         <a href="{{ route('komplain.show', $k) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                            <span class="text-xl">🎫</span>
+                            <svg class="w-5 h-5 flex-shrink-0 text-purple-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.569 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $k->judul }}</p>
                                 <p class="text-xs text-gray-400">{{ $k->no_komplain }} · {{ ucfirst(str_replace('_',' ',$k->status)) }}</p>
