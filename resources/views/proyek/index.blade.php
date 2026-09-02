@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">📁 Manajemen Proyek</h1>
+    <h1 class="text-2xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0V6a2.25 2.25 0 0 1 2.25-2.25h5.379a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H19.5A2.25 2.25 0 0 1 21.75 9v3.75" /></svg>Manajemen Proyek</h1>
     @if(in_array(auth()->user()->role_id, [1, 10, 11]))
     <a href="{{ route('proyek.create') }}"
        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
@@ -24,11 +24,11 @@
 
 {{-- Filter Status --}}
 <div class="flex gap-2 mb-4">
-@foreach(['semua' => 'Semua', 'bola_liar' => '🎱 Bola Liar', 'aktif' => 'Aktif', 'draft' => 'Draft', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
+@foreach(['semua' => 'Semua', 'bola_liar' => '<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" /></svg> Bola Liar', 'aktif' => 'Aktif', 'draft' => 'Draft', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
     <button onclick="filterProyek('{{ $val }}')"
         class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition {{ $val == 'semua' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-300 hover:border-indigo-400' }}"
         data-filter="{{ $val }}">
-        {{ $label }}
+        {!! $label !!}
     </button>
     @endforeach
 </div>
@@ -46,11 +46,11 @@
                     {{ $p->status == 'draft' ? 'bg-gray-100 text-gray-600' : '' }}
                     {{ $p->status == 'selesai' ? 'bg-blue-100 text-blue-700' : '' }}
                     {{ $p->status == 'dibatalkan' ? 'bg-red-100 text-red-700' : '' }}">
-                    {{ $p->status == 'bola_liar' ? '🎱 Bola Liar' : ucfirst($p->status) }}
+                    {!! $p->status == 'bola_liar' ? '<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" /></svg> Bola Liar' : ucfirst($p->status) !!}
                 </span>
             </div>
             <h3 class="font-semibold text-gray-800 mb-1">{{ $p->nama_proyek }}</h3>
-            <p class="text-sm text-gray-500 mb-3">🏢 {{ $p->klien }}</p>
+            <p class="text-sm text-gray-500 mb-3"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg> {{ $p->klien }}</p>
             @if(auth()->user()->isSuperAdmin())
             <span class="inline-block mb-3 bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
                 {{ $p->company->nama ?? '-' }}
@@ -71,7 +71,7 @@
 
             <div class="flex justify-between items-center text-xs text-gray-400">
                 <span>⏰ {{ $p->deadline ? $p->deadline->format('d M Y') : '-' }}</span>
-                <span>👥 {{ $p->anggota->count() }} anggota</span>
+                <span><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg> {{ $p->anggota->count() }} anggota</span>
             </div>
         </div>
         <div class="border-t px-5 py-3 flex justify-between items-center">

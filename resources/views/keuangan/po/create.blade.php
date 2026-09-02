@@ -47,7 +47,7 @@
         </div>
 
         {{-- Detail Barang --}}
-        <h2 class="font-semibold text-gray-700 mb-3">📦 Detail Barang</h2>
+        <h2 class="font-semibold text-gray-700 mb-3"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5V18a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V7.5m18 0A2.25 2.25 0 0 0 18.75 5.25H5.25A2.25 2.25 0 0 0 3 7.5m18 0-8.427 4.764a2.25 2.25 0 0 1-2.146 0L3 7.5" /></svg>Detail Barang</h2>
         <div class="overflow-x-auto mb-4">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
