@@ -5,7 +5,7 @@
 </div>
 
 @if($errors->any())
-<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300">❌ {{ $errors->first() }}</div>
+<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg> {{ $errors->first() }}</div>
 @endif
 
 <form method="POST" action="{{ route('customer.store') }}">
@@ -58,7 +58,7 @@
         <div>
             <label class="block text-xs font-medium text-gray-500 mb-1">Tipe Harga Jual</label>
             <select name="tipe_harga_jual"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                 @foreach([1,2,3,4,5] as $t)
                 <option value="{{ $t }}" {{ old('tipe_harga_jual', 1) == $t ? 'selected' : '' }}>Tipe {{ $t }}</option>
                 @endforeach

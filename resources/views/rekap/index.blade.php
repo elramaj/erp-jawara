@@ -10,7 +10,7 @@
     <form method="GET" action="{{ route('rekap.index') }}" class="flex gap-3 items-end">
         <div>
             <label class="block text-xs font-medium text-gray-500 mb-1">Bulan</label>
-            <select name="bulan" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <select name="bulan" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                 @foreach(range(1,12) as $b)
                 <option value="{{ $b }}" {{ $bulan == $b ? 'selected' : '' }}>
                     {{ Carbon\Carbon::createFromDate(2024, $b, 1)->translatedFormat('F') }}

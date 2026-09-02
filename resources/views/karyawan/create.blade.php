@@ -38,7 +38,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">PT / Perusahaan *</label>
                 <select name="company_id"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8"
                     required>
                     <option value="">-- Pilih PT --</option>
                     @foreach($companies as $company)
@@ -52,7 +52,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
                 <select name="role_id"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8"
                     required>
                     <option value="">-- Pilih Role --</option>
                     @foreach($roles as $role)
@@ -66,7 +66,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
                 <select name="department_id"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                     <option value="">-- Pilih Departemen --</option>
                     @foreach($departments as $dept)
                         <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>

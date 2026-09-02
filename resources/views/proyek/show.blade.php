@@ -8,14 +8,13 @@
         <p class="text-gray-500 text-sm">🏢 {{ $proyek->klien }}</p>
     </div>
     <a href="{{ route('proyek.index') }}"
-       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-        ← Kembali
+       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-1.5 w-fit">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg> Kembali
     </a>
 </div>
 
 @if(session('success'))
-<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300">
-    ✅ {{ session('success') }}
+<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> {{ session('success') }}
 </div>
 @endif
 
@@ -98,7 +97,7 @@
                     <div class="flex-1">
                         <label class="text-xs text-gray-500">Status</label>
                         <select name="status"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                             @foreach(['draft' => 'Draft', 'bola_liar' => '🎱 Bola Liar', 'aktif' => 'Aktif', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'] as $val => $label)
                             <option value="{{ $val }}" {{ $proyek->status == $val ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -150,7 +149,7 @@
                                         class="border rounded px-2 py-1 text-xs focus:outline-none
                                         {{ $m->status == 'selesai' ? 'border-green-300 bg-green-50 text-green-700' : '' }}
                                         {{ $m->status == 'proses' ? 'border-yellow-300 bg-yellow-50 text-yellow-700' : '' }}
-                                        {{ $m->status == 'belum' ? 'border-gray-200 text-gray-500' : '' }}">
+                                        {{ $m->status == 'belum' ? 'border-gray-200 text-gray-500' : '' }} pr-8">
                                     <option value="belum" {{ $m->status == 'belum' ? 'selected' : '' }}>Belum</option>
                                     <option value="proses" {{ $m->status == 'proses' ? 'selected' : '' }}>Proses</option>
                                     <option value="selesai" {{ $m->status == 'selesai' ? 'selected' : '' }}>Selesai</option>

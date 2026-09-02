@@ -22,7 +22,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Supplier *</label>
                 <select name="supplier_id"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8" required>
                     <option value="">-- Pilih Supplier --</option>
                     @foreach($suppliers as $s)
                     <option value="{{ $s->id }}" {{ old('supplier_id') == $s->id ? 'selected' : '' }}>{{ $s->nama }}</option>
@@ -32,7 +32,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Proyek (opsional)</label>
                 <select name="proyek_id"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                     <option value="">-- Pilih Proyek --</option>
                     @foreach($proyek as $p)
                     <option value="{{ $p->id }}" {{ old('proyek_id') == $p->id ? 'selected' : '' }}>{{ $p->nama_proyek }}</option>
@@ -63,7 +63,7 @@
                     <tr class="detail-row">
                         <td class="px-3 py-2">
                             <select name="barang_id[]"
-                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400" required>
+                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 pr-8" required>
                                 <option value="">-- Pilih Barang --</option>
                                 @foreach($barang as $b)
                                 <option value="{{ $b->id }}">{{ $b->nama_barang }} ({{ $b->satuan }})</option>

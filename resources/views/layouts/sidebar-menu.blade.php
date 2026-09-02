@@ -79,6 +79,17 @@
         </a>
     </li>
     @endif
+    @if(in_array(auth()->user()->role_id, [1, 2, 3, 4, 11]))
+    <li>
+        <a href="{{ route('aset.index') }}"
+           style="{{ request()->routeIs('aset.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('aset.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('aset.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" /></svg> Aset Perusahaan
+        </a>
+    </li>
+    @endif
 </ul>
 
 {{-- Keuangan --}}

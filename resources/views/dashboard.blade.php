@@ -5,7 +5,7 @@
 {{-- Greeting --}}
 <div class="mb-4">
     <h1 class="text-xl font-bold text-gray-800">
-        👋 Halo, {{ auth()->user()->name }}!
+        Halo, {{ auth()->user()->name }}!
     </h1>
     <p class="text-gray-500 text-sm mt-1">{{ now()->translatedFormat('l, d F Y') }}</p>
 </div>
@@ -26,7 +26,7 @@
                     @endif
                 </p>
             @else
-                <p class="text-base font-bold text-red-500 mt-1">⚠️ Belum Absen!</p>
+                <p class="text-base font-bold text-red-500 mt-1 flex items-center gap-1.5"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg> Belum Absen!</p>
             @endif
         </div>
     </div>
@@ -90,7 +90,7 @@
 
     {{-- Grafik Kehadiran 7 Hari Terakhir --}}
     <div class="bg-white rounded-xl shadow p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">📊 Kehadiran 7 Hari Terakhir</h2>
+        <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5V21h3.75v-7.5H3ZM10.125 9v12H13.5V9h-3.375ZM17.25 3v18H21V3h-3.75Z" /></svg> Kehadiran 7 Hari Terakhir</h2>
         <canvas id="grafikKehadiran" height="120"></canvas>
         <div class="flex flex-wrap gap-3 mt-3 text-xs text-gray-500 border-t pt-3">
             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span> Hadir</span>
@@ -102,7 +102,7 @@
 
     {{-- Kalender --}}
     <div class="bg-white rounded-xl shadow p-4">
-        <h2 class="text-sm font-semibold text-gray-700 mb-3">📅 Kalender</h2>
+        <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg> Kalender</h2>
         <div id="kalender"></div>
         <div id="keterangan-libur" class="mt-3 border-t pt-3 text-xs text-gray-600 space-y-1"></div>
     </div>
@@ -248,7 +248,7 @@ function initKalender() {
             });
             const el = document.getElementById('keterangan-libur');
             if (libur.length > 0) {
-                el.innerHTML = '<p style="font-weight:600;color:#374151;margin-bottom:6px;">🗓️ Hari Libur Bulan Ini:</p>' +
+                el.innerHTML = '<p style="font-weight:600;color:#374151;margin-bottom:6px;display:flex;align-items:center;gap:6px;"><svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg> Hari Libur Bulan Ini:</p>' +
                     libur.map(h => {
                         const d = new Date(h.date);
                         const tgl = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });

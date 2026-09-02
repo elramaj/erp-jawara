@@ -2,21 +2,21 @@
 
 @section('content')
 <div class="mb-4">
-    <h1 class="text-xl font-bold text-gray-800">🕐 Absensi</h1>
+    <h1 class="text-xl font-bold text-gray-800"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Absensi</h1>
     <p class="text-gray-500 text-sm mt-1">{{ now()->translatedFormat('l, d F Y') }}</p>
 </div>
 
 @if(session('success'))
-<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300">✅ {{ session('success') }}</div>
+<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> {{ session('success') }}</div>
 @endif
 @if(session('error'))
-<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300">❌ {{ session('error') }}</div>
+<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4 border border-red-300 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg> {{ session('error') }}</div>
 @endif
 
 {{-- Shortcut Mobile --}}
 <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-4 flex items-center justify-between">
     <div>
-        <p class="text-sm font-semibold text-indigo-700">📱 Absensi via HP</p>
+        <p class="text-sm font-semibold text-indigo-700"><svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>Absensi via HP</p>
         <p class="text-xs text-indigo-500 mt-0.5">Dengan GPS + Foto Selfie</p>
     </div>
     <a href="{{ route('absensi.mobile') }}"
@@ -58,9 +58,9 @@
                 </div>
                 @endif
                 @if($absensiHariIni->lokasi_valid === 1)
-                <p class="text-xs text-green-600">📍 Lokasi: Dalam area kantor</p>
+                <p class="text-xs text-green-600"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Lokasi: Dalam area kantor</p>
                 @elseif($absensiHariIni->lokasi_valid === 0)
-                <p class="text-xs text-orange-500">📍 Lokasi: Di luar area kantor</p>
+                <p class="text-xs text-orange-500"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Lokasi: Di luar area kantor</p>
                 @endif
             </div>
         @else
@@ -75,21 +75,21 @@
                 @csrf
                 <button type="submit"
                     class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-base transition">
-                    ✅ Check-in Sekarang
+                    <svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>Check-in Sekarang
                 </button>
             </form>
         @elseif(!$absensiHariIni->jam_keluar)
-            <p class="text-green-600 font-semibold text-sm">✅ Sudah Check-in jam {{ $absensiHariIni->jam_masuk }}</p>
+            <p class="text-green-600 font-semibold text-sm"><svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>Sudah Check-in jam {{ $absensiHariIni->jam_masuk }}</p>
             <form method="POST" action="{{ route('absensi.checkout') }}" class="w-full">
                 @csrf
                 <button type="submit"
                     class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-base transition">
-                    🔴 Check-out Sekarang
+                    <svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" /></svg>Check-out Sekarang
                 </button>
             </form>
         @else
             <div class="text-center">
-                <p class="text-green-600 font-semibold text-base">✅ Absensi Selesai</p>
+                <p class="text-green-600 font-semibold text-base"><svg class="w-4 h-4 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>Absensi Selesai</p>
                 <p class="text-gray-500 text-sm mt-1">{{ $absensiHariIni->jam_masuk }} — {{ $absensiHariIni->jam_keluar }}</p>
             </div>
         @endif
@@ -98,7 +98,7 @@
 
 {{-- Riwayat Absensi --}}
 <div class="bg-white rounded-xl shadow p-5">
-    <h2 class="text-base font-semibold text-gray-700 mb-4">📋 Riwayat 7 Hari Terakhir</h2>
+    <h2 class="text-base font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H5.25a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 5.25 3h7.5a2.25 2.25 0 0 1 2.25 2.25v13.5a2.25 2.25 0 0 1-2.25 2.25Zm0 0h3.75a2.25 2.25 0 0 0 2.25-2.25V9a2.25 2.25 0 0 0-2.25-2.25h-1.5" /></svg>Riwayat 7 Hari Terakhir</h2>
 
     {{-- Desktop --}}
     <div class="hidden md:block">
@@ -120,9 +120,9 @@
                     <td class="py-2 text-sm">{{ $item->jam_keluar ?? '-' }}</td>
                     <td class="py-2 text-xs">
                         @if($item->lokasi_valid === 1)
-                        <span class="text-green-600">📍 Dalam area</span>
+                        <span class="text-green-600"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Dalam area</span>
                         @elseif($item->lokasi_valid === 0)
-                        <span class="text-orange-500">📍 Luar area</span>
+                        <span class="text-orange-500"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Luar area</span>
                         @else
                         <span class="text-gray-400">-</span>
                         @endif
@@ -162,9 +162,9 @@
                 <span>Masuk: {{ $item->jam_masuk ?? '-' }}</span>
                 <span>Keluar: {{ $item->jam_keluar ?? '-' }}</span>
                 @if($item->lokasi_valid === 1)
-                <span class="text-green-500">📍 Dalam area</span>
+                <span class="text-green-500"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Dalam area</span>
                 @elseif($item->lokasi_valid === 0)
-                <span class="text-orange-400">📍 Luar area</span>
+                <span class="text-orange-400"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Luar area</span>
                 @endif
             </div>
         </div>

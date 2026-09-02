@@ -19,21 +19,25 @@
                 {{ ucfirst(str_replace('_', ' ', $komplain->status)) }}
             </span>
             <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">
-                {{ $komplain->jenis == 'barang' ? '📦 Barang' : '📄 Dokumen' }}
+                @if($komplain->jenis == 'barang')
+                <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg> Barang
+                @else
+                <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg> Dokumen
+                @endif
             </span>
             @if($komplain->masih_garansi)
-            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">🛡️ Masih Garansi</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg> Masih Garansi</span>
             @endif
         </div>
     </div>
     <a href="{{ route('komplain.index') }}"
-       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-        ← Kembali
+       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-1.5 w-fit">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg> Kembali
     </a>
 </div>
 
 @if(session('success'))
-<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300">✅ {{ session('success') }}</div>
+<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4 border border-green-300 flex items-center gap-2"><svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> {{ session('success') }}</div>
 @endif
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -41,7 +45,7 @@
 
         {{-- Detail Komplain --}}
         <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="font-semibold text-gray-700 mb-4">📋 Detail Komplain</h2>
+            <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H5.25a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 5.25 3h7.5a2.25 2.25 0 0 1 2.25 2.25v13.5a2.25 2.25 0 0 1-2.25 2.25Zm0 0h3.75a2.25 2.25 0 0 0 2.25-2.25V9a2.25 2.25 0 0 0-2.25-2.25h-1.5" /></svg> Detail Komplain</h2>
             <div class="grid grid-cols-2 gap-4 text-sm mb-4">
                 <div>
                     <p class="text-xs text-gray-400">Proyek</p>
@@ -77,23 +81,23 @@
         {{-- Update Status --}}
         @if($komplain->status != 'resolved')
         <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="font-semibold text-gray-700 mb-4">🔄 Update Status</h2>
+            <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg> Update Status</h2>
             <form method="POST" action="{{ route('komplain.status', $komplain) }}">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                     <div>
                         <label class="text-xs text-gray-500">Status Baru *</label>
                         <select name="status"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                             <option value="open" {{ $komplain->status == 'open' ? 'selected' : '' }}>Open</option>
                             <option value="in_progress" {{ $komplain->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="resolved">Resolved ✅</option>
+                            <option value="resolved">Resolved</option>
                         </select>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Ditangani oleh</label>
                         <select name="handled_by"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-8">
                             <option value="">-- Pilih --</option>
                             @foreach($users as $u)
                             <option value="{{ $u->id }}" {{ $komplain->handled_by == $u->id ? 'selected' : '' }}>
@@ -125,7 +129,7 @@
 
         {{-- Timeline --}}
         <div class="bg-white rounded-xl shadow p-6">
-            <h2 class="font-semibold text-gray-700 mb-4">📅 Timeline Penanganan</h2>
+            <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg> Timeline Penanganan</h2>
             <div class="space-y-4">
                 @forelse($komplain->timeline as $t)
                 <div class="flex gap-3">
@@ -179,7 +183,7 @@
                 @endif
                 <div>
                     <p class="text-xs text-gray-400">Jenis</p>
-                    <p class="font-medium text-gray-700">{{ $komplain->jenis == 'barang' ? '📦 Barang' : '📄 Dokumen' }}</p>
+                    <p class="font-medium text-gray-700">@if($komplain->jenis == 'barang')<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg> Barang @else<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg> Dokumen @endif</p>
                 </div>
                 <div>
                     <p class="text-xs text-gray-400">Prioritas</p>
@@ -196,7 +200,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-400">Garansi</p>
-                    <p class="font-medium text-gray-700">{{ $komplain->masih_garansi ? '✅ Masih Garansi' : '❌ Tidak/Habis' }}</p>
+                    <p class="font-medium text-gray-700">@if($komplain->masih_garansi)<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> Masih Garansi @else<svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg> Tidak/Habis @endif</p>
                 </div>
             </div>
         </div>

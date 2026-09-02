@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\GudangController;
+use App\Http\Controllers\AsetController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SoController;
@@ -83,6 +84,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/gudang/opname', [GudangController::class, 'opname'])->name('gudang.opname');
     Route::post('/gudang/opname', [GudangController::class, 'storeOpname'])->name('gudang.opname.store');
     Route::delete('/gudang/barang/{barang}/hapus', [GudangController::class, 'destroyBarang'])->name('gudang.barang.destroy');
+
+    // Aset
+    Route::get('/aset', [AsetController::class, 'index'])->name('aset.index');
+Route::get('/aset/create', [AsetController::class, 'create'])->name('aset.create');
+Route::post('/aset', [AsetController::class, 'store'])->name('aset.store');
+Route::get('/aset/{aset}', [AsetController::class, 'show'])->name('aset.show');
+Route::get('/aset/{aset}/edit', [AsetController::class, 'edit'])->name('aset.edit');
+Route::put('/aset/{aset}', [AsetController::class, 'update'])->name('aset.update');
+Route::post('/aset/{aset}/pindah-tangan', [AsetController::class, 'pindahTangan'])->name('aset.pindah');
+Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.destroy');
 
     // Master Data
     Route::resource('customer', CustomerController::class);
