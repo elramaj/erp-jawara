@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">✅ Review Pengajuan Izin</h1>
+    <h1 class="text-2xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Review Pengajuan Izin</h1>
 </div>
 
 @if(session('success'))
@@ -48,7 +48,7 @@
                     @if($attachments->count() > 0)
                         <button onclick="lihatLampiran({{ $attachments->toJson() }})"
                             class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded text-xs font-semibold transition">
-                            📎 {{ $attachments->count() }} file
+                            <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>{{ $attachments->count() }} file
                         </button>
                     @else
                         <span class="text-gray-300 text-xs">-</span>
@@ -98,7 +98,7 @@
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto"
         onclick="event.stopPropagation()">
         <div class="flex justify-between items-center p-6 border-b">
-            <h3 class="text-lg font-bold text-gray-800">📎 Lampiran Izin</h3>
+            <h3 class="text-lg font-bold text-gray-800"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>Lampiran Izin</h3>
             <button onclick="tutupLampiran()" class="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
         <div id="modal-lampiran-content" class="p-6 grid grid-cols-2 gap-4"></div>
@@ -124,7 +124,7 @@ function lihatLampiran(attachments) {
             content.innerHTML += `
                 <div class="rounded-xl border border-gray-200 p-4 flex flex-col items-center gap-3">
                     <div class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center">
-                        <span class="text-3xl">📄</span>
+                        <span class="text-3xl"><svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg></span>
                     </div>
                     <p class="text-xs text-gray-600 text-center truncate w-full">${file.file_name}</p>
                     <a href="${url}" target="_blank"

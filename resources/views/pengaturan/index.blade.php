@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">⚙️ Pengaturan</h1>
+    <h1 class="text-2xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.241.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.213-1.28Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>Pengaturan</h1>
 </div>
 
 @if(session('success'))
@@ -19,7 +19,7 @@
 
     {{-- Departemen --}}
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold text-gray-700 mb-4">🏢 Manajemen Departemen</h2>
+        <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>Manajemen Departemen</h2>
         <div class="space-y-2 mb-4">
             @forelse($departments as $d)
             <div class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
@@ -65,7 +65,7 @@
 
     {{-- Jam Kerja --}}
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold text-gray-700 mb-4">🕐 Pengaturan Jam Kerja</h2>
+        <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Pengaturan Jam Kerja</h2>
         <form method="POST" action="{{ route('pengaturan.jamkerja') }}">
             @csrf
             <div class="space-y-3">
@@ -112,7 +112,7 @@
     {{-- Manajemen PT --}}
     <div class="bg-white rounded-xl shadow p-6 lg:col-span-2">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="font-semibold text-gray-700">🏭 Manajemen PT / Perusahaan</h2>
+            <h2 class="font-semibold text-gray-700"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 21v-4.5m0 4.5h3.75m-3.75 0h-9m9-4.5V9m0 7.5H12m3.75-7.5V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H12m0 0V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H8.25M12 9v7.5m0-7.5H8.25m4.5 7.5H8.25m0-7.5V21m0-11.625v11.625m0 0H4.875c-.621 0-1.125-.504-1.125-1.125V9.375c0-.621.504-1.125 1.125-1.125H8.25" /></svg>Manajemen PT / Perusahaan</h2>
             <button onclick="toggleFormPT()"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
                 + Tambah PT
@@ -121,7 +121,7 @@
 
         {{-- Form Tambah/Edit PT --}}
         <div id="form-pt" class="border border-indigo-100 bg-indigo-50 rounded-lg p-4 mb-4 hidden">
-            <p class="text-sm font-medium text-gray-700 mb-3" id="form-pt-title">➕ Tambah PT Baru</p>
+            <p class="text-sm font-medium text-gray-700 mb-3" id="form-pt-title">+ Tambah PT Baru</p>
             <form method="POST" id="pt-form" action="{{ route('company.store') }}">
                 @csrf
                 <input type="hidden" name="_method" id="pt-method" value="POST">
@@ -154,7 +154,7 @@
 
                     {{-- Lokasi Kantor per PT --}}
                     <div class="md:col-span-3">
-                        <p class="text-xs font-semibold text-gray-600 mb-2 mt-1 border-t pt-3">📍 Lokasi Kantor (untuk Absensi GPS)</p>
+                        <p class="text-xs font-semibold text-gray-600 mb-2 mt-1 border-t pt-3"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Lokasi Kantor (untuk Absensi GPS)</p>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Latitude</label>
@@ -173,12 +173,12 @@
                     </div>
                     <div class="md:col-span-3">
                         <p class="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-lg p-2">
-                            💡 Ambil koordinat dari <a href="https://maps.google.com" target="_blank" class="underline font-semibold">Google Maps</a>
+                            <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>Ambil koordinat dari <a href="https://maps.google.com" target="_blank" class="underline font-semibold">Google Maps</a>
                             → klik kanan lokasi kantor → "What's here?" → salin angka koordinatnya.
                         </p>
                     </div>
 
-                    {{-- ✅ TAMBAHAN: Status Aktif --}}
+                    {{-- TAMBAHAN: Status Aktif --}}
                     <div class="md:col-span-3 border-t pt-3">
                         <input type="hidden" name="is_active" value="0">
                         <label class="flex items-center gap-3 cursor-pointer">
@@ -223,7 +223,7 @@
                         <td class="px-4 py-3 text-center">
                             @if($c->latitude)
                             <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-semibold">
-                                ✅ {{ $c->radius_meter }}m
+                                <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>{{ $c->radius_meter }}m
                             </span>
                             @else
                             <span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full text-xs">Belum diset</span>
@@ -236,7 +236,7 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex gap-2 justify-center">
-                                {{-- ✅ TAMBAHAN: parameter is_active --}}
+                                {{-- TAMBAHAN: parameter is_active --}}
                                 <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }})"
                                     class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
@@ -259,7 +259,7 @@
 
 <script>
 function editDepartment(id, name, desc) {
-    document.getElementById('form-dept-title').textContent = '✏️ Edit Departemen';
+    document.getElementById('form-dept-title').textContent = 'Edit Departemen';
     document.getElementById('dept-form').action = '/pengaturan/department/' + id;
     document.getElementById('dept-method').value = 'PUT';
     document.getElementById('dept-id').value = id;
@@ -294,7 +294,7 @@ function toggleFormPT() {
 }
 
 function resetFormPT() {
-    document.getElementById('form-pt-title').textContent = '➕ Tambah PT Baru';
+    document.getElementById('form-pt-title').textContent = '+ Tambah PT Baru';
     document.getElementById('pt-form').action = '{{ route('company.store') }}';
     document.getElementById('pt-method').value = 'POST';
     document.getElementById('pt-kode').value = '';
@@ -305,14 +305,14 @@ function resetFormPT() {
     document.getElementById('pt-latitude').value = '';
     document.getElementById('pt-longitude').value = '';
     document.getElementById('pt-radius').value = '100';
-    {{-- ✅ TAMBAHAN: reset checkbox --}}
+    {{-- TAMBAHAN: reset checkbox --}}
     document.getElementById('pt-is-active').checked = true;
     document.getElementById('form-pt').classList.add('hidden');
 }
 
-{{-- ✅ TAMBAHAN: parameter isActive --}}
+{{-- TAMBAHAN: parameter isActive --}}
 function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive) {
-    document.getElementById('form-pt-title').textContent = '✏️ Edit PT';
+    document.getElementById('form-pt-title').textContent = 'Edit PT';
     document.getElementById('pt-form').action = '/company/' + id;
     document.getElementById('pt-method').value = 'PUT';
     document.getElementById('pt-kode').value = kode;

@@ -56,7 +56,7 @@
     </table>
 
     {{-- Rincian Pemasukan --}}
-    <div class="section-title">💰 Rincian Pemasukan</div>
+    <div class="section-title">Rincian Pemasukan</div>
     <table>
         <thead>
             <tr>
@@ -87,7 +87,7 @@
     </table>
 
     {{-- Rincian Pengeluaran --}}
-    <div class="section-title">💸 Rincian Pengeluaran</div>
+    <div class="section-title">Rincian Pengeluaran</div>
     <table>
         <thead>
             <tr>

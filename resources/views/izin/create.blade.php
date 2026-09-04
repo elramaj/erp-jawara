@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">📝 Ajukan Izin / Cuti</h1>
+    <h1 class="text-2xl font-bold text-gray-800"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487 18.55 2.8a2.15 2.15 0 0 1 3.038 3.038L9.75 17.677a4.5 4.5 0 0 1-1.897 1.13L4.5 19.5l.693-3.353a4.5 4.5 0 0 1 1.13-1.897l10.539-10.763Z" /></svg>Ajukan Izin / Cuti</h1>
 </div>
 
 <div class="bg-white rounded-xl shadow p-6 max-w-2xl">
