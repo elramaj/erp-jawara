@@ -7,7 +7,7 @@
         Aset Perusahaan
     </h1>
     <a href="{{ route('aset.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
         + Tambah Aset
     </a>
 </div>
@@ -120,7 +120,7 @@ $kondisiBadge = [
                 </td>
                 <td class="px-4 py-3 text-center">
                     <a href="{{ route('aset.show', $a) }}"
-                       class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded text-xs font-semibold transition">Detail</a>
+                       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-semibold transition">Detail</a>
                 </td>
             </tr>
             @empty

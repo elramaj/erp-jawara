@@ -4,7 +4,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800">📋 Pengajuan Izin / Cuti</h1>
     <a href="{{ route('izin.create') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
         + Ajukan Izin
     </a>
 </div>

@@ -9,7 +9,7 @@
             📋 Opname
         </a>
         <a href="{{ route('gudang.barang.create') }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
             + Tambah
         </a>
     </div>
@@ -92,7 +92,7 @@
                 <td class="px-4 py-3 text-center">
                     <div class="flex gap-2 justify-center">
                         <a href="{{ route('gudang.barang.show', $b) }}"
-                           class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded text-xs font-semibold transition">Detail</a>
+                           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-semibold transition">Detail</a>
                         <form method="POST" action="{{ route('gudang.barang.destroy', $b) }}"
                             onsubmit="return confirm('Yakin hapus barang ini?')">
                             @csrf @method('DELETE')

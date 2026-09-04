@@ -20,7 +20,7 @@
         <p class="text-xs text-indigo-500 mt-0.5">Dengan GPS + Foto Selfie</p>
     </div>
     <a href="{{ route('absensi.mobile') }}"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
         Buka
     </a>
 </div>

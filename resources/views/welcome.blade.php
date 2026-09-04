@@ -451,7 +451,7 @@
     <section class="hero">
         <div class="hero-inner">
             <div>
-                <div class="hero-badge"><span>🚀</span> Sistem ERP Modern</div>
+                <div class="hero-badge"><span><svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" /></svg></span> Sistem ERP Modern</div>
                 <h1>Kelola Bisnis<br>Lebih <em>Cerdas</em><br>& Efisien.</h1>
                 <p>Platform ERP terintegrasi untuk manajemen proyek, keuangan, gudang, SDM, dan absensi GPS dalam satu sistem yang mudah digunakan.</p>
                 <div class="hero-cta">
@@ -465,7 +465,7 @@
 
             <div class="hero-visual">
                 <div class="visual-card">
-                    <div class="card-icon red">📁</div>
+                    <div class="card-icon red"><svg style="width:22px;height:22px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#dc2626"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0V6a2.25 2.25 0 0 1 2.25-2.25h5.379a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H19.5A2.25 2.25 0 0 1 21.75 9v3.75" /></svg></div>
                     <div class="card-content">
                         <p>Proyek Aktif</p>
                         <h4>Manajemen Proyek</h4>
@@ -473,7 +473,7 @@
                     <div class="card-value">✓</div>
                 </div>
                 <div class="visual-card">
-                    <div class="card-icon green">💰</div>
+                    <div class="card-icon green"><svg style="width:22px;height:22px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#16a34a"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg></div>
                     <div class="card-content">
                         <p>Keuangan Real-time</p>
                         <h4>Laporan SO & PO</h4>
@@ -481,7 +481,7 @@
                     <div class="card-value">✓</div>
                 </div>
                 <div class="visual-card">
-                    <div class="card-icon orange">🏭</div>
+                    <div class="card-icon orange"><svg style="width:22px;height:22px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ea580c"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg></div>
                     <div class="card-content">
                         <p>Stok Gudang</p>
                         <h4>FIFO & Serial Number</h4>
@@ -489,7 +489,7 @@
                     <div class="card-value">✓</div>
                 </div>
                 <div class="visual-card">
-                    <div class="card-icon blue">📍</div>
+                    <div class="card-icon blue"><svg style="width:22px;height:22px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2563eb"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg></div>
                     <div class="card-content">
                         <p>Absensi Karyawan</p>
                         <h4>GPS + Foto Selfie</h4>
@@ -509,32 +509,32 @@
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="icon">📊</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5V21h3.75v-7.5H3ZM10.125 9v12H13.5V9h-3.375ZM17.25 3v18H21V3h-3.75Z" /></svg></div>
                 <h3>Dashboard Informatif</h3>
                 <p>Pantau statistik kehadiran, proyek aktif, dan laporan keuangan secara real-time.</p>
             </div>
             <div class="feature-card">
-                <div class="icon">📍</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg></div>
                 <h3>Absensi GPS & Selfie</h3>
                 <p>Karyawan absen dengan verifikasi lokasi GPS dan foto selfie untuk mencegah kecurangan.</p>
             </div>
             <div class="feature-card">
-                <div class="icon">📁</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0V6a2.25 2.25 0 0 1 2.25-2.25h5.379a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H19.5A2.25 2.25 0 0 1 21.75 9v3.75" /></svg></div>
                 <h3>Manajemen Proyek</h3>
                 <p>Timeline otomatis 10 fase, milestone tracking, dan notifikasi deadline proyek.</p>
             </div>
             <div class="feature-card">
-                <div class="icon">🏭</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg></div>
                 <h3>Gudang FIFO</h3>
                 <p>Stok masuk/keluar dengan metode FIFO, serial number tracking, dan alert stok minimum.</p>
             </div>
             <div class="feature-card">
-                <div class="icon">💰</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg></div>
                 <h3>Keuangan Terintegrasi</h3>
                 <p>Sales Order, Purchase Order, faktur, pembayaran, dan laporan laba rugi dalam satu sistem.</p>
             </div>
             <div class="feature-card">
-                <div class="icon">🏢</div>
+                <div class="icon"><svg style="width:24px;height:24px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg></div>
                 <h3>Multi Perusahaan</h3>
                 <p>Kelola lebih dari satu PT dengan data yang terpisah dan karyawan yang bisa lintas PT.</p>
             </div>
@@ -565,7 +565,7 @@
 
     {{-- CTA --}}
     <section class="cta-section">
-        <h2>Siap Memulai? 🚀</h2>
+        <h2>Siap Memulai? <svg style="width:26px;height:26px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="var(--red)"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" /></svg></h2>
         <p>Masuk ke sistem dan kelola bisnis lebih efisien hari ini.</p>
         @auth
         <a href="{{ url('/dashboard') }}" class="btn-hero">Buka Dashboard →</a>
