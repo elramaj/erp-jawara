@@ -160,9 +160,10 @@ class SoController extends Controller
         ]);
 
         $total = $so->detail->sum(fn($d) => $d->jumlah * $d->harga);
-        $no_fj = 'FJ-' . date('Ymd') . '-' . str_pad(Fj::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
+        $no_fj = 'FJ-' . date('Ymd') . '-' . str_pad(Fj::withoutCompanyScope()->whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
 
         Fj::create([
+            'company_id'  => $so->company_id,
             'no_fj'       => $no_fj,
             'tanggal'     => $request->tanggal,
             'so_id'       => $so->id,

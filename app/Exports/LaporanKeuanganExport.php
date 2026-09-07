@@ -17,11 +17,18 @@ class LaporanKeuanganExport implements FromArray, WithEvents, WithTitle
 {
     protected $bulan;
     protected $tahun;
+    protected $isSuperAdmin;
+    protected $companyId;
 
     public function __construct($bulan, $tahun)
     {
         $this->bulan = $bulan;
         $this->tahun = $tahun;
+        // Capture di sini (bukan di dalam array()), karena Excel::download()
+        // dijalankan sinkron dalam request yang sama, jadi auth()->user()
+        // masih valid dipanggil dari sini.
+        $this->isSuperAdmin = auth()->user()->isSuperAdmin();
+        $this->companyId = auth()->user()->company_id;
     }
 
     public function title(): string
@@ -33,15 +40,25 @@ class LaporanKeuanganExport implements FromArray, WithEvents, WithTitle
     {
         $bulan = $this->bulan;
         $tahun = $this->tahun;
+        $isSuperAdmin = $this->isSuperAdmin;
+        $companyId = $this->companyId;
 
         $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y');
 
-        $pemasukan  = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->sum('jumlah');
-        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->sum('jumlah');
+        $pemasukan  = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
+            ->sum('jumlah');
+        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
+            ->sum('jumlah');
         $labaRugi   = $pemasukan - $pengeluaran;
 
-        $riwayatMasuk  = FjBayar::with(['fj.so.customer'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->orderBy('tanggal')->get();
-        $riwayatKeluar = FbBayar::with(['fb.po.supplier'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->orderBy('tanggal')->get();
+        $riwayatMasuk  = FjBayar::with(['fj.so.customer'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
+            ->orderBy('tanggal')->get();
+        $riwayatKeluar = FbBayar::with(['fb.po.supplier'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
+            ->orderBy('tanggal')->get();
 
         $rows = [];
 

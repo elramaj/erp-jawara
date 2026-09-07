@@ -53,7 +53,9 @@ class CompanyController extends Controller
     public function edit(Company $company)
     {
         $this->cekAkses();
-        $users = User::where('is_active', 1)->orderBy('name')->get();
+        $users = User::where('is_active', 1)
+            ->where('company_id', $company->id)
+            ->orderBy('name')->get();
         return view('pengaturan.company.edit', compact('company', 'users'));
     }
 

@@ -47,7 +47,7 @@ class KomplainController extends Controller
         $this->cekAkses();
         $proyek = Proyek::orderBy('nama_proyek')->get();
         $no_komplain = 'CMP-' . date('Ymd') . '-' . str_pad(
-            Komplain::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT
+            Komplain::withoutCompanyScope()->whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT
         );
         return view('komplain.create', compact('proyek', 'no_komplain'));
     }
@@ -64,10 +64,11 @@ class KomplainController extends Controller
         ]);
 
         $no_komplain = 'CMP-' . date('Ymd') . '-' . str_pad(
-            Komplain::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT
+            Komplain::withoutCompanyScope()->whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT
         );
 
         $komplain = Komplain::create([
+            'company_id'    => auth()->user()->company_id,
             'no_komplain'   => $no_komplain,
             'proyek_id'     => $request->proyek_id,
             'jenis'         => $request->jenis,
@@ -94,7 +95,7 @@ class KomplainController extends Controller
     {
         $this->cekAkses();
         $komplain->load(['proyek', 'creator', 'handler', 'timeline.creator']);
-        $users = User::where('is_active', 1)->orderBy('name')->get();
+        $users = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
         return view('komplain.show', compact('komplain', 'users'));
     }
 

@@ -130,9 +130,10 @@ class PoController extends Controller
         ]);
 
         $total = $po->detail->sum(fn($d) => $d->jumlah * $d->harga);
-        $no_fb = 'FB-' . date('Ymd') . '-' . str_pad(Fb::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
+        $no_fb = 'FB-' . date('Ymd') . '-' . str_pad(Fb::withoutCompanyScope()->whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
 
         Fb::create([
+            'company_id'  => $po->company_id,
             'no_fb'       => $no_fb,
             'tanggal'     => $request->tanggal,
             'po_id'       => $po->id,

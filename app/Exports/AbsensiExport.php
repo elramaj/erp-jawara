@@ -42,8 +42,9 @@ class AbsensiExport implements FromArray, WithEvents, WithTitle
             $current->addDay();
         }
 
-        // Ambil semua karyawan aktif
-        $karyawan = User::where('is_active', 1)->orderBy('name')->get();
+        // Ambil semua karyawan aktif (di-scope otomatis ke company sendiri,
+        // kecuali Super Admin yang boleh lihat semua company).
+        $karyawan = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
 
         // Ambil semua absensi dalam periode
         $semuaAbsensi = Absensi::whereBetween('tanggal', [$mulai->toDateString(), $selesai->toDateString()])

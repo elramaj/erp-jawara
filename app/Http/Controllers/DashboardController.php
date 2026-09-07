@@ -52,11 +52,26 @@ class DashboardController extends Controller
         $izinPendingAdmin = 0;
 
         if ($user->role_id == 11) {
-            $totalKaryawan = User::where('is_active', 1)->count();
-            $hadirHariIni = Absensi::whereDate('tanggal', $today)
-                ->whereIn('status', ['hadir', 'terlambat'])
-                ->count();
-            $izinPendingAdmin = PengajuanIzin::where('status', 'pending')->count();
+            $totalKaryawanQuery = User::where('is_active', 1);
+            $hadirHariIniQuery = Absensi::whereDate('tanggal', $today)
+                ->whereIn('status', ['hadir', 'terlambat']);
+            $izinPendingAdminQuery = PengajuanIzin::where('status', 'pending');
+
+            // Bukan Super Admin -> batasi cuma ke company sendiri.
+            // Super Admin -> biarin, biar liat angka gabungan semua company.
+            if (!$user->isSuperAdmin()) {
+                $totalKaryawanQuery->where('company_id', $user->company_id);
+                $hadirHariIniQuery->whereHas('user', function ($q) use ($user) {
+                    $q->where('company_id', $user->company_id);
+                });
+                $izinPendingAdminQuery->whereHas('user', function ($q) use ($user) {
+                    $q->where('company_id', $user->company_id);
+                });
+            }
+
+            $totalKaryawan = $totalKaryawanQuery->count();
+            $hadirHariIni = $hadirHariIniQuery->count();
+            $izinPendingAdmin = $izinPendingAdminQuery->count();
         }
 
         // Data grafik kehadiran 7 hari terakhir milik user

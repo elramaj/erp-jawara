@@ -1,12 +1,15 @@
 <?php
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Komplain extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'komplain';
     protected $fillable = [
-    'no_komplain', 'proyek_id', 'jenis', 'prioritas',
+    'company_id', 'no_komplain', 'proyek_id', 'jenis', 'prioritas',
     'judul', 'deskripsi', 'status', 'masih_garansi',
     'created_by', 'handled_by', 'resolved_at', 'no_servisan',
 ];

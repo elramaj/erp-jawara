@@ -23,7 +23,7 @@ class RekapAbsensiController extends Controller
 
         $karyawan = User::with(['absensi' => function($q) use ($bulan, $tahun) {
             $q->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun);
-        }])->get();
+        }])->forCurrentCompany()->get();
 
         $totalHariKerja = $this->hitungHariKerja($bulan, $tahun);
 
@@ -33,6 +33,14 @@ class RekapAbsensiController extends Controller
     public function detail(Request $request, User $user)
     {
         if (auth()->user()->role_id != 11) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Route model binding tidak otomatis ke-scope company (User model
+        // sengaja tidak pakai global scope, lihat catatan di scopeForCurrentCompany).
+        // Makanya perlu dicek manual biar admin company A tidak bisa buka
+        // rekap detail karyawan company B cuma dengan tebak-tebak ID di URL.
+        if (!auth()->user()->isSuperAdmin() && $user->company_id != auth()->user()->company_id) {
             abort(403, 'Akses ditolak.');
         }
 

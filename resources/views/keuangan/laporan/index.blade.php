@@ -4,6 +4,13 @@
     <h1 class="text-2xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>Laporan Keuangan</h1>
 </div>
 
+@if(auth()->user()->isSuperAdmin())
+<div class="bg-purple-50 border border-purple-300 text-purple-700 px-4 py-2 rounded-lg mb-4 text-sm font-semibold flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
+    Mode Super Admin — menampilkan data gabungan dari SEMUA company.
+</div>
+@endif
+
 {{-- Filter --}}
 <div class="bg-white rounded-xl shadow p-4 mb-6">
     <form method="GET" action="{{ route('laporan.keuangan') }}" class="flex gap-3 items-end">
@@ -74,6 +81,9 @@
             <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                 <tr>
                     <th class="px-3 py-2 text-left">Tanggal</th>
+                    @if(auth()->user()->isSuperAdmin())
+                    <th class="px-3 py-2 text-left">Company</th>
+                    @endif
                     <th class="px-3 py-2 text-left">Customer</th>
                     <th class="px-3 py-2 text-left">No FJ</th>
                     <th class="px-3 py-2 text-right">Jumlah</th>
@@ -83,6 +93,13 @@
                 @forelse($riwayatMasuk as $r)
                 <tr class="hover:bg-gray-50">
                     <td class="px-3 py-2 text-gray-500">{{ $r->tanggal->format('d M') }}</td>
+                    @if(auth()->user()->isSuperAdmin())
+                    <td class="px-3 py-2">
+                        <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                            {{ $r->fj->company->nama ?? '-' }}
+                        </span>
+                    </td>
+                    @endif
                     <td class="px-3 py-2 text-gray-700">{{ $r->fj->so->customer->nama ?? '-' }}</td>
                     <td class="px-3 py-2 font-mono text-xs text-indigo-600">{{ $r->fj->no_fj ?? '-' }}</td>
                     <td class="px-3 py-2 text-right font-semibold text-green-600">
@@ -90,13 +107,13 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="4" class="px-3 py-6 text-center text-gray-400">Belum ada pemasukan bulan ini.</td></tr>
+                <tr><td colspan="{{ auth()->user()->isSuperAdmin() ? 5 : 4 }}" class="px-3 py-6 text-center text-gray-400">Belum ada pemasukan bulan ini.</td></tr>
                 @endforelse
             </tbody>
             @if($riwayatMasuk->count() > 0)
             <tfoot class="border-t-2">
                 <tr>
-                    <td colspan="3" class="px-3 py-2 text-right font-bold text-gray-700">Total:</td>
+                    <td colspan="{{ auth()->user()->isSuperAdmin() ? 4 : 3 }}" class="px-3 py-2 text-right font-bold text-gray-700">Total:</td>
                     <td class="px-3 py-2 text-right font-bold text-green-600">Rp {{ number_format($pemasukan, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>
@@ -111,6 +128,9 @@
             <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                 <tr>
                     <th class="px-3 py-2 text-left">Tanggal</th>
+                    @if(auth()->user()->isSuperAdmin())
+                    <th class="px-3 py-2 text-left">Company</th>
+                    @endif
                     <th class="px-3 py-2 text-left">Supplier</th>
                     <th class="px-3 py-2 text-left">No FB</th>
                     <th class="px-3 py-2 text-right">Jumlah</th>
@@ -120,6 +140,13 @@
                 @forelse($riwayatKeluar as $r)
                 <tr class="hover:bg-gray-50">
                     <td class="px-3 py-2 text-gray-500">{{ $r->tanggal->format('d M') }}</td>
+                    @if(auth()->user()->isSuperAdmin())
+                    <td class="px-3 py-2">
+                        <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                            {{ $r->fb->company->nama ?? '-' }}
+                        </span>
+                    </td>
+                    @endif
                     <td class="px-3 py-2 text-gray-700">{{ $r->fb->po->supplier->nama ?? '-' }}</td>
                     <td class="px-3 py-2 font-mono text-xs text-indigo-600">{{ $r->fb->no_fb ?? '-' }}</td>
                     <td class="px-3 py-2 text-right font-semibold text-red-600">
@@ -127,13 +154,13 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="4" class="px-3 py-6 text-center text-gray-400">Belum ada pengeluaran bulan ini.</td></tr>
+                <tr><td colspan="{{ auth()->user()->isSuperAdmin() ? 5 : 4 }}" class="px-3 py-6 text-center text-gray-400">Belum ada pengeluaran bulan ini.</td></tr>
                 @endforelse
             </tbody>
             @if($riwayatKeluar->count() > 0)
             <tfoot class="border-t-2">
                 <tr>
-                    <td colspan="3" class="px-3 py-2 text-right font-bold text-gray-700">Total:</td>
+                    <td colspan="{{ auth()->user()->isSuperAdmin() ? 4 : 3 }}" class="px-3 py-2 text-right font-bold text-gray-700">Total:</td>
                     <td class="px-3 py-2 text-right font-bold text-red-600">Rp {{ number_format($pengeluaran, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>

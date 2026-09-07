@@ -26,36 +26,43 @@ class LaporanKeuanganController extends Controller
         $this->cekAkses();
         $bulan = $request->bulan ?? Carbon::now()->month;
         $tahun = $request->tahun ?? Carbon::now()->year;
+        $isSuperAdmin = auth()->user()->isSuperAdmin();
+        $companyId = auth()->user()->company_id;
 
         // Total pemasukan (pembayaran FJ bulan ini)
+        // FjBayar tidak punya company_id sendiri, jadi discope lewat relasi fj->company_id.
         $pemasukan = FjBayar::whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
 
         // Total pengeluaran (pembayaran FB bulan ini)
         $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
 
         $labaRugi = $pemasukan - $pengeluaran;
 
-        // Piutang (FJ belum lunas)
+        // Piutang (FJ belum lunas) -- Fj sudah otomatis discope company via trait
         $piutang = Fj::whereIn('status', ['unpaid', 'partial'])->sum('total')
             - Fj::whereIn('status', ['unpaid', 'partial'])->sum('terbayar');
 
-        // Hutang (FB belum lunas)
+        // Hutang (FB belum lunas) -- Fb sudah otomatis discope company via trait
         $hutang = Fb::whereIn('status', ['unpaid', 'partial'])->sum('total')
             - Fb::whereIn('status', ['unpaid', 'partial'])->sum('terbayar');
 
         // Riwayat transaksi bulan ini
-        $riwayatMasuk = FjBayar::with(['fj.so.customer'])
+        $riwayatMasuk = FjBayar::with(['fj.so.customer', 'fj.company'])
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
             ->orderBy('tanggal', 'desc')->get();
 
-        $riwayatKeluar = FbBayar::with(['fb.po.supplier'])
+        $riwayatKeluar = FbBayar::with(['fb.po.supplier', 'fb.company'])
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->orderBy('tanggal', 'desc')->get();
 
         return view('keuangan.laporan.index', compact(
@@ -81,15 +88,27 @@ class LaporanKeuanganController extends Controller
         $this->cekAkses();
         $bulan = $request->bulan ?? Carbon::now()->month;
         $tahun = $request->tahun ?? Carbon::now()->year;
+        $isSuperAdmin = auth()->user()->isSuperAdmin();
+        $companyId = auth()->user()->company_id;
 
-        $pemasukan   = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->sum('jumlah');
-        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->sum('jumlah');
+        $pemasukan   = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
+            ->sum('jumlah');
+        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
+            ->sum('jumlah');
         $labaRugi    = $pemasukan - $pengeluaran;
         $piutang     = \App\Models\Fj::whereIn('status', ['unpaid','partial'])->sum('total')
                     - \App\Models\Fj::whereIn('status', ['unpaid','partial'])->sum('terbayar');
 
-        $riwayatMasuk  = FjBayar::with(['fj.so.customer'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->orderBy('tanggal')->get();
-        $riwayatKeluar = FbBayar::with(['fb.po.supplier'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)->orderBy('tanggal')->get();
+        $riwayatMasuk  = FjBayar::with(['fj.so.customer', 'fj.company'])
+            ->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
+            ->orderBy('tanggal')->get();
+        $riwayatKeluar = FbBayar::with(['fb.po.supplier', 'fb.company'])
+            ->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
+            ->orderBy('tanggal')->get();
 
         $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F-Y');
 
