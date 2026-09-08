@@ -16,6 +16,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SoController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
+use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\KomplainController;
 use App\Http\Controllers\CompanyController;
@@ -115,6 +116,11 @@ Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.de
     Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan.keuangan');
     Route::get('/laporan-keuangan/export-excel', [LaporanKeuanganController::class, 'exportExcel'])->name('laporan.excel');
     Route::get('/laporan-keuangan/export-pdf', [LaporanKeuanganController::class, 'exportPdf'])->name('laporan.pdf');
+
+    // Pengeluaran / Beban Operasional
+    Route::get('/pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
+    Route::post('/pengeluaran', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
+    Route::delete('/pengeluaran/{beban}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
