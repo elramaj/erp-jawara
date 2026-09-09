@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Absensi;
 use App\Models\User;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -158,13 +159,21 @@ class AbsensiExport implements FromArray, WithEvents, WithTitle
                 $sheet->getStyle('A5:C' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
                 // Auto width kolom
-                foreach (range('A', $lastCol) as $col) {
+                // Pakai Coordinate::stringFromColumnIndex, BUKAN range('A', $lastCol),
+                // karena range() cuma bisa 1 huruf -- begitu kolom lewat Z (jadi AA,
+                // AB, dst -- gampang kejadian kalau tanggalnya 1 bulan penuh + kolom
+                // ringkasan), range() bakal error di PHP 8.3 ("must be a single byte").
+                $lastColIndex = Coordinate::columnIndexFromString($lastCol);
+                for ($i = 1; $i <= $lastColIndex; $i++) {
+                    $col = Coordinate::stringFromColumnIndex($i);
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
 
                 // Warnai H = hijau, A = merah, L = abu
+                $startColIndex = Coordinate::columnIndexFromString('E');
                 for ($row = 5; $row <= $lastRow; $row++) {
-                    for ($col = 'E'; $col != $lastCol; $col++) {
+                    for ($colIndex = $startColIndex; $colIndex != $lastColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
                         $cell = $sheet->getCell($col . $row);
                         $val  = $cell->getValue();
                         if ($val == 'H') {
