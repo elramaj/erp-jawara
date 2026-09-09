@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\FjBayar;
 use App\Models\FbBayar;
+use App\Models\BebanOperasional;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -48,9 +49,13 @@ class LaporanKeuanganExport implements FromArray, WithEvents, WithTitle
         $pemasukan  = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
-        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+        $pengeluaranPembelian = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
+        // BebanOperasional sudah otomatis discope company via trait BelongsToCompany.
+        $pengeluaranOperasional = BebanOperasional::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->sum('nominal');
+        $pengeluaran = $pengeluaranPembelian + $pengeluaranOperasional;
         $labaRugi   = $pemasukan - $pengeluaran;
 
         $riwayatMasuk  = FjBayar::with(['fj.so.customer'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
@@ -58,6 +63,8 @@ class LaporanKeuanganExport implements FromArray, WithEvents, WithTitle
             ->orderBy('tanggal')->get();
         $riwayatKeluar = FbBayar::with(['fb.po.supplier'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
+            ->orderBy('tanggal')->get();
+        $riwayatBeban = BebanOperasional::with(['karyawan'])->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->orderBy('tanggal')->get();
 
         $rows = [];
@@ -101,7 +108,26 @@ class LaporanKeuanganExport implements FromArray, WithEvents, WithTitle
                 'Rp ' . number_format($r->jumlah, 0, ',', '.'),
             ];
         }
-        $rows[] = ['', '', '', 'Total', 'Rp ' . number_format($pengeluaran, 0, ',', '.')];
+        $rows[] = ['', '', '', 'Total', 'Rp ' . number_format($pengeluaranPembelian, 0, ',', '.')];
+        $rows[] = [];
+
+        // Beban Operasional (termasuk Reimburse karyawan)
+        $rows[] = ['RINCIAN BEBAN OPERASIONAL (TERMASUK REIMBURSE KARYAWAN)'];
+        $rows[] = ['No', 'Tanggal', 'Kategori', 'Keterangan', 'Nominal'];
+        foreach ($riwayatBeban as $i => $b) {
+            $kategori = \App\Models\BebanOperasional::KATEGORI[$b->kategori] ?? $b->kategori;
+            if ($b->kategori == 'reimburse' && $b->karyawan) {
+                $kategori .= ' — ' . $b->karyawan->name;
+            }
+            $rows[] = [
+                $i + 1,
+                $b->tanggal->format('d M Y'),
+                $kategori,
+                $b->keterangan ?: '-',
+                'Rp ' . number_format($b->nominal, 0, ',', '.'),
+            ];
+        }
+        $rows[] = ['', '', '', 'Total', 'Rp ' . number_format($pengeluaranOperasional, 0, ',', '.')];
 
         return $rows;
     }

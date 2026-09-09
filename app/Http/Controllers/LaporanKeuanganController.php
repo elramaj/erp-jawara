@@ -6,6 +6,7 @@ use App\Models\Fj;
 use App\Models\FjBayar;
 use App\Models\Fb;
 use App\Models\FbBayar;
+use App\Models\BebanOperasional;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Exports\LaporanKeuanganExport;
@@ -37,10 +38,20 @@ class LaporanKeuanganController extends Controller
             ->sum('jumlah');
 
         // Total pengeluaran (pembayaran FB bulan ini)
-        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)
+        $pengeluaranPembelian = FbBayar::whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
+
+        // Beban operasional bulan ini (gaji, sewa, listrik, transport, REIMBURSE karyawan, dll)
+        // -- sebelumnya modul ini gak pernah dihitung di Laporan Keuangan sama sekali,
+        // jadi reimburse yang disetujui gak pernah kelihatan kehitung di laba-rugi.
+        // BebanOperasional sudah otomatis discope company via trait BelongsToCompany.
+        $pengeluaranOperasional = BebanOperasional::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->sum('nominal');
+
+        $pengeluaran = $pengeluaranPembelian + $pengeluaranOperasional;
 
         $labaRugi = $pemasukan - $pengeluaran;
 
@@ -65,10 +76,16 @@ class LaporanKeuanganController extends Controller
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->orderBy('tanggal', 'desc')->get();
 
+        $riwayatBeban = BebanOperasional::with(['creator', 'karyawan', 'company'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->orderBy('tanggal', 'desc')->get();
+
         return view('keuangan.laporan.index', compact(
             'bulan', 'tahun', 'pemasukan', 'pengeluaran',
+            'pengeluaranPembelian', 'pengeluaranOperasional',
             'labaRugi', 'piutang', 'hutang',
-            'riwayatMasuk', 'riwayatKeluar'
+            'riwayatMasuk', 'riwayatKeluar', 'riwayatBeban'
         ));
     }
     public function exportExcel(Request $request)
@@ -94,9 +111,12 @@ class LaporanKeuanganController extends Controller
         $pemasukan   = FjBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fj', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
-        $pengeluaran = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+        $pengeluaranPembelian = FbBayar::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->sum('jumlah');
+        $pengeluaranOperasional = BebanOperasional::whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->sum('nominal');
+        $pengeluaran = $pengeluaranPembelian + $pengeluaranOperasional;
         $labaRugi    = $pemasukan - $pengeluaran;
         $piutang     = \App\Models\Fj::whereIn('status', ['unpaid','partial'])->sum('total')
                     - \App\Models\Fj::whereIn('status', ['unpaid','partial'])->sum('terbayar');
@@ -109,12 +129,16 @@ class LaporanKeuanganController extends Controller
             ->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
             ->when(!$isSuperAdmin, fn($q) => $q->whereHas('fb', fn($q2) => $q2->where('company_id', $companyId)))
             ->orderBy('tanggal')->get();
+        $riwayatBeban = BebanOperasional::with(['creator', 'karyawan'])
+            ->whereMonth('tanggal', $bulan)->whereYear('tanggal', $tahun)
+            ->orderBy('tanggal')->get();
 
         $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F-Y');
 
         $pdf = Pdf::loadView('laporan.keuangan-pdf', compact(
             'bulan', 'tahun', 'pemasukan', 'pengeluaran',
-            'labaRugi', 'piutang', 'riwayatMasuk', 'riwayatKeluar'
+            'pengeluaranPembelian', 'pengeluaranOperasional',
+            'labaRugi', 'piutang', 'riwayatMasuk', 'riwayatKeluar', 'riwayatBeban'
         ))->setPaper('a4', 'portrait');
 
         return $pdf->download('laporan-keuangan-' . $namaBulan . '.pdf');

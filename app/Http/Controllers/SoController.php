@@ -99,7 +99,15 @@ class SoController extends Controller
             'jumlah'    => 'required|array',
         ]);
 
-        $no_sj = 'SJ-' . date('Ymd') . '-' . str_pad(Sj::whereDate('created_at', today())->count() + 1, 3, '0', STR_PAD_LEFT);
+        // Nomor SJ di-scope per company (pakai company_id milik SO-nya) supaya
+        // tidak tabrakan urutan kalau ada lebih dari 1 company aktif dalam sistem.
+        $companyId = $so->company_id;
+        $no_sj = 'SJ-' . date('Ymd') . '-' . str_pad(
+            Sj::whereDate('created_at', today())
+                ->whereHas('so', fn($q) => $q->where('company_id', $companyId))
+                ->count() + 1,
+            3, '0', STR_PAD_LEFT
+        );
 
         $sj = Sj::create([
             'no_sj'      => $no_sj,

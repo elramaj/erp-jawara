@@ -111,8 +111,39 @@
             <tr><td colspan="5" style="text-align: center; color: #999;">Tidak ada data</td></tr>
             @endforelse
             <tr class="total-row">
-                <td colspan="4" style="text-align: right;">Total Pengeluaran</td>
-                <td style="text-align: right; color: #dc2626;">Rp {{ number_format($pengeluaran, 0, ',', '.') }}</td>
+                <td colspan="4" style="text-align: right;">Total Pengeluaran Pembelian</td>
+                <td style="text-align: right; color: #dc2626;">Rp {{ number_format($pengeluaranPembelian, 0, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {{-- Rincian Beban Operasional (termasuk Reimburse karyawan) --}}
+    <div class="section-title">Rincian Beban Operasional (termasuk Reimburse Karyawan)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Kategori</th>
+                <th>Keterangan</th>
+                <th style="text-align: right;">Nominal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($riwayatBeban as $i => $b)
+            <tr>
+                <td>{{ $i + 1 }}</td>
+                <td>{{ $b->tanggal->format('d M Y') }}</td>
+                <td>{{ \App\Models\BebanOperasional::KATEGORI[$b->kategori] ?? $b->kategori }}{{ $b->kategori == 'reimburse' && $b->karyawan ? ' — '.$b->karyawan->name : '' }}</td>
+                <td>{{ $b->keterangan ?: '-' }}</td>
+                <td style="text-align: right;">Rp {{ number_format($b->nominal, 0, ',', '.') }}</td>
+            </tr>
+            @empty
+            <tr><td colspan="5" style="text-align: center; color: #999;">Tidak ada data</td></tr>
+            @endforelse
+            <tr class="total-row">
+                <td colspan="4" style="text-align: right;">Total Beban Operasional</td>
+                <td style="text-align: right; color: #dc2626;">Rp {{ number_format($pengeluaranOperasional, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
