@@ -23,12 +23,13 @@
 
 {{-- Form Tambah (collapsible) --}}
 <div id="form-tambah" class="bg-white rounded-xl shadow p-6 mb-6 hidden">
-    <h2 class="font-semibold text-gray-700 mb-4">Catat Beban Operasional Baru</h2>
+    <h2 class="font-semibold text-gray-700 mb-4">Catat Beban Operasional</h2>
     <form method="POST" action="{{ route('pengeluaran.store') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
         @csrf
         <div>
             <label class="block text-xs font-medium text-gray-500 mb-1">Kategori *</label>
-            <select name="kategori" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <select name="kategori" id="input-kategori" required onchange="toggleKaryawan()"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 @foreach(\App\Models\BebanOperasional::KATEGORI as $key => $label)
                 <option value="{{ $key }}">{{ $label }}</option>
                 @endforeach
@@ -52,8 +53,36 @@
         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
             Simpan
         </button>
+
+        {{-- Muncul cuma kalau kategori = Reimburse Karyawan --}}
+        <div id="wrap-karyawan" class="hidden md:col-span-2">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Karyawan yang di-reimburse *</label>
+            <select name="user_id" id="input-karyawan"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <option value="">-- Pilih Karyawan --</option>
+                @foreach($karyawan as $k)
+                <option value="{{ $k->id }}">{{ $k->name }}</option>
+                @endforeach
+            </select>
+        </div>
     </form>
 </div>
+
+<script>
+function toggleKaryawan() {
+    const kategori = document.getElementById('input-kategori').value;
+    const wrap = document.getElementById('wrap-karyawan');
+    const input = document.getElementById('input-karyawan');
+    if (kategori === 'reimburse') {
+        wrap.classList.remove('hidden');
+        input.setAttribute('required', 'required');
+    } else {
+        wrap.classList.add('hidden');
+        input.removeAttribute('required');
+        input.value = '';
+    }
+}
+</script>
 
 {{-- Filter --}}
 <div class="bg-white rounded-xl shadow p-4 mb-6">
@@ -135,7 +164,16 @@
                         {{ \App\Models\BebanOperasional::KATEGORI[$b->kategori] ?? $b->kategori }}
                     </span>
                 </td>
-                <td class="px-4 py-3 text-gray-600">{{ $b->keterangan ?? '-' }}</td>
+                <td class="px-4 py-3 text-gray-600">
+                    @if($b->kategori === 'reimburse' && $b->karyawan)
+                        <span class="font-medium text-gray-800">{{ $b->karyawan->name }}</span>
+                        @if($b->keterangan)
+                        <span class="text-gray-400"> — {{ $b->keterangan }}</span>
+                        @endif
+                    @else
+                        {{ $b->keterangan ?? '-' }}
+                    @endif
+                </td>
                 <td class="px-4 py-3 text-gray-500">{{ $b->creator->name ?? '-' }}</td>
                 <td class="px-4 py-3 text-right font-semibold text-red-600">
                     Rp {{ number_format($b->nominal, 0, ',', '.') }}

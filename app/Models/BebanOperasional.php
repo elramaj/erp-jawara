@@ -8,7 +8,7 @@ class BebanOperasional extends Model
     use BelongsToCompany;
 
     protected $table = 'beban_operasional';
-    protected $fillable = ['company_id', 'kategori', 'tanggal', 'nominal', 'keterangan', 'created_by'];
+    protected $fillable = ['company_id', 'user_id', 'kategori', 'tanggal', 'nominal', 'keterangan', 'created_by'];
 
     protected $casts = [
         'tanggal' => 'date',
@@ -28,5 +28,11 @@ class BebanOperasional extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Khusus kategori reimburse: karyawan yang di-reimburse.
+    public function karyawan()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

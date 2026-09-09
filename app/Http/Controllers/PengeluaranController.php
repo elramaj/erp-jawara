@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BebanOperasional;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class PengeluaranController extends Controller
         $bulan = $request->bulan ?? Carbon::now()->month;
         $tahun = $request->tahun ?? Carbon::now()->year;
 
-        $beban = BebanOperasional::with(['creator', 'company'])
+        $beban = BebanOperasional::with(['creator', 'company', 'karyawan'])
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
             ->orderBy('tanggal', 'desc')
@@ -35,8 +36,11 @@ class PengeluaranController extends Controller
             return $items->sum('nominal');
         });
 
+        // Buat dropdown pilih karyawan pas kategori = reimburse.
+        $karyawan = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
+
         return view('keuangan.pengeluaran.index', compact(
-            'beban', 'bulan', 'tahun', 'totalBulanIni', 'perKategori'
+            'beban', 'bulan', 'tahun', 'totalBulanIni', 'perKategori', 'karyawan'
         ));
     }
 
@@ -48,10 +52,13 @@ class PengeluaranController extends Controller
             'tanggal'     => 'required|date',
             'nominal'     => 'required|numeric|min:1',
             'keterangan'  => 'nullable|string|max:255',
+            // Wajib pilih karyawan cuma kalau kategorinya reimburse.
+            'user_id'     => 'required_if:kategori,reimburse|nullable|exists:users,id',
         ]);
 
         BebanOperasional::create([
             'company_id'  => auth()->user()->company_id,
+            'user_id'     => $request->kategori === 'reimburse' ? $request->user_id : null,
             'kategori'    => $request->kategori,
             'tanggal'     => $request->tanggal,
             'nominal'     => $request->nominal,
