@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class PengajuanIzin extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'pengajuan_izin';
 
     protected $fillable = [
+        'company_id',
         'user_id',
         'jenis',
         'tanggal_mulai',

@@ -41,10 +41,10 @@
                 <td class="px-4 py-3 text-gray-600 max-w-xs truncate">{{ $r->keterangan }}</td>
                 <td class="px-4 py-3 text-center">
                     @if($r->bukti)
-                    <a href="{{ asset('storage/' . $r->bukti) }}" target="_blank"
+                    <button type="button" onclick="showBuktiModal('{{ asset('storage/' . $r->bukti) }}')"
                         class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded text-xs font-semibold transition inline-flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>Lihat
-                    </a>
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>Lihat
+                    </button>
                     @else
                     <span class="text-gray-300 text-xs">-</span>
                     @endif
@@ -89,4 +89,6 @@
         </tbody>
     </table>
 </div>
+
+@include('components.bukti-modal')
 @endsection

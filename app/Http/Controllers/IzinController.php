@@ -33,6 +33,7 @@ class IzinController extends Controller
         ]);
 
         PengajuanIzin::create([
+            'company_id'       => auth()->user()->company_id,
             'user_id'          => auth()->id(),
             'jenis'            => $request->jenis,
             'tanggal_mulai'    => $request->tanggal_mulai,
