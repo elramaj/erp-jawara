@@ -5,6 +5,7 @@ use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\IzinController;
+use App\Http\Controllers\ReimburseController;
 use App\Http\Controllers\RekapAbsensiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfilController;
@@ -57,6 +58,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/izin', [IzinController::class, 'store'])->name('izin.store');
     Route::get('/izin/review', [IzinController::class, 'review'])->name('izin.review');
     Route::post('/izin/{izin}/status', [IzinController::class, 'updateStatus'])->name('izin.status');
+
+    // Reimburse
+    Route::get('/reimburse', [ReimburseController::class, 'index'])->name('reimburse.index');
+    Route::get('/reimburse/create', [ReimburseController::class, 'create'])->name('reimburse.create');
+    Route::post('/reimburse', [ReimburseController::class, 'store'])->name('reimburse.store');
+    Route::get('/reimburse/review', [ReimburseController::class, 'review'])->name('reimburse.review');
+    Route::post('/reimburse/{reimburse}/status', [ReimburseController::class, 'updateStatus'])->name('reimburse.status');
 
     // Rekap Absensi
     Route::get('/rekap-absensi', [RekapAbsensiController::class, 'index'])->name('rekap.index');
