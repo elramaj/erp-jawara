@@ -117,7 +117,12 @@
                 <tr class="border-b hover:bg-gray-50">
                     <td class="py-2 text-sm">{{ $item->tanggal->translatedFormat('d M Y') }}</td>
                     <td class="py-2 text-sm">{{ $item->jam_masuk ?? '-' }}</td>
-                    <td class="py-2 text-sm">{{ $item->jam_keluar ?? '-' }}</td>
+                    <td class="py-2 text-sm">
+                        {{ $item->jam_keluar ?? '-' }}
+                        @if($item->lembur_menit > 0)
+                        <span class="ml-1 bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">+{{ $item->lembur_menit }}m lembur</span>
+                        @endif
+                    </td>
                     <td class="py-2 text-xs">
                         @if($item->lokasi_valid === 1)
                         <span class="text-green-600"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Dalam area</span>
@@ -161,6 +166,9 @@
             <div class="flex gap-4 mt-1 text-xs text-gray-400">
                 <span>Masuk: {{ $item->jam_masuk ?? '-' }}</span>
                 <span>Keluar: {{ $item->jam_keluar ?? '-' }}</span>
+                @if($item->lembur_menit > 0)
+                <span class="text-indigo-500 font-semibold">Lembur {{ $item->lembur_menit }}m</span>
+                @endif
                 @if($item->lokasi_valid === 1)
                 <span class="text-green-500"><svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>Dalam area</span>
                 @elseif($item->lokasi_valid === 0)

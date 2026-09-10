@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\JamKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company;
@@ -20,7 +21,7 @@ class PengaturanController extends Controller
     {
         $this->cekAkses();
         $departments  = Department::orderBy('name')->get();
-        $jamKerja     = DB::table('jam_kerja')->orderBy('id')->get();
+        $jamKerja     = JamKerja::orderBy('id')->get();
         $companies    = Company::withCount('users')->orderBy('nama')->get();
         $lokasiKantor = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
         return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor'));

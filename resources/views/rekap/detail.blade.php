@@ -22,7 +22,7 @@
     $izin      = $absensi->whereIn('status', ['izin', 'sakit', 'cuti'])->count();
     $alfa      = $absensi->where('status', 'alfa')->count();
 @endphp
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow p-4 border-l-4 border-green-500">
         <p class="text-gray-500 text-xs">Hadir</p>
         <p class="text-2xl font-bold text-green-600">{{ $hadir }}</p>
@@ -38,6 +38,10 @@
     <div class="bg-white rounded-xl shadow p-4 border-l-4 border-red-500">
         <p class="text-gray-500 text-xs">Alfa</p>
         <p class="text-2xl font-bold text-red-600">{{ $alfa }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 border-l-4 border-indigo-500">
+        <p class="text-gray-500 text-xs">Total Lembur</p>
+        <p class="text-2xl font-bold text-indigo-600">{{ floor($totalLemburMenit / 60) }}j {{ $totalLemburMenit % 60 }}m</p>
     </div>
 </div>
 
@@ -81,7 +85,12 @@
                     @endif
                 </td>
                 <td class="px-4 py-3 text-center text-indigo-600 font-medium">{{ $a->jam_masuk ?? '-' }}</td>
-                <td class="px-4 py-3 text-center text-indigo-600 font-medium">{{ $a->jam_keluar ?? '-' }}</td>
+                <td class="px-4 py-3 text-center text-indigo-600 font-medium">
+                    {{ $a->jam_keluar ?? '-' }}
+                    @if($a->lembur_menit > 0)
+                    <div class="text-[10px] text-indigo-400 font-normal">+{{ $a->lembur_menit }}m lembur</div>
+                    @endif
+                </td>
 
                 {{-- Foto --}}
                 <td class="px-4 py-3 text-center">
@@ -231,7 +240,7 @@ function bukaDetail(id) {
             </div>
             <div>
                 <p class="text-xs text-gray-400 mb-1">Jam Keluar</p>
-                <p class="font-semibold text-indigo-600">${a.jam_keluar ?? '-'}</p>
+                <p class="font-semibold text-indigo-600">${a.jam_keluar ?? '-'}${a.lembur_menit > 0 ? ` <span class="text-xs font-normal text-indigo-400">(+${a.lembur_menit}m lembur)</span>` : ''}</p>
             </div>
             <div>
                 <p class="text-xs text-gray-400 mb-1">Status</p>

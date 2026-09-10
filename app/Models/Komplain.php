@@ -42,10 +42,10 @@ class Komplain extends Model
     public function getPrioritasLabelAttribute()
     {
         return match($this->prioritas) {
-            'critical' => '🔴 Critical',
-            'high'     => '🟠 High',
-            'medium'   => '🟡 Medium',
-            'low'      => '🟢 Low',
+            'critical' => 'Critical',
+            'high'     => 'High',
+            'medium'   => 'Medium',
+            'low'      => 'Low',
             default    => $this->prioritas,
         };
     }

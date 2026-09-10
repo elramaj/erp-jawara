@@ -83,16 +83,16 @@ public function index()
 
         // Buat milestone otomatis sesuai alur kerja
         $milestones = [
-            ['judul' => '📦 Paket Baru Masuk',       'urutan' => 1],
-            ['judul' => '📞 Respon & Koordinasi',     'urutan' => 2],
-            ['judul' => '🛒 Purchase Order (PO)',      'urutan' => 3],
-            ['judul' => '📊 Monitor Barang PO',        'urutan' => 4],
-            ['judul' => '📥 Barang Diterima Gudang',   'urutan' => 5],
-            ['judul' => '🔧 Uji Fungsi',               'urutan' => 6],
-            ['judul' => '🚚 Pengiriman ke Customer',   'urutan' => 7],
-            ['judul' => '📄 Dokumen (BAST & Invoice)', 'urutan' => 8],
-            ['judul' => '💰 Pembayaran',               'urutan' => 9],
-            ['judul' => '✅ Selesai',                  'urutan' => 10],
+            ['judul' => 'Paket Baru Masuk',       'urutan' => 1],
+            ['judul' => 'Respon & Koordinasi',     'urutan' => 2],
+            ['judul' => 'Purchase Order (PO)',      'urutan' => 3],
+            ['judul' => 'Monitor Barang PO',        'urutan' => 4],
+            ['judul' => 'Barang Diterima Gudang',   'urutan' => 5],
+            ['judul' => 'Uji Fungsi',               'urutan' => 6],
+            ['judul' => 'Pengiriman ke Customer',   'urutan' => 7],
+            ['judul' => 'Dokumen (BAST & Invoice)', 'urutan' => 8],
+            ['judul' => 'Pembayaran',               'urutan' => 9],
+            ['judul' => 'Selesai',                  'urutan' => 10],
         ];
 
         foreach ($milestones as $m) {

@@ -64,6 +64,7 @@ class RekapAbsensiController extends Controller
                 'catatan'      => $a->catatan,
                 'jam_masuk'    => $a->jam_masuk,
                 'jam_keluar'   => $a->jam_keluar,
+                'lembur_menit' => $a->lembur_menit,
                 'status'       => $a->status,
                 'lokasi_valid' => $a->lokasi_valid,
                 'lat_masuk'    => $a->lat_masuk,
@@ -76,7 +77,9 @@ class RekapAbsensiController extends Controller
             ];
         });
 
-        return view('rekap.detail', compact('user', 'absensi', 'bulan', 'tahun', 'absensiJson'));
+        $totalLemburMenit = $absensi->sum('lembur_menit');
+
+        return view('rekap.detail', compact('user', 'absensi', 'bulan', 'tahun', 'absensiJson', 'totalLemburMenit'));
     }
 
     private function hitungHariKerja($bulan, $tahun)
