@@ -37,7 +37,7 @@ class ProfilController extends Controller
             ->count();
 
         // Aset yang lagi dipegang
-        $asetDipegang = Aset::where('user_id', $user->id)
+        $asetDipegang = Aset::where('dipegang_oleh', $user->id)
             ->with('kategori')
             ->orderBy('nama_aset')
             ->get();

@@ -116,6 +116,7 @@ public function destroy(User $user)
     \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => $adminId]);
     \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => $adminId]);
     \App\Models\Komplain::where('created_by', $user->id)->update(['created_by' => $adminId]);
+    \App\Models\BebanOperasional::where('created_by', $user->id)->update(['created_by' => $adminId]);
     DB::table('komplain_timeline')->where('created_by', $user->id)->update(['created_by' => $adminId]);
     DB::table('proyek')->where('created_by', $user->id)->update(['created_by' => $adminId]);
 
