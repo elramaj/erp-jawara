@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Karyawan
     Route::resource('karyawan', KaryawanController::class)->parameters(['karyawan' => 'user']);
+    Route::post('/karyawan/{user}/restore', [KaryawanController::class, 'restore'])->name('karyawan.restore');
 
     // Izin & Cuti
     Route::get('/izin', [IzinController::class, 'index'])->name('izin.index');

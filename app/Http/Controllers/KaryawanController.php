@@ -105,24 +105,24 @@ public function destroy(User $user)
 {
     if ($user->id === auth()->id()) {
         return redirect()->route('karyawan.index')
-            ->with('error', 'Tidak bisa menghapus akun sendiri!');
+            ->with('error', 'Tidak bisa menonaktifkan akun sendiri!');
     }
 
-    $adminId = auth()->id();
-
-    \App\Models\Absensi::where('user_id', $user->id)->delete();
-    \App\Models\PengajuanIzin::where('user_id', $user->id)->delete();
-    \App\Models\ProyekAnggota::where('user_id', $user->id)->delete();
-    \App\Models\GudangStokMasuk::where('created_by', $user->id)->update(['created_by' => $adminId]);
-    \App\Models\GudangStokKeluar::where('created_by', $user->id)->update(['created_by' => $adminId]);
-    \App\Models\Komplain::where('created_by', $user->id)->update(['created_by' => $adminId]);
-    \App\Models\BebanOperasional::where('created_by', $user->id)->update(['created_by' => $adminId]);
-    DB::table('komplain_timeline')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-    DB::table('proyek')->where('created_by', $user->id)->update(['created_by' => $adminId]);
-
-    $user->delete();
+    // Nonaktifkan, JANGAN dihapus permanen. Semua riwayat (absensi, izin,
+    // transaksi gudang/komplain/proyek/pengeluaran) tetap utuh dan tetap
+    // atas nama karyawan yang bersangkutan -- cuma dia jadi gak bisa
+    // login lagi & gak muncul di pilihan aktif (dropdown assign, dst).
+    $user->update(['is_active' => false]);
 
     return redirect()->route('karyawan.index')
-        ->with('success', 'Karyawan berhasil dihapus!');
+        ->with('success', 'Karyawan berhasil dinonaktifkan. Semua riwayat datanya tetap tersimpan.');
+}
+
+public function restore(User $user)
+{
+    $user->update(['is_active' => true]);
+
+    return redirect()->route('karyawan.index')
+        ->with('success', 'Karyawan berhasil diaktifkan kembali.');
 }
 }

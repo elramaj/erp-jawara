@@ -77,15 +77,26 @@
                            class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1 rounded text-xs font-semibold transition">
                             Edit
                         </a>
+                        @if($k->is_active)
                         <form method="POST" action="{{ route('karyawan.destroy', $k) }}"
-                            onsubmit="return confirm('Yakin hapus karyawan ini?')">
+                            onsubmit="return confirm('Nonaktifkan karyawan ini? Semua riwayat datanya tetap tersimpan, cuma gak bisa login lagi.')">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                 class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded text-xs font-semibold transition">
-                                Hapus
+                                Nonaktifkan
                             </button>
                         </form>
+                        @else
+                        <form method="POST" action="{{ route('karyawan.restore', $k) }}"
+                            onsubmit="return confirm('Aktifkan kembali karyawan ini?')">
+                            @csrf
+                            <button type="submit"
+                                class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded text-xs font-semibold transition">
+                                Aktifkan
+                            </button>
+                        </form>
+                        @endif
                     </div>
                 </td>
             </tr>

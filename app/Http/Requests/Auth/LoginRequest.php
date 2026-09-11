@@ -49,6 +49,17 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Karyawan yang sudah dinonaktifkan (resign/dihentikan) gak boleh
+        // login lagi, meski password-nya masih bener.
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun ini sudah tidak aktif. Hubungi admin jika ini keliru.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

@@ -158,7 +158,7 @@
 
 {{-- Aset yang Dipegang --}}
 <div class="bg-white rounded-xl shadow p-6">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25m0-9L3 7.5m9 5.25v9M3 7.5v9l9 5.25" /></svg>Aset yang Sedang Saya Pegang</h2>
+    <h2 class="text-lg font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25m0-9L3 7.5m9 5.25v9M3 7.5v9l9 5.25" /></svg>Aset yang sedang saya pegang</h2>
 
     @if($asetDipegang->isEmpty())
     <p class="text-sm text-gray-400 py-4 text-center">Kamu belum memegang aset perusahaan apapun saat ini.</p>
