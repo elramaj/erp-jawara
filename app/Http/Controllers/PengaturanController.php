@@ -21,7 +21,9 @@ class PengaturanController extends Controller
     {
         $this->cekAkses();
         $departments  = Department::orderBy('name')->get();
-        $jamKerja     = JamKerja::orderBy('id')->get();
+        $urutanHari   = array_flip(JamKerja::HARI); // minggu=0 ... sabtu=6
+        $jamKerja     = JamKerja::with('company')->get()
+            ->sortBy(fn($j) => ($j->company_id ?? 0) * 10 + ($urutanHari[strtolower($j->hari)] ?? 99));
         $companies    = Company::withCount('users')->orderBy('nama')->get();
         $lokasiKantor = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
         return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor'));
@@ -63,13 +65,19 @@ class PengaturanController extends Controller
             'is_libur'        => 'nullable|array',
         ]);
 
+        $isSuperAdmin = auth()->user()->isSuperAdmin();
+        $companyId    = auth()->user()->company_id;
+
         foreach ($request->jam_kerja_id as $i => $id) {
-            DB::table('jam_kerja')->where('id', $id)->update([
-                'jam_masuk'       => $request->jam_masuk[$i],
-                'jam_keluar'      => $request->jam_keluar[$i],
-                'toleransi_menit' => $request->toleransi_menit[$i],
-                'is_libur'        => in_array($id, $request->is_libur ?? []) ? 1 : 0,
-            ]);
+            DB::table('jam_kerja')->where('id', $id)
+                // Admin biasa cuma boleh update jadwal company sendiri.
+                ->when(!$isSuperAdmin, fn($q) => $q->where('company_id', $companyId))
+                ->update([
+                    'jam_masuk'       => $request->jam_masuk[$i],
+                    'jam_keluar'      => $request->jam_keluar[$i],
+                    'toleransi_menit' => $request->toleransi_menit[$i],
+                    'is_libur'        => in_array($id, $request->is_libur ?? []) ? 1 : 0,
+                ]);
         }
 
         return back()->with('success', 'Jam kerja berhasil diupdate!');

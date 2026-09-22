@@ -1,13 +1,16 @@
 <?php
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class JamKerja extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'jam_kerja';
     public $timestamps = false;
-    protected $fillable = ['hari', 'jam_masuk', 'jam_keluar', 'toleransi_menit', 'is_libur'];
+    protected $fillable = ['company_id', 'hari', 'jam_masuk', 'jam_keluar', 'toleransi_menit', 'is_libur'];
 
     protected $casts = [
         'is_libur' => 'boolean',

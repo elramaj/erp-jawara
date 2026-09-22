@@ -69,7 +69,14 @@
         <form method="POST" action="{{ route('pengaturan.jamkerja') }}">
             @csrf
             <div class="space-y-3">
+                @php $lastCompany = null; @endphp
                 @foreach($jamKerja as $j)
+                @if(auth()->user()->isSuperAdmin() && $j->company_id !== $lastCompany)
+                    @php $lastCompany = $j->company_id; @endphp
+                    <p class="text-xs uppercase tracking-wide font-semibold text-purple-600 pt-2 {{ !$loop->first ? 'border-t border-gray-100' : '' }}">
+                        {{ $j->company->nama ?? 'Tanpa Company' }}
+                    </p>
+                @endif
                 <div class="border border-gray-100 rounded-lg p-3 {{ $j->is_libur ? 'bg-gray-50' : '' }}">
                     <input type="hidden" name="jam_kerja_id[]" value="{{ $j->id }}">
                     <div class="flex items-center justify-between mb-2">
