@@ -66,49 +66,68 @@
     {{-- Jam Kerja --}}
     <div class="bg-white rounded-xl shadow p-6">
         <h2 class="font-semibold text-gray-700 mb-4"><svg class="w-5 h-5 inline-block -mt-1 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Pengaturan Jam Kerja</h2>
+
+        @php $groupJamKerja = $jamKerja->groupBy('company_id'); @endphp
+
+        @if(auth()->user()->isSuperAdmin() && $groupJamKerja->count() > 1)
+        {{-- Tab pemilih company, cuma muncul kalau Super Admin & ada >1 company --}}
+        <div class="flex flex-wrap gap-2 mb-4 border-b border-gray-100 pb-3">
+            @foreach($groupJamKerja as $cid => $rows)
+            <button type="button" onclick="pilihTabJamKerja({{ $cid }})"
+                id="tab-jamkerja-{{ $cid }}"
+                class="tab-jamkerja-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $loop->first ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                {{ $rows->first()->company->nama ?? 'Tanpa Company' }}
+            </button>
+            @endforeach
+        </div>
+        @endif
+
         <form method="POST" action="{{ route('pengaturan.jamkerja') }}">
             @csrf
-            <div class="space-y-3">
-                @php $lastCompany = null; @endphp
-                @foreach($jamKerja as $j)
-                @if(auth()->user()->isSuperAdmin() && $j->company_id !== $lastCompany)
-                    @php $lastCompany = $j->company_id; @endphp
-                    <p class="text-xs uppercase tracking-wide font-semibold text-purple-600 pt-2 {{ !$loop->first ? 'border-t border-gray-100' : '' }}">
-                        {{ $j->company->nama ?? 'Tanpa Company' }}
-                    </p>
-                @endif
-                <div class="border border-gray-100 rounded-lg p-3 {{ $j->is_libur ? 'bg-gray-50' : '' }}">
-                    <input type="hidden" name="jam_kerja_id[]" value="{{ $j->id }}">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-semibold text-gray-700">{{ ucfirst($j->hari) }}</p>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="is_libur[]" value="{{ $j->id }}"
-                                {{ $j->is_libur ? 'checked' : '' }}
-                                class="w-4 h-4 text-indigo-600 rounded"
-                                onchange="toggleHari(this, {{ $j->id }})">
-                            <span class="text-xs text-gray-500">Hari Libur</span>
-                        </label>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 hari-inputs-{{ $j->id }} {{ $j->is_libur ? 'opacity-40 pointer-events-none' : '' }}">
-                        <div>
-                            <label class="text-xs text-gray-400">Jam Masuk</label>
-                            <input type="time" name="jam_masuk[]" value="{{ $j->jam_masuk }}"
-                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400">Jam Keluar</label>
-                            <input type="time" name="jam_keluar[]" value="{{ $j->jam_keluar }}"
-                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400">Toleransi (menit)</label>
-                            <input type="number" name="toleransi_menit[]" value="{{ $j->toleransi_menit }}" min="0"
-                                class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                        </div>
-                    </div>
-                </div>
-                @endforeach
+            @foreach($groupJamKerja as $cid => $rows)
+            <div id="panel-jamkerja-{{ $cid }}" class="panel-jamkerja {{ !$loop->first ? 'hidden' : '' }} overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-400 text-xs uppercase">
+                            <th class="py-2 pr-2 font-medium">Hari</th>
+                            <th class="py-2 px-2 font-medium">Jam Masuk</th>
+                            <th class="py-2 px-2 font-medium">Jam Keluar</th>
+                            <th class="py-2 px-2 font-medium">Toleransi (menit)</th>
+                            <th class="py-2 pl-2 font-medium text-center">Libur</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach($rows as $j)
+                        <tr class="{{ $j->is_libur ? 'bg-gray-50' : '' }}">
+                            <input type="hidden" name="jam_kerja_id[]" value="{{ $j->id }}">
+                            <td class="py-2 pr-2 font-semibold text-gray-700 whitespace-nowrap">{{ ucfirst($j->hari) }}</td>
+                            <td class="py-2 px-2">
+                                <input type="time" name="jam_masuk[]" value="{{ $j->jam_masuk }}"
+                                    class="hari-input-{{ $j->id }} w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 disabled:opacity-40 disabled:bg-gray-100"
+                                    {{ $j->is_libur ? 'disabled' : '' }}>
+                            </td>
+                            <td class="py-2 px-2">
+                                <input type="time" name="jam_keluar[]" value="{{ $j->jam_keluar }}"
+                                    class="hari-input-{{ $j->id }} w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 disabled:opacity-40 disabled:bg-gray-100"
+                                    {{ $j->is_libur ? 'disabled' : '' }}>
+                            </td>
+                            <td class="py-2 px-2">
+                                <input type="number" name="toleransi_menit[]" value="{{ $j->toleransi_menit }}" min="0"
+                                    class="hari-input-{{ $j->id }} w-24 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 disabled:opacity-40 disabled:bg-gray-100"
+                                    {{ $j->is_libur ? 'disabled' : '' }}>
+                            </td>
+                            <td class="py-2 pl-2 text-center">
+                                <input type="checkbox" name="is_libur[]" value="{{ $j->id }}"
+                                    {{ $j->is_libur ? 'checked' : '' }}
+                                    class="w-4 h-4 text-indigo-600 rounded"
+                                    onchange="toggleHari(this, {{ $j->id }})">
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
+            @endforeach
             <button type="submit"
                 class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition">
                 Simpan Jam Kerja
@@ -284,12 +303,24 @@ function resetDeptForm() {
 }
 
 function toggleHari(checkbox, id) {
-    const inputs = document.querySelector('.hari-inputs-' + id);
-    if (checkbox.checked) {
-        inputs.classList.add('opacity-40', 'pointer-events-none');
-    } else {
-        inputs.classList.remove('opacity-40', 'pointer-events-none');
-    }
+    document.querySelectorAll('.hari-input-' + id).forEach(function (input) {
+        input.disabled = checkbox.checked;
+    });
+}
+
+function pilihTabJamKerja(companyId) {
+    document.querySelectorAll('.panel-jamkerja').forEach(function (panel) {
+        panel.classList.add('hidden');
+    });
+    document.getElementById('panel-jamkerja-' + companyId).classList.remove('hidden');
+
+    document.querySelectorAll('.tab-jamkerja-btn').forEach(function (btn) {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-600');
+    });
+    var activeBtn = document.getElementById('tab-jamkerja-' + companyId);
+    activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+    activeBtn.classList.add('bg-indigo-600', 'text-white');
 }
 
 function toggleFormPT() {
