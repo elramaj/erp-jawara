@@ -56,7 +56,7 @@ class AbsensiController extends Controller
 
         if ($sudahAbsen) {
             return redirect()->route('absensi.index')
-                ->with('error', 'Kamu sudah check-in hari ini!');
+                ->with('error', 'Anda sudah melakukan check-in hari ini!');
         }
 
         $jamSekarang = Carbon::now();
@@ -85,12 +85,12 @@ class AbsensiController extends Controller
 
         if (!$absensi) {
             return redirect()->route('absensi.index')
-                ->with('error', 'Kamu belum check-in hari ini!');
+                ->with('error', 'Anda belum melakukan check-in hari ini!');
         }
 
         if ($absensi->jam_keluar) {
             return redirect()->route('absensi.index')
-                ->with('error', 'Kamu sudah check-out hari ini!');
+                ->with('error', 'Anda sudah melakukan check-out hari ini!');
         }
 
         $jamSekarang = Carbon::now();
@@ -119,7 +119,7 @@ class AbsensiController extends Controller
 
         if ($sudahAbsen) {
             return redirect()->route('absensi.mobile')
-                ->with('error', 'Kamu sudah check-in hari ini!');
+                ->with('error', 'Anda sudah melakukan check-in hari ini!');
         }
 
         // Simpan foto selfie dari base64
@@ -167,12 +167,12 @@ class AbsensiController extends Controller
 
         if (!$absensi) {
             return redirect()->route('absensi.mobile')
-                ->with('error', 'Kamu belum check-in hari ini!');
+                ->with('error', 'Anda belum melakukan check-in hari ini!');
         }
 
         if ($absensi->jam_keluar) {
             return redirect()->route('absensi.mobile')
-                ->with('error', 'Kamu sudah check-out hari ini!');
+                ->with('error', 'Anda sudah melakukan check-out hari ini!');
         }
 
         // Simpan foto selfie keluar

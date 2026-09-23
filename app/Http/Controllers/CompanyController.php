@@ -77,7 +77,7 @@ class CompanyController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
-        return redirect()->route('pengaturan.index')->with('success', 'PT berhasil diupdate!');
+        return redirect()->route('pengaturan.index')->with('success', 'PT berhasil diperbarui!');
     }
 
     public function destroy(Company $company)

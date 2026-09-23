@@ -43,7 +43,7 @@ class PengaturanController extends Controller
         $this->cekAkses();
         $request->validate(['name' => 'required|string|max:100|unique:departments,name,' . $department->id]);
         $department->update(['name' => $request->name, 'description' => $request->description]);
-        return back()->with('success', 'Departemen berhasil diupdate!');
+        return back()->with('success', 'Departemen berhasil diperbarui!');
     }
 
     public function destroyDepartment(Department $department)
@@ -80,7 +80,7 @@ class PengaturanController extends Controller
                 ]);
         }
 
-        return back()->with('success', 'Jam kerja berhasil diupdate!');
+        return back()->with('success', 'Jam kerja berhasil diperbarui!');
     }
 
     // Lokasi Kantor
@@ -116,6 +116,6 @@ class PengaturanController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Lokasi kantor berhasil diupdate!');
+        return back()->with('success', 'Lokasi kantor berhasil diperbarui!');
     }
 }

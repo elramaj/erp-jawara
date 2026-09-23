@@ -128,7 +128,7 @@ class CustomerController extends Controller
             'is_active'         => $request->has('is_active') ? 1 : 0,
         ]);
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil diupdate!');
+        return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui!');
     }
 
     public function destroy(Customer $customer)

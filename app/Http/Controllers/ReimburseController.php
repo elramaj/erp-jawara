@@ -116,6 +116,6 @@ class ReimburseController extends Controller
         });
 
         return redirect()->route('reimburse.review')
-            ->with('success', 'Status klaim reimburse berhasil diupdate!');
+            ->with('success', 'Status klaim reimburse berhasil diperbarui!');
     }
 }

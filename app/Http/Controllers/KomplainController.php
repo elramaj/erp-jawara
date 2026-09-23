@@ -128,6 +128,6 @@ class KomplainController extends Controller
             'created_by'  => auth()->id(),
         ]);
 
-        return back()->with('success', 'Status komplain berhasil diupdate!');
+        return back()->with('success', 'Status komplain berhasil diperbarui!');
     }
 }

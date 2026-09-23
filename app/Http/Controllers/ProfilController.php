@@ -79,7 +79,7 @@ class ProfilController extends Controller
         $user->update($data);
 
         return redirect()->route('profil.index')
-            ->with('success', 'Profil berhasil diupdate!');
+            ->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function gantiPassword(Request $request)

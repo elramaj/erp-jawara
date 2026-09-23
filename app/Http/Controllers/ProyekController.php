@@ -140,7 +140,7 @@ public function index()
             'status'   => $request->status,
         ]);
 
-        return back()->with('success', 'Progress berhasil diupdate!');
+        return back()->with('success', 'Progress berhasil diperbarui!');
     }
 
     // Tambah milestone
@@ -178,7 +178,7 @@ public function index()
             'tanggal_selesai'=> $request->status == 'selesai' ? now() : null,
         ]);
 
-        return back()->with('success', 'Status milestone diupdate!');
+        return back()->with('success', 'Status milestone diperbarui!');
     }
 
     // Upload dokumen

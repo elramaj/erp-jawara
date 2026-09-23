@@ -98,7 +98,7 @@ class KaryawanController extends Controller
         $user->update($data);
 
         return redirect()->route('karyawan.index')
-            ->with('success', 'Data karyawan berhasil diupdate!');
+            ->with('success', 'Data karyawan berhasil diperbarui!');
     }
 
 public function destroy(User $user)

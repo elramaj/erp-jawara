@@ -94,11 +94,11 @@
             <p style="font-size:14px;color:#1d4ed8;margin:0;"><svg style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:4px" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>Mendeteksi lokasi kamu...</p>
         </div>
         <div x-show="lokasiStatus == 'dalam'" class="badge-dalam" x-cloak>
-            <p style="font-size:14px;font-weight:600;color:#166534;margin:0;"><svg style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:4px" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>Kamu dalam area kantor</p>
+            <p style="font-size:14px;font-weight:600;color:#166534;margin:0;"><svg style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:4px" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>Anda berada dalam area kantor</p>
             <p style="font-size:12px;color:#15803d;margin:4px 0 0;">Lokasi terdeteksi valid</p>
         </div>
         <div x-show="lokasiStatus == 'luar'" class="badge-luar" x-cloak>
-            <p style="font-size:14px;font-weight:600;color:#9a3412;margin:0;"><svg style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:4px" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>Kamu di luar area kantor</p>
+            <p style="font-size:14px;font-weight:600;color:#9a3412;margin:0;"><svg style="width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:4px" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>Anda berada di luar area kantor</p>
             <p style="font-size:12px;color:#c2410c;margin:4px 0 0;">Absensi tetap bisa dilakukan sebagai WFH / Dinas Luar</p>
         </div>
         <div x-show="lokasiStatus == 'error'" class="badge-error" x-cloak>

@@ -71,6 +71,6 @@ class IzinController extends Controller
         ]);
 
         return redirect()->route('izin.review')
-            ->with('success', 'Status pengajuan berhasil diupdate!');
+            ->with('success', 'Status pengajuan berhasil diperbarui!');
     }
 }

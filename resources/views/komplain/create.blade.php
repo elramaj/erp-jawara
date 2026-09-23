@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Buat Komplain Baru</h1>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Buat Komplain Baru</h1>
 </div>
 
 <div class="bg-white rounded-xl shadow p-6 max-w-2xl">

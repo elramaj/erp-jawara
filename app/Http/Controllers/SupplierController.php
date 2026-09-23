@@ -118,7 +118,7 @@ class SupplierController extends Controller
             'is_active'         => $request->has('is_active') ? 1 : 0,
         ]);
 
-        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil diupdate!');
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil diperbarui!');
     }
 
     public function destroy(Supplier $supplier)

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="flex justify-between items-center mb-4">
-    <h1 class="text-xl font-bold text-gray-800"><svg class="w-6 h-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 21v-4.5m0 4.5h3.75m-3.75 0h-9m9-4.5V9m0 7.5H12m3.75-7.5V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H12m0 0V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H8.25M12 9v7.5m0-7.5H8.25m4.5 7.5H8.25m0-7.5V21m0-11.625v11.625m0 0H4.875c-.621 0-1.125-.504-1.125-1.125V9.375c0-.621.504-1.125 1.125-1.125H8.25" /></svg>Gudang</h1>
+    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 21v-4.5m0 4.5h3.75m-3.75 0h-9m9-4.5V9m0 7.5H12m3.75-7.5V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H12m0 0V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H8.25M12 9v7.5m0-7.5H8.25m4.5 7.5H8.25m0-7.5V21m0-11.625v11.625m0 0H4.875c-.621 0-1.125-.504-1.125-1.125V9.375c0-.621.504-1.125 1.125-1.125H8.25" /></svg>Gudang</h1>
     <div class="flex gap-2">
         <a href="{{ route('gudang.opname') }}"
            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
