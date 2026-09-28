@@ -1,11 +1,15 @@
 <?php
 namespace App\Models;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'customers';
     protected $fillable = [
+        'company_id',
         'kode', 'nama', 'alamat', 'telepon', 'email', 'pic', 'is_active',
         'sales_pic', 'termin_pembayaran', 'batas_jtempo', 'batas_piutang',
         'rayon', 'coa_piutang', 'tipe_harga_jual',

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
@@ -14,32 +16,62 @@ class SupplierController extends Controller
         }
     }
 
+    /**
+     * Sama seperti CustomerController -- Admin biasa dipaksa ke company
+     * miliknya sendiri, Super Admin wajib pilih company dari dropdown.
+     */
+    private function resolveCompanyId(Request $request): int
+    {
+        if (auth()->user()->isSuperAdmin()) {
+            $request->validate(['company_id' => 'required|exists:companies,id']);
+            return (int) $request->company_id;
+        }
+
+        return (int) auth()->user()->company_id;
+    }
+
     public function index()
     {
         $this->cekAkses();
-        $suppliers = Supplier::orderBy('nama')->get();
+        $suppliers = Supplier::with('company')->orderBy('nama')->get();
         return view('keuangan.supplier.index', compact('suppliers'));
     }
 
     public function create()
     {
         $this->cekAkses();
-        // Auto generate kode supplier
-        $lastKode = Supplier::orderBy('id', 'desc')->first();
-        $noUrut   = $lastKode ? (intval(substr($lastKode->kode, 3)) + 1) : 1;
-        $kode     = 'SUP' . str_pad($noUrut, 4, '0', STR_PAD_LEFT);
-        return view('keuangan.supplier.create', compact('kode'));
+        $companies = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : collect();
+        $kode = $this->generateKode(auth()->user()->company_id);
+        return view('keuangan.supplier.create', compact('kode', 'companies'));
+    }
+
+    private function generateKode(?int $companyId): string
+    {
+        $lastKode = Supplier::withoutCompanyScope()
+            ->where('company_id', $companyId)
+            ->orderBy('id', 'desc')
+            ->first();
+        $noUrut = $lastKode ? (intval(substr($lastKode->kode, 3)) + 1) : 1;
+        return 'SUP' . str_pad($noUrut, 4, '0', STR_PAD_LEFT);
     }
 
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->resolveCompanyId($request);
+
         $request->validate([
-            'kode' => 'required|unique:suppliers,kode',
+            'kode' => [
+                'required',
+                Rule::unique('suppliers', 'kode')->where(fn ($q) => $q->where('company_id', $companyId)),
+            ],
             'nama' => 'required|string|max:150',
         ]);
 
         Supplier::create([
+            'company_id'        => $companyId,
             'kode'              => $request->kode,
             'nama'              => $request->nama,
             'termin_pembayaran' => $request->termin_pembayaran,
@@ -76,18 +108,29 @@ class SupplierController extends Controller
     public function edit(Supplier $supplier)
     {
         $this->cekAkses();
-        return view('keuangan.supplier.edit', compact('supplier'));
+        $companies = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : collect();
+        return view('keuangan.supplier.edit', compact('supplier', 'companies'));
     }
 
     public function update(Request $request, Supplier $supplier)
     {
         $this->cekAkses();
+        $companyId = $this->resolveCompanyId($request);
+
         $request->validate([
-            'kode' => 'required|unique:suppliers,kode,' . $supplier->id,
+            'kode' => [
+                'required',
+                Rule::unique('suppliers', 'kode')
+                    ->where(fn ($q) => $q->where('company_id', $companyId))
+                    ->ignore($supplier->id),
+            ],
             'nama' => 'required|string|max:150',
         ]);
 
         $supplier->update([
+            'company_id'        => $companyId,
             'kode'              => $request->kode,
             'nama'              => $request->nama,
             'termin_pembayaran' => $request->termin_pembayaran,

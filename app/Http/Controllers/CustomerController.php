@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -14,32 +16,64 @@ class CustomerController extends Controller
         }
     }
 
+    /**
+     * Tentukan company_id yang berlaku untuk create/update. Admin biasa
+     * dipaksa ke company miliknya sendiri (walau kirim company_id lain di
+     * request). Super Admin wajib pilih company dari dropdown karena
+     * company_id dia sendiri bisa NULL.
+     */
+    private function resolveCompanyId(Request $request): int
+    {
+        if (auth()->user()->isSuperAdmin()) {
+            $request->validate(['company_id' => 'required|exists:companies,id']);
+            return (int) $request->company_id;
+        }
+
+        return (int) auth()->user()->company_id;
+    }
+
     public function index()
     {
         $this->cekAkses();
-        $customers = Customer::orderBy('nama')->get();
+        $customers = Customer::with('company')->orderBy('nama')->get();
         return view('keuangan.customer.index', compact('customers'));
     }
 
     public function create()
     {
         $this->cekAkses();
-        // Auto generate kode customer
-        $lastKode = Customer::orderBy('id', 'desc')->first();
-        $noUrut   = $lastKode ? (intval(substr($lastKode->kode, 3)) + 1) : 1;
-        $kode     = 'CUS' . str_pad($noUrut, 4, '0', STR_PAD_LEFT);
-        return view('keuangan.customer.create', compact('kode'));
+        $companies = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : collect();
+        $kode = $this->generateKode(auth()->user()->company_id);
+        return view('keuangan.customer.create', compact('kode', 'companies'));
+    }
+
+    private function generateKode(?int $companyId): string
+    {
+        $lastKode = Customer::withoutCompanyScope()
+            ->where('company_id', $companyId)
+            ->orderBy('id', 'desc')
+            ->first();
+        $noUrut = $lastKode ? (intval(substr($lastKode->kode, 3)) + 1) : 1;
+        return 'CUS' . str_pad($noUrut, 4, '0', STR_PAD_LEFT);
     }
 
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->resolveCompanyId($request);
+
         $request->validate([
-            'kode' => 'required|unique:customers,kode',
+            'kode' => [
+                'required',
+                Rule::unique('customers', 'kode')->where(fn ($q) => $q->where('company_id', $companyId)),
+            ],
             'nama' => 'required|string|max:150',
         ]);
 
         Customer::create([
+            'company_id'        => $companyId,
             'kode'              => $request->kode,
             'nama'              => $request->nama,
             'sales_pic'         => $request->sales_pic,
@@ -81,18 +115,29 @@ class CustomerController extends Controller
     public function edit(Customer $customer)
     {
         $this->cekAkses();
-        return view('keuangan.customer.edit', compact('customer'));
+        $companies = auth()->user()->isSuperAdmin()
+            ? Company::where('is_active', 1)->orderBy('nama')->get()
+            : collect();
+        return view('keuangan.customer.edit', compact('customer', 'companies'));
     }
 
     public function update(Request $request, Customer $customer)
     {
         $this->cekAkses();
+        $companyId = $this->resolveCompanyId($request);
+
         $request->validate([
-            'kode' => 'required|unique:customers,kode,' . $customer->id,
+            'kode' => [
+                'required',
+                Rule::unique('customers', 'kode')
+                    ->where(fn ($q) => $q->where('company_id', $companyId))
+                    ->ignore($customer->id),
+            ],
             'nama' => 'required|string|max:150',
         ]);
 
         $customer->update([
+            'company_id'        => $companyId,
             'kode'              => $request->kode,
             'nama'              => $request->nama,
             'sales_pic'         => $request->sales_pic,

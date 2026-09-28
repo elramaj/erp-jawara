@@ -18,6 +18,9 @@
             <tr>
                 <th class="px-4 py-3 text-left">Kode</th>
                 <th class="px-4 py-3 text-left">Nama</th>
+                @if(auth()->user()->isSuperAdmin())
+                <th class="px-4 py-3 text-left">PT</th>
+                @endif
                 <th class="px-4 py-3 text-left">Telepon</th>
                 <th class="px-4 py-3 text-left">Email</th>
                 <th class="px-4 py-3 text-left">PIC</th>
@@ -30,6 +33,13 @@
             <tr class="hover:bg-gray-50">
                 <td class="px-4 py-3 font-mono text-xs text-gray-400">{{ $c->kode }}</td>
                 <td class="px-4 py-3 font-medium text-gray-800">{{ $c->nama }}</td>
+                @if(auth()->user()->isSuperAdmin())
+                <td class="px-4 py-3">
+                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                        {{ $c->company->nama ?? '-' }}
+                    </span>
+                </td>
+                @endif
                 <td class="px-4 py-3 text-gray-500">{{ $c->telepon ?? '-' }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ $c->email ?? '-' }}</td>
                 <td class="px-4 py-3 text-gray-500">{{ $c->pic ?? '-' }}</td>
@@ -51,7 +61,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada customer.</td></tr>
+            <tr><td colspan="{{ auth()->user()->isSuperAdmin() ? 8 : 7 }}" class="px-4 py-8 text-center text-gray-400">Belum ada customer.</td></tr>
             @endforelse
         </tbody>
     </table>
