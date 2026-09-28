@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BebanOperasional;
+use App\Models\Reimburse;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -77,6 +78,24 @@ class PengeluaranController extends Controller
         $this->cekAkses();
         $bulan = $beban->tanggal->month;
         $tahun = $beban->tanggal->year;
+
+        // Beban yang otomatis dibuat dari klaim reimburse yang disetujui
+        // tidak boleh dihapus langsung dari sini. FK beban_operasional_id di
+        // reimburse pakai onDelete('set null'), jadi kalau dipaksa hapus,
+        // baris reimburse-nya TIDAK ikut terhapus -- cuma jadi "menggantung"
+        // (status tetap disetujui, tapi tidak lagi kehitung di Laporan
+        // Keuangan, tanpa jejak kenapa). Pembatalan harus lewat menu Review
+        // Reimburse (tombol Batalkan), yang menghapus baris ini SEKALIGUS
+        // mengubah status klaim jadi dibatalkan.
+        $terkaitReimburse = Reimburse::withoutCompanyScope()
+            ->where('beban_operasional_id', $beban->id)
+            ->exists();
+
+        if ($terkaitReimburse) {
+            return redirect()->route('pengeluaran.index', compact('bulan', 'tahun'))
+                ->with('error', 'Beban ini berasal dari klaim reimburse yang sudah disetujui. Batalkan lewat menu Review Reimburse, bukan dari sini.');
+        }
+
         $beban->delete();
 
         return redirect()->route('pengeluaran.index', compact('bulan', 'tahun'))

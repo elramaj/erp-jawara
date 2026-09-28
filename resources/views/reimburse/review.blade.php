@@ -56,7 +56,8 @@
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold
                         {{ $r->status == 'pending' ? 'bg-yellow-100 text-yellow-700' : '' }}
                         {{ $r->status == 'disetujui' ? 'bg-green-100 text-green-700' : '' }}
-                        {{ $r->status == 'ditolak' ? 'bg-red-100 text-red-700' : '' }}">
+                        {{ $r->status == 'ditolak' ? 'bg-red-100 text-red-700' : '' }}
+                        {{ $r->status == 'dibatalkan' ? 'bg-gray-200 text-gray-600' : '' }}">
                         {{ ucfirst($r->status) }}
                     </span>
                 </td>
@@ -77,6 +78,18 @@
                     </form>
                     @elseif($r->status == 'pending')
                         <span class="text-gray-400 text-xs italic">Menunggu reviewer lain (pengajuan sendiri)</span>
+                    @elseif($r->status == 'disetujui')
+                        <div class="flex flex-col gap-1">
+                            <span class="text-gray-400 text-xs">{{ $r->catatan_approval ?? '-' }}</span>
+                            <p class="text-gray-300 text-[10px]">oleh {{ $r->approver->name ?? '-' }}</p>
+                            <form method="POST" action="{{ route('reimburse.batalkan', $r) }}"
+                                onsubmit="return confirm('Batalkan klaim ini? Beban operasional terkait akan ikut terhapus.')">
+                                @csrf
+                                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold underline">
+                                    Batalkan
+                                </button>
+                            </form>
+                        </div>
                     @else
                         <span class="text-gray-400 text-xs">{{ $r->catatan_approval ?? '-' }}</span>
                         <p class="text-gray-300 text-[10px] mt-0.5">oleh {{ $r->approver->name ?? '-' }}</p>

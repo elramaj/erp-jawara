@@ -124,4 +124,39 @@ class ReimburseController extends Controller
         return redirect()->route('reimburse.review')
             ->with('success', 'Status klaim reimburse berhasil diperbarui!');
     }
+
+    /**
+     * Batalkan klaim yang SUDAH disetujui. Ini satu-satunya jalur resmi buat
+     * "membongkar" reimburse yang sudah disetujui -- menghapus baris
+     * Beban Operasional terkait DAN mengubah status klaim jadi dibatalkan
+     * dalam satu transaksi, supaya tidak ada data yang menggantung (lihat
+     * juga PengeluaranController::destroy() yang sengaja memblokir hapus
+     * langsung dari menu Pengeluaran untuk beban jenis ini).
+     */
+    public function batalkan(Reimburse $reimburse)
+    {
+        $this->cekAksesKeuangan();
+
+        if ($reimburse->status !== 'disetujui') {
+            return redirect()->route('reimburse.review')
+                ->with('error', 'Hanya klaim yang sudah disetujui yang bisa dibatalkan.');
+        }
+
+        DB::transaction(function () use ($reimburse) {
+            if ($reimburse->beban_operasional_id) {
+                BebanOperasional::where('id', $reimburse->beban_operasional_id)->delete();
+            }
+
+            $catatan = trim(($reimburse->catatan_approval ?? '') . ' [Dibatalkan oleh ' . auth()->user()->name . ' pada ' . now()->format('d M Y H:i') . ']');
+
+            $reimburse->update([
+                'status'                => 'dibatalkan',
+                'beban_operasional_id'  => null,
+                'catatan_approval'      => $catatan,
+            ]);
+        });
+
+        return redirect()->route('reimburse.review')
+            ->with('success', 'Klaim reimburse dibatalkan, beban operasional terkait ikut dihapus.');
+    }
 }

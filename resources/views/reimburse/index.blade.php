@@ -53,7 +53,8 @@
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold
                         {{ $r->status == 'pending' ? 'bg-yellow-100 text-yellow-700' : '' }}
                         {{ $r->status == 'disetujui' ? 'bg-green-100 text-green-700' : '' }}
-                        {{ $r->status == 'ditolak' ? 'bg-red-100 text-red-700' : '' }}">
+                        {{ $r->status == 'ditolak' ? 'bg-red-100 text-red-700' : '' }}
+                        {{ $r->status == 'dibatalkan' ? 'bg-gray-200 text-gray-600' : '' }}">
                         {{ ucfirst($r->status) }}
                     </span>
                 </td>

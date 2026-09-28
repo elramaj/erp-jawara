@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/reimburse', [ReimburseController::class, 'store'])->name('reimburse.store');
     Route::get('/reimburse/review', [ReimburseController::class, 'review'])->name('reimburse.review');
     Route::post('/reimburse/{reimburse}/status', [ReimburseController::class, 'updateStatus'])->name('reimburse.status');
+    Route::post('/reimburse/{reimburse}/batalkan', [ReimburseController::class, 'batalkan'])->name('reimburse.batalkan');
 
     // Rekap Absensi
     Route::get('/rekap-absensi', [RekapAbsensiController::class, 'index'])->name('rekap.index');
