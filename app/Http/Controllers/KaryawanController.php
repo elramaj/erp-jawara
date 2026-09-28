@@ -11,8 +11,44 @@ use Illuminate\Support\Facades\DB;
 
 class KaryawanController extends Controller
 {
+    /**
+     * Hanya Admin (role_id 11) dan Super Admin yang boleh mengelola karyawan.
+     * Karyawan biasa tidak boleh menyentuh modul ini sama sekali.
+     */
+    private function cekAkses()
+    {
+        $u = auth()->user();
+        if (!$u->isSuperAdmin() && $u->role_id != 11) {
+            abort(403, 'Akses ditolak.');
+        }
+    }
+
+    /**
+     * Pastikan Admin (non-Super Admin) hanya bisa menyentuh karyawan
+     * di company miliknya sendiri. Super Admin bebas lintas company.
+     */
+    private function cekAksesCompany(User $user)
+    {
+        if (!auth()->user()->isSuperAdmin() && $user->company_id !== auth()->user()->company_id) {
+            abort(403, 'Akses ditolak.');
+        }
+    }
+
+    /**
+     * Hanya Super Admin yang boleh membuat/menaikkan seseorang jadi Admin (role_id 11).
+     * Mencegah Admin sebuah company membuat Admin baru lain secara bebas.
+     */
+    private function cekEskalasiRole(int $roleId)
+    {
+        if ($roleId == 11 && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang dapat menetapkan peran Admin.');
+        }
+    }
+
     public function index()
     {
+        $this->cekAkses();
+
         $karyawan = User::with(['role', 'department', 'company'])
             ->forCurrentCompany()
             ->orderBy('name')->get();
@@ -21,6 +57,8 @@ class KaryawanController extends Controller
 
     public function create()
     {
+        $this->cekAkses();
+
         $roles       = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $companies   = auth()->user()->isSuperAdmin()
@@ -31,6 +69,8 @@ class KaryawanController extends Controller
 
     public function store(Request $request)
     {
+        $this->cekAkses();
+
         $request->validate([
             'name'          => 'required|string|max:150',
             'email'         => 'required|email|unique:users,email',
@@ -42,12 +82,20 @@ class KaryawanController extends Controller
             'join_date'     => 'nullable|date',
         ]);
 
+        $this->cekEskalasiRole((int) $request->role_id);
+
+        // Admin non-Super Admin hanya boleh membuat karyawan di company miliknya
+        // sendiri, walaupun ia mengirim company_id lain lewat request.
+        $companyId = auth()->user()->isSuperAdmin()
+            ? $request->company_id
+            : auth()->user()->company_id;
+
         User::create([
             'name'          => $request->name,
             'email'         => $request->email,
             'password'      => bcrypt($request->password),
             'role_id'       => $request->role_id,
-            'company_id'    => $request->company_id,
+            'company_id'    => $companyId,
             'department_id' => $request->department_id,
             'phone'         => $request->phone,
             'join_date'     => $request->join_date,
@@ -60,6 +108,9 @@ class KaryawanController extends Controller
 
     public function edit(User $user)
     {
+        $this->cekAkses();
+        $this->cekAksesCompany($user);
+
         $roles       = Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
         $companies   = auth()->user()->isSuperAdmin()
@@ -70,6 +121,9 @@ class KaryawanController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $this->cekAkses();
+        $this->cekAksesCompany($user);
+
         $request->validate([
             'name'          => 'required|string|max:150',
             'email'         => 'required|email|unique:users,email,' . $user->id,
@@ -80,11 +134,18 @@ class KaryawanController extends Controller
             'join_date'     => 'nullable|date',
         ]);
 
+        $this->cekEskalasiRole((int) $request->role_id);
+
+        // Admin non-Super Admin tidak bisa memindahkan karyawan ke company lain.
+        $companyId = auth()->user()->isSuperAdmin()
+            ? $request->company_id
+            : auth()->user()->company_id;
+
         $data = [
             'name'          => $request->name,
             'email'         => $request->email,
             'role_id'       => $request->role_id,
-            'company_id'    => $request->company_id,
+            'company_id'    => $companyId,
             'department_id' => $request->department_id,
             'phone'         => $request->phone,
             'join_date'     => $request->join_date,
@@ -103,6 +164,9 @@ class KaryawanController extends Controller
 
 public function destroy(User $user)
 {
+    $this->cekAkses();
+    $this->cekAksesCompany($user);
+
     if ($user->id === auth()->id()) {
         return redirect()->route('karyawan.index')
             ->with('error', 'Tidak bisa menonaktifkan akun sendiri!');
@@ -120,6 +184,9 @@ public function destroy(User $user)
 
 public function restore(User $user)
 {
+    $this->cekAkses();
+    $this->cekAksesCompany($user);
+
     $user->update(['is_active' => true]);
 
     return redirect()->route('karyawan.index')

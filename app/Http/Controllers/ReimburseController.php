@@ -88,6 +88,12 @@ class ReimburseController extends Controller
                 ->with('error', 'Klaim ini sudah diproses sebelumnya.');
         }
 
+        // Pengaju tidak boleh menyetujui/menolak klaim reimburse miliknya sendiri.
+        if ($reimburse->user_id === auth()->id()) {
+            return redirect()->route('reimburse.review')
+                ->with('error', 'Tidak bisa menyetujui/menolak klaim reimburse milik sendiri.');
+        }
+
         DB::transaction(function () use ($request, $reimburse) {
             $bebanId = null;
 

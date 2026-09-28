@@ -61,7 +61,7 @@
                     </span>
                 </td>
                 <td class="px-4 py-3">
-                    @if($r->status == 'pending')
+                    @if($r->status == 'pending' && $r->user_id !== auth()->id())
                     <form method="POST" action="{{ route('reimburse.status', $r) }}" class="flex gap-2 items-center">
                         @csrf
                         <input type="text" name="catatan_approval" placeholder="Catatan (opsional)"
@@ -75,6 +75,8 @@
                             Tolak
                         </button>
                     </form>
+                    @elseif($r->status == 'pending')
+                        <span class="text-gray-400 text-xs italic">Menunggu reviewer lain (pengajuan sendiri)</span>
                     @else
                         <span class="text-gray-400 text-xs">{{ $r->catatan_approval ?? '-' }}</span>
                         <p class="text-gray-300 text-[10px] mt-0.5">oleh {{ $r->approver->name ?? '-' }}</p>

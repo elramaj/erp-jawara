@@ -64,7 +64,7 @@
                     </span>
                 </td>
                 <td class="px-4 py-3">
-                    @if($p->status == 'pending')
+                    @if($p->status == 'pending' && $p->user_id !== auth()->id())
                     <form method="POST" action="{{ route('izin.status', $p) }}" class="flex gap-2 items-center">
                         @csrf
                         <input type="text" name="catatan_review" placeholder="Catatan (opsional)"
@@ -78,6 +78,8 @@
                             Tolak
                         </button>
                     </form>
+                    @elseif($p->status == 'pending')
+                        <span class="text-gray-400 text-xs italic">Menunggu reviewer lain (pengajuan sendiri)</span>
                     @else
                         <span class="text-gray-400 text-xs">{{ $p->catatan_review ?? '-' }}</span>
                     @endif

@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class IzinController extends Controller
 {
+    // Sama kayak akses Reimburse (admin/finance/bos) -- karyawan biasa
+    // hanya boleh mengajukan izin, bukan mereview punya orang lain.
+    private function cekAksesReview()
+    {
+        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+            abort(403, 'Akses ditolak.');
+        }
+    }
+
     // Daftar pengajuan izin milik user yang login
     public function index()
     {
@@ -49,6 +58,8 @@ class IzinController extends Controller
     // Halaman review untuk admin/bos
     public function review()
     {
+        $this->cekAksesReview();
+
         $pengajuan = PengajuanIzin::with('user')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -58,10 +69,23 @@ class IzinController extends Controller
     // Setujui atau tolak pengajuan
     public function updateStatus(Request $request, PengajuanIzin $izin)
     {
+        $this->cekAksesReview();
+
         $request->validate([
             'status' => 'required|in:disetujui,ditolak',
             'catatan_review' => 'nullable|string|max:255',
         ]);
+
+        if ($izin->status !== 'pending') {
+            return redirect()->route('izin.review')
+                ->with('error', 'Pengajuan ini sudah diproses sebelumnya.');
+        }
+
+        // Pengaju tidak boleh menyetujui/menolak izin miliknya sendiri.
+        if ($izin->user_id === auth()->id()) {
+            return redirect()->route('izin.review')
+                ->with('error', 'Tidak bisa menyetujui/menolak pengajuan izin milik sendiri.');
+        }
 
         $izin->update([
             'status'         => $request->status,
