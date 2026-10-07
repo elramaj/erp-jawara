@@ -20,7 +20,7 @@ class SoController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 11])) {
+        if (!in_array(auth()->user()->role_id, [1, 2, 3, 5, 11])) {
             abort(403, 'Akses ditolak.');
         }
     }

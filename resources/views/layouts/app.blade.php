@@ -157,7 +157,7 @@
             {{-- User info --}}
             <div class="text-right hide-mobile">
                 <p class="text-sm font-semibold">{{ auth()->user()->name }}</p>
-                <p class="text-xs" style="color:rgba(255,255,255,0.7);">{{ auth()->user()->role->name ?? 'Admin' }}</p>
+                <p class="text-xs" style="color:rgba(255,255,255,0.7);">{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : (auth()->user()->role->name ?? '-') }}</p>
             </div>
             <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 text-white" style="background:rgba(0,0,0,0.2);">
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}

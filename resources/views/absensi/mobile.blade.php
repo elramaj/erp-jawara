@@ -41,7 +41,7 @@
         </div>
         <div style="text-align:right;">
             <p style="font-weight:600;font-size:14px;margin:0;">{{ auth()->user()->name }}</p>
-            <p style="font-size:12px;opacity:0.8;margin:0;">{{ auth()->user()->role->name ?? '-' }}</p>
+            <p style="font-size:12px;opacity:0.8;margin:0;">{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : (auth()->user()->role->name ?? '-') }}</p>
         </div>
     </div>
 

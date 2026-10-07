@@ -119,12 +119,12 @@
 </ul>
 
 {{-- Keuangan --}}
-@if(in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]))
+@if(in_array(auth()->user()->role_id, [1, 2, 3, 5, 11, 14]))
 <div class="px-4 py-3 mt-4 mb-2">
     <p class="text-xs uppercase tracking-widest font-semibold" style="color:rgba(255,255,255,0.3);">Keuangan</p>
 </div>
 <ul class="space-y-0.5 px-3">
-    @if(in_array(auth()->user()->role_id, [1, 2, 3, 11]))
+    @if(in_array(auth()->user()->role_id, [1, 2, 3, 5, 11]))
     <li>
         <a href="{{ route('so.index') }}"
            style="{{ request()->routeIs('so.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -135,6 +135,8 @@
         </a>
     </li>
     @endif
+    {{-- PO, Customer, Supplier: Sales (5) tidak ikut, cuma butuh SO --}}
+    @if(in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]))
     <li>
         <a href="{{ route('po.index') }}"
            style="{{ request()->routeIs('po.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -162,6 +164,7 @@
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.925-2.885A2.25 2.25 0 0 1 6.879 3h10.242a2.25 2.25 0 0 1 1.872 1.001l1.925 2.885a3.004 3.004 0 0 1-.621 4.72M9.75 21v-4.5a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 .75.75V21" /></svg> Supplier
         </a>
     </li>
+    @endif
     @if(in_array(auth()->user()->role_id, [1, 2, 11]))
     <li>
         <a href="{{ route('laporan.keuangan') }}"

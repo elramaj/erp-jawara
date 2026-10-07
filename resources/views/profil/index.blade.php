@@ -74,7 +74,7 @@
                     <p class="font-semibold text-gray-800">{{ $user->name }}</p>
                     <p class="text-sm text-gray-500">{{ $user->email }}</p>
                     <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-semibold capitalize">
-                        {{ $user->role->name ?? '-' }}
+                        {{ $user->isSuperAdmin() ? 'Super Admin' : ($user->role->name ?? '-') }}
                     </span>
                     <p id="photoFileName" class="text-[10px] text-indigo-500 mt-1"></p>
                 </div>
