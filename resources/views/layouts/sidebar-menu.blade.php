@@ -83,6 +83,51 @@
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0V6a2.25 2.25 0 0 1 2.25-2.25h5.379a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H19.5A2.25 2.25 0 0 1 21.75 9v3.75" /></svg> Proyek
         </a>
     </li>
+    @if(\App\Services\ProdukTayangService::lihatPermintaan(auth()->user()))
+    <li>
+        <a href="{{ route('produk.index') }}"
+           style="{{ request()->routeIs('produk.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('produk.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('produk.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg> Permintaan Produk
+            @php $n_produk_index = collect(\App\Services\ProdukTayangService::ringkasan(auth()->user()))->only(['produk','konfirmasi'])->sum(fn($c) => $c->count()); @endphp
+            @if($n_produk_index > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_produk_index }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
+    @if(\App\Services\ProdukTayangService::lihatTayang(auth()->user()))
+    <li>
+        <a href="{{ route('tayang.index') }}"
+           style="{{ request()->routeIs('tayang.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('tayang.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('tayang.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" /></svg> Tayang
+            @php $n_tayang_index = collect(\App\Services\ProdukTayangService::ringkasan(auth()->user()))->only(['tayang','desain'])->sum(fn($c) => $c->count()); @endphp
+            @if($n_tayang_index > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_tayang_index }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
+    @if(\App\Services\PengirimanService::bisaLihat(auth()->user()))
+    <li>
+        <a href="{{ route('pengiriman.index') }}"
+           style="{{ request()->routeIs('pengiriman.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('pengiriman.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('pengiriman.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Pengiriman
+            @php $notifPengiriman = collect(\App\Services\PengirimanService::ringkasan(auth()->user()))->sum(fn($c) => $c->count()); @endphp
+            @if($notifPengiriman > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $notifPengiriman }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
     @if(in_array(auth()->user()->role_id, [1, 4, 5, 7, 11]))
     <li>
         <a href="{{ route('komplain.index') }}"

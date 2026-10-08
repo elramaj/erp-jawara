@@ -99,6 +99,14 @@ class KomplainController extends Controller
         return view('komplain.show', compact('komplain', 'users'));
     }
 
+    // Cetak Tanda Terima Barang Service (template: resources/views/cetak/tanda-terima-service.blade.php)
+    public function cetakTerima(Komplain $komplain)
+    {
+        $this->cekAkses();
+        $komplain->load(['proyek', 'handler', 'company']);
+        return view('cetak.tanda-terima-service', ['komplain' => $komplain, 'perusahaan' => $komplain->company]);
+    }
+
         public function updateStatus(Request $request, Komplain $komplain)
     {
         $this->cekAkses();

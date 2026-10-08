@@ -82,6 +82,14 @@ class PoController extends Controller
         return view('keuangan.po.show', compact('po'));
     }
 
+    // Cetak Purchase Order (template: resources/views/cetak/po.blade.php)
+    public function cetak(Po $po)
+    {
+        $this->cekAkses();
+        $po->load(['supplier', 'detail.barang', 'creator', 'proyek', 'company']);
+        return view('cetak.po', ['po' => $po, 'perusahaan' => $po->company]);
+    }
+
     // Catat barang datang → auto update stok gudang
     public function storeBarangDatang(Request $request, Po $po)
     {

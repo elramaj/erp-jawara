@@ -15,6 +15,9 @@ use App\Http\Controllers\AsetController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SoController;
+use App\Http\Controllers\PengirimanController;
+use App\Http\Controllers\PermintaanProdukController;
+use App\Http\Controllers\TayangController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PengeluaranController;
@@ -85,6 +88,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/milestone/{milestone}/status', [ProyekController::class, 'updateMilestone'])->name('milestone.status');
     Route::post('/proyek/{proyek}/dokumen', [ProyekController::class, 'uploadDokumen'])->name('proyek.dokumen');
 
+    // Permintaan Produk (Sales -> Produk) & Tayang (e-catalog)
+    Route::get('/permintaan-produk', [PermintaanProdukController::class, 'index'])->name('produk.index');
+    Route::get('/permintaan-produk/buat', [PermintaanProdukController::class, 'create'])->name('produk.create');
+    Route::post('/permintaan-produk', [PermintaanProdukController::class, 'store'])->name('produk.store');
+    Route::get('/permintaan-produk/{permintaan}', [PermintaanProdukController::class, 'show'])->name('produk.show');
+    Route::post('/permintaan-produk/{permintaan}/ambil', [PermintaanProdukController::class, 'ambil'])->name('produk.ambil');
+    Route::post('/permintaan-produk/{permintaan}/item/{item}/opsi', [PermintaanProdukController::class, 'tambahOpsi'])->name('produk.opsi.store');
+    Route::delete('/permintaan-produk/{permintaan}/opsi/{opsi}', [PermintaanProdukController::class, 'hapusOpsi'])->name('produk.opsi.destroy');
+    Route::post('/permintaan-produk/{permintaan}/kirim', [PermintaanProdukController::class, 'kirimKeSales'])->name('produk.kirim');
+    Route::post('/permintaan-produk/{permintaan}/konfirmasi', [PermintaanProdukController::class, 'konfirmasi'])->name('produk.konfirmasi');
+    Route::post('/permintaan-produk/{permintaan}/opsi-lain', [PermintaanProdukController::class, 'mintaOpsiLain'])->name('produk.opsi_lain');
+    Route::post('/permintaan-produk/{permintaan}/batalkan', [PermintaanProdukController::class, 'batalkan'])->name('produk.batalkan');
+
+    Route::get('/tayang', [TayangController::class, 'index'])->name('tayang.index');
+    Route::get('/tayang/{tayang}', [TayangController::class, 'show'])->name('tayang.show');
+    Route::post('/tayang/{tayang}/mulai', [TayangController::class, 'mulai'])->name('tayang.mulai');
+    Route::put('/tayang/{tayang}', [TayangController::class, 'update'])->name('tayang.update');
+    Route::post('/tayang/{tayang}/tayangkan', [TayangController::class, 'tayangkan'])->name('tayang.tayangkan');
+    Route::post('/tayang/{tayang}/turunkan', [TayangController::class, 'turunkan'])->name('tayang.turunkan');
+
+    // Pengiriman (jadwal kirim barang proyek ke customer)
+    Route::get('/pengiriman', [PengirimanController::class, 'index'])->name('pengiriman.index');
+    Route::get('/pengiriman/proyek/{proyek}/buat', [PengirimanController::class, 'create'])->name('pengiriman.create');
+    Route::post('/pengiriman/proyek/{proyek}', [PengirimanController::class, 'store'])->name('pengiriman.store');
+    Route::get('/pengiriman/{pengiriman}/cetak', [PengirimanController::class, 'cetak'])->name('pengiriman.cetak');
+    Route::get('/pengiriman/{pengiriman}', [PengirimanController::class, 'show'])->name('pengiriman.show');
+    Route::get('/pengiriman/{pengiriman}/edit', [PengirimanController::class, 'edit'])->name('pengiriman.edit');
+    Route::put('/pengiriman/{pengiriman}', [PengirimanController::class, 'update'])->name('pengiriman.update');
+    Route::post('/pengiriman/{pengiriman}/konfirmasi', [PengirimanController::class, 'konfirmasi'])->name('pengiriman.konfirmasi');
+    Route::post('/pengiriman/{pengiriman}/revisi', [PengirimanController::class, 'mintaRevisi'])->name('pengiriman.revisi');
+    Route::post('/pengiriman/{pengiriman}/kirim', [PengirimanController::class, 'kirim'])->name('pengiriman.kirim');
+    Route::post('/pengiriman/{pengiriman}/terima', [PengirimanController::class, 'terima'])->name('pengiriman.terima');
+    Route::post('/pengiriman/{pengiriman}/batalkan', [PengirimanController::class, 'batalkan'])->name('pengiriman.batalkan');
+
     // Gudang
     Route::get('/gudang', [GudangController::class, 'index'])->name('gudang.index');
     Route::get('/gudang/barang/create', [GudangController::class, 'createBarang'])->name('gudang.barang.create');
@@ -112,12 +149,14 @@ Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.de
 
     // Penjualan (SO)
     Route::resource('so', SoController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('/so/{so}/cetak', [SoController::class, 'cetak'])->name('so.cetak');
     Route::post('/so/{so}/sj', [SoController::class, 'storeSj'])->name('so.sj.store');
     Route::post('/so/{so}/fj', [SoController::class, 'storeFj'])->name('so.fj.store');
     Route::post('/fj/{fj}/bayar', [SoController::class, 'storeBayarFj'])->name('fj.bayar');
 
     // Pembelian (PO)
     Route::resource('po', PoController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('/po/{po}/cetak', [PoController::class, 'cetak'])->name('po.cetak');
     Route::post('/po/{po}/barang-datang', [PoController::class, 'storeBarangDatang'])->name('po.barang_datang');
     Route::post('/po/{po}/fb', [PoController::class, 'storeFb'])->name('po.fb.store');
     Route::post('/fb/{fb}/bayar', [PoController::class, 'storeBayarFb'])->name('fb.bayar');
@@ -142,6 +181,7 @@ Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.de
 
     // Komplain
     Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('/komplain/{komplain}/cetak-terima', [KomplainController::class, 'cetakTerima'])->name('komplain.cetak');
     Route::post('/komplain/{komplain}/status', [KomplainController::class, 'updateStatus'])->name('komplain.status');
 
     // Company

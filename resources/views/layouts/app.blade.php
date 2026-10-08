@@ -89,7 +89,11 @@
                 $notifKomplain = \App\Models\Komplain::where('handled_by', auth()->id())
                     ->where('status', '!=', 'resolved')
                     ->count();
-                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain;
+                $notifPengirimanData = \App\Services\PengirimanService::ringkasan(auth()->user());
+                $notifPengirimanTotal = collect($notifPengirimanData)->sum(fn($c) => $c->count());
+                $notifPT = \App\Services\ProdukTayangService::ringkasan(auth()->user());
+                $notifPTTotal = collect($notifPT)->sum(fn($c) => $c->count());
+                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain + $notifPengirimanTotal + $notifPTTotal;
             @endphp
             <div class="relative" x-data="{ open: false }" @click.away="open = false">
                 <button @click="open = !open" class="relative p-1">
@@ -117,6 +121,69 @@
                             </div>
                         </a>
                         @endif
+                        @foreach($notifPT['produk'] as $nq)
+                        <a href="{{ route('produk.show', $nq) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nq->judul }}</p>
+                                <p class="text-xs text-blue-600">{{ $nq->status === 'baru' ? 'Permintaan baru dari Sales' : ($nq->alasan_revisi ? 'Sales minta opsi lain' : 'Sedang dicarikan') }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPT['konfirmasi'] as $nc)
+                        <a href="{{ route('produk.show', $nc) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nc->judul }}</p>
+                                <p class="text-xs text-yellow-600">Opsi barang siap, menunggu pilihan Sales</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPT['tayang'] as $nt)
+                        <a href="{{ route('tayang.show', $nt) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nt->judul }}</p>
+                                <p class="text-xs text-green-600">{{ $nt->status === 'antrian' ? 'Antrian tayang baru' : 'Sedang disiapkan' }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPT['desain'] as $nd)
+                        <a href="{{ route('tayang.show', $nd) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-purple-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nd->judul }}</p>
+                                <p class="text-xs text-purple-600">Butuh desain untuk tayang</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPengirimanData['siap'] as $np)
+                        <a href="{{ route('pengiriman.create', $np['proyek']) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $np['proyek']->nama_proyek }}</p>
+                                <p class="text-xs text-indigo-600">Perlu dijadwalkan: {{ $np['alasan'] }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPengirimanData['konfirmasi'] as $nk)
+                        <a href="{{ route('pengiriman.show', $nk) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nk->proyek->nama_proyek }}</p>
+                                <p class="text-xs text-yellow-600">Jadwal kirim {{ $nk->tanggal_kirim->format('d M') }} menunggu konfirmasi</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifPengirimanData['revisi'] as $nr)
+                        <a href="{{ route('pengiriman.show', $nr) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-orange-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nr->proyek->nama_proyek }}</p>
+                                <p class="text-xs text-orange-600">Jadwal kirim diminta diubah (Sales/Gudang)</p>
+                            </div>
+                        </a>
+                        @endforeach
                         @php
                         $proyekDeadline = \App\Models\Proyek::whereNotIn('status', ['selesai','dibatalkan'])
                             ->whereNotNull('deadline')->where('deadline', '<=', now()->addDays(7))

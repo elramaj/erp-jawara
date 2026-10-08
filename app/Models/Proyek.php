@@ -55,4 +55,63 @@ class Proyek extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function po()
+    {
+        return $this->hasMany(Po::class);
+    }
+
+    public function pengiriman()
+    {
+        return $this->hasMany(Pengiriman::class);
+    }
+
+    /**
+     * Kelengkapan barang proyek, dihitung dari semua PO proyek ini
+     * (PO berstatus draft/batal diabaikan). Barang dianggap lengkap kalau
+     * jumlah_diterima >= jumlah di PO. Pakai eager load po.detail kalau
+     * dipanggil untuk banyak proyek sekaligus.
+     *
+     * @return array{ada_po:bool, total_item:int, item_lengkap:int, dipesan:int, diterima:int, persen:int, lengkap:bool}
+     */
+    public function kelengkapanBarang(): array
+    {
+        $totalItem = 0;
+        $itemLengkap = 0;
+        $dipesan = 0;
+        $diterima = 0;
+
+        foreach ($this->po as $po) {
+            if (in_array($po->status, ['draft', 'batal'], true)) {
+                continue;
+            }
+            foreach ($po->detail as $d) {
+                $totalItem++;
+                $dipesan  += (int) $d->jumlah;
+                $diterima += min((int) $d->jumlah_diterima, (int) $d->jumlah);
+                if ((int) $d->jumlah_diterima >= (int) $d->jumlah && (int) $d->jumlah > 0) {
+                    $itemLengkap++;
+                }
+            }
+        }
+
+        $adaPo = $totalItem > 0;
+
+        return [
+            'ada_po'       => $adaPo,
+            'total_item'   => $totalItem,
+            'item_lengkap' => $itemLengkap,
+            'dipesan'      => $dipesan,
+            'diterima'     => $diterima,
+            'persen'       => $dipesan > 0 ? (int) floor($diterima / $dipesan * 100) : 0,
+            'lengkap'      => $adaPo && $itemLengkap === $totalItem,
+        ];
+    }
+
+    /** Anggota proyek yang berperan Sales (role_id 5). */
+    public function salesAnggota()
+    {
+        return $this->anggota->filter(fn($a) => $a->user && (int) $a->user->role_id === 5)
+            ->map(fn($a) => $a->user)->values();
+    }
 }

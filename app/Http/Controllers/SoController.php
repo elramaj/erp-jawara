@@ -89,6 +89,14 @@ class SoController extends Controller
         return view('keuangan.so.show', compact('so'));
     }
 
+    // Cetak Sales Order (template: resources/views/cetak/so.blade.php)
+    public function cetak(So $so)
+    {
+        $this->cekAkses();
+        $so->load(['customer', 'detail.barang', 'creator', 'proyek', 'company']);
+        return view('cetak.so', ['so' => $so, 'perusahaan' => $so->company]);
+    }
+
     // Buat Surat Jalan dari SO
     public function storeSj(Request $request, So $so)
     {
