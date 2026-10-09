@@ -81,6 +81,102 @@
             @endif
         </div>
 
+        {{-- Tanda Terima Barang Service --}}
+        @php
+            $baris = old('barang') ? array_values(old('barang'))
+                : ($komplain->barangService->isNotEmpty()
+                    ? $komplain->barangService->map(fn($b) => ['nama_barang' => $b->nama_barang, 'serial_number' => $b->serial_number, 'qty' => $b->qty])->all()
+                    : [['nama_barang' => '', 'serial_number' => '', 'qty' => 1]]);
+        @endphp
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex justify-between items-center mb-1">
+                <h2 class="font-semibold text-gray-700">Tanda Terima Barang Service</h2>
+                <a href="{{ route('komplain.cetak', $komplain) }}" target="_blank" class="text-sm text-indigo-600 hover:underline font-semibold">Cetak</a>
+            </div>
+            <p class="text-xs text-gray-400 mb-4">Isi data barang yang diserahkan untuk diservis. Data tersimpan dan otomatis tercetak di tanda terima.</p>
+
+            @if($errors->any())
+            <div class="bg-red-100 text-red-700 px-3 py-2 rounded-lg mb-3 text-sm"><ul class="list-disc pl-5">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>
+            @endif
+
+            <form method="POST" action="{{ route('komplain.tanda_terima', $komplain) }}" id="form-tanda-terima">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="text-xs text-gray-500">Tanggal Terima</label>
+                        <input type="date" name="tanggal_terima_service" value="{{ old('tanggal_terima_service', optional($komplain->tanggal_terima_service)->format('Y-m-d')) }}"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="text-xs text-gray-500">Nama Penyerah Barang</label>
+                        <input type="text" name="penyerah_nama" value="{{ old('penyerah_nama', $komplain->penyerah_nama) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Kontak Penyerah</label>
+                        <input type="text" name="penyerah_kontak" value="{{ old('penyerah_kontak', $komplain->penyerah_kontak) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Barang yang diservis</p>
+                    <button type="button" id="btn-tambah-barang" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-semibold transition">+ Tambah Barang</button>
+                </div>
+                <div id="baris-barang" class="space-y-2 mb-4">
+                    @foreach($baris as $i => $b)
+                    <div class="barang-row grid grid-cols-12 gap-2">
+                        <input type="text" data-f="nama_barang" name="barang[{{ $i }}][nama_barang]" value="{{ $b['nama_barang'] ?? '' }}" placeholder="Nama / tipe barang" class="col-span-5 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <input type="text" data-f="serial_number" name="barang[{{ $i }}][serial_number]" value="{{ $b['serial_number'] ?? '' }}" placeholder="Serial number" class="col-span-4 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <input type="number" min="1" data-f="qty" name="barang[{{ $i }}][qty]" value="{{ $b['qty'] ?? 1 }}" class="col-span-2 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <button type="button" class="btn-hapus-barang col-span-1 text-red-500 hover:text-red-700 text-lg leading-none" title="Hapus baris">&times;</button>
+                    </div>
+                    @endforeach
+                </div>
+                <template id="tpl-barang">
+                    <div class="barang-row grid grid-cols-12 gap-2">
+                        <input type="text" data-f="nama_barang" placeholder="Nama / tipe barang" class="col-span-5 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <input type="text" data-f="serial_number" placeholder="Serial number" class="col-span-4 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <input type="number" min="1" data-f="qty" value="1" class="col-span-2 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <button type="button" class="btn-hapus-barang col-span-1 text-red-500 hover:text-red-700 text-lg leading-none" title="Hapus baris">&times;</button>
+                    </div>
+                </template>
+
+                <div class="grid grid-cols-1 gap-3 mb-4">
+                    <div>
+                        <label class="text-xs text-gray-500">Kelengkapan yang diserahkan (adaptor, kabel, dus, dll)</label>
+                        <textarea name="kelengkapan_service" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ old('kelengkapan_service', $komplain->kelengkapan_service) }}</textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Kondisi fisik saat diterima</label>
+                        <textarea name="kondisi_fisik" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ old('kondisi_fisik', $komplain->kondisi_fisik) }}</textarea>
+                    </div>
+                </div>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Simpan Data Tanda Terima</button>
+            </form>
+        </div>
+        <script>
+        (function () {
+            var wadah = document.getElementById('baris-barang');
+            var tpl = document.getElementById('tpl-barang');
+            function nomori() {
+                wadah.querySelectorAll('.barang-row').forEach(function (row, i) {
+                    row.querySelectorAll('[data-f]').forEach(function (el) { el.name = 'barang[' + i + '][' + el.dataset.f + ']'; });
+                });
+            }
+            document.getElementById('btn-tambah-barang').addEventListener('click', function () {
+                wadah.insertAdjacentHTML('beforeend', tpl.innerHTML);
+                nomori();
+                var r = wadah.querySelectorAll('.barang-row'); r[r.length - 1].querySelector('input').focus();
+            });
+            wadah.addEventListener('click', function (e) {
+                var t = e.target.closest('.btn-hapus-barang'); if (!t) return;
+                if (wadah.querySelectorAll('.barang-row').length > 1) { t.closest('.barang-row').remove(); nomori(); }
+                else { t.closest('.barang-row').querySelectorAll('input').forEach(function (i) { if (i.dataset.f !== 'qty') i.value = ''; }); }
+            });
+            nomori();
+        })();
+        </script>
+
         {{-- Update Status --}}
         @if($komplain->status != 'resolved')
         <div class="bg-white rounded-xl shadow p-6">

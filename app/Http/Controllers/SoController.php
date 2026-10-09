@@ -15,6 +15,7 @@ use App\Models\GudangStokKeluar;
 use App\Models\GudangFifoDetail;
 use App\Models\GudangStokMasuk;
 use Illuminate\Http\Request;
+use App\Support\CetakTemplate;
 
 class SoController extends Controller
 {
@@ -89,12 +90,12 @@ class SoController extends Controller
         return view('keuangan.so.show', compact('so'));
     }
 
-    // Cetak Sales Order (template: resources/views/cetak/so.blade.php)
+    // Cetak Sales Order (template: resources/views/cetak/<template PT>/so.blade.php)
     public function cetak(So $so)
     {
         $this->cekAkses();
         $so->load(['customer', 'detail.barang', 'creator', 'proyek', 'company']);
-        return view('cetak.so', ['so' => $so, 'perusahaan' => $so->company]);
+        return CetakTemplate::view('so', $so->company, ['so' => $so]);
     }
 
     // Buat Surat Jalan dari SO

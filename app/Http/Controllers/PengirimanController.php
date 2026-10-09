@@ -7,6 +7,7 @@ use App\Models\Proyek;
 use App\Models\ProyekMilestone;
 use App\Models\So;
 use App\Services\PengirimanService;
+use App\Support\CetakTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -132,7 +133,7 @@ class PengirimanController extends Controller
         ]);
     }
 
-    // Cetak Delivery Order (template: resources/views/cetak/do.blade.php)
+    // Cetak Delivery Order (template: resources/views/cetak/<template PT>/do.blade.php)
     public function cetak(Pengiriman $pengiriman)
     {
         $pengiriman->load(['proyek.po.detail.barang', 'company']);
@@ -158,9 +159,8 @@ class PengirimanController extends Controller
             }
         }
 
-        return view('cetak.do', [
+        return CetakTemplate::view('do', $pengiriman->company, [
             'pengiriman' => $pengiriman,
-            'perusahaan' => $pengiriman->company,
             'daftarSo'   => $daftarSo,
             'barang'     => $barang,
         ]);

@@ -12,12 +12,19 @@ class Komplain extends Model
     'company_id', 'no_komplain', 'proyek_id', 'jenis', 'prioritas',
     'judul', 'deskripsi', 'status', 'masih_garansi',
     'created_by', 'handled_by', 'resolved_at', 'no_servisan',
+    'tanggal_terima_service', 'kelengkapan_service', 'kondisi_fisik', 'penyerah_nama', 'penyerah_kontak',
 ];
 
     protected $casts = [
         'resolved_at'   => 'datetime',
         'masih_garansi' => 'boolean',
+        'tanggal_terima_service' => 'date',
     ];
+
+    public function barangService()
+    {
+        return $this->hasMany(KomplainBarangService::class);
+    }
 
     public function proyek()
     {

@@ -6,7 +6,9 @@ use App\Models\Komplain;
 use App\Models\KomplainTimeline;
 use App\Models\Proyek;
 use App\Models\User;
+use App\Support\CetakTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KomplainController extends Controller
 {
@@ -99,12 +101,62 @@ class KomplainController extends Controller
         return view('komplain.show', compact('komplain', 'users'));
     }
 
-    // Cetak Tanda Terima Barang Service (template: resources/views/cetak/tanda-terima-service.blade.php)
+    // Cetak Tanda Terima Barang Service (template: resources/views/cetak/<template PT>/tanda-terima-service.blade.php)
     public function cetakTerima(Komplain $komplain)
     {
         $this->cekAkses();
-        $komplain->load(['proyek', 'handler', 'company']);
-        return view('cetak.tanda-terima-service', ['komplain' => $komplain, 'perusahaan' => $komplain->company]);
+        $komplain->load(['proyek', 'handler', 'company', 'barangService']);
+        return CetakTemplate::view('tanda-terima-service', $komplain->company, ['komplain' => $komplain]);
+    }
+
+    // Simpan isian Tanda Terima Barang Service (barang, kelengkapan, kondisi, penyerah)
+    public function simpanTandaTerima(Request $request, Komplain $komplain)
+    {
+        $this->cekAkses();
+
+        $data = $request->validate([
+            'tanggal_terima_service'  => 'nullable|date',
+            'kelengkapan_service'     => 'nullable|string|max:1000',
+            'kondisi_fisik'           => 'nullable|string|max:1000',
+            'penyerah_nama'           => 'nullable|string|max:255',
+            'penyerah_kontak'         => 'nullable|string|max:100',
+            'barang'                  => 'nullable|array|max:20',
+            'barang.*.nama_barang'    => 'nullable|string|max:255',
+            'barang.*.serial_number'  => 'nullable|string|max:255',
+            'barang.*.qty'            => 'nullable|integer|min:1|max:100000',
+        ]);
+
+        DB::transaction(function () use ($komplain, $data) {
+            $komplain->update([
+                'tanggal_terima_service' => $data['tanggal_terima_service'] ?? null,
+                'kelengkapan_service'    => $data['kelengkapan_service'] ?? null,
+                'kondisi_fisik'          => $data['kondisi_fisik'] ?? null,
+                'penyerah_nama'          => $data['penyerah_nama'] ?? null,
+                'penyerah_kontak'        => $data['penyerah_kontak'] ?? null,
+            ]);
+
+            // Ganti seluruh daftar barang; baris tanpa nama barang diabaikan.
+            $komplain->barangService()->delete();
+            foreach ($data['barang'] ?? [] as $b) {
+                if (trim((string) ($b['nama_barang'] ?? '')) === '') {
+                    continue;
+                }
+                $komplain->barangService()->create([
+                    'nama_barang'   => trim($b['nama_barang']),
+                    'serial_number' => $b['serial_number'] ?? null,
+                    'qty'           => $b['qty'] ?? 1,
+                ]);
+            }
+
+            KomplainTimeline::create([
+                'komplain_id' => $komplain->id,
+                'keterangan'  => 'Data Tanda Terima Barang Service diperbarui.',
+                'status_baru' => $komplain->status,
+                'created_by'  => auth()->id(),
+            ]);
+        });
+
+        return back()->with('success', 'Data tanda terima service disimpan.');
     }
 
         public function updateStatus(Request $request, Komplain $komplain)

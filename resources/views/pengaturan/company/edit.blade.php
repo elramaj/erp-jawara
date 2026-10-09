@@ -7,7 +7,7 @@
     {{-- Form Edit PT --}}
     <div class="bg-white rounded-xl shadow p-6">
         <h2 class="font-semibold text-gray-700 mb-4">Info PT</h2>
-        <form method="POST" action="{{ route('company.update', $company) }}">
+        <form method="POST" action="{{ route('company.update', $company) }}" enctype="multipart/form-data">
             @csrf @method('PUT')
             <div class="space-y-3">
                 <div>
@@ -35,6 +35,38 @@
                     <textarea name="alamat" rows="2"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">{{ old('alamat', $company->alamat) }}</textarea>
                 </div>
+
+
+            <div class="border-t pt-3 mt-3">
+                <p class="text-sm font-semibold text-gray-600 mb-2">Kop Surat & Template Cetak</p>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Logo PT</label>
+                        @if(isset($company) && $company->logo)
+                        <div class="flex items-center gap-3 mb-2">
+                            <img src="{{ $company->logo_url }}" alt="Logo" class="h-12 w-auto border rounded p-1 bg-white">
+                            <label class="text-xs text-red-600 flex items-center gap-1"><input type="checkbox" name="hapus_logo" value="1"> Hapus logo</label>
+                        </div>
+                        @endif
+                        <input type="file" name="logo" accept="image/png,image/jpeg,image/webp"
+                            class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white">
+                        <p class="text-xs text-gray-400 mt-1">PNG/JPG/WEBP, maks 2 MB. Dipakai di kop SO, PO, DO, dan Tanda Terima Service. Kosong = logo bawaan aplikasi.</p>
+                        @error('logo')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Template Cetak</label>
+                        <select name="template_cetak" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-8">
+                            <option value="">Default (sama seperti PT pertama)</option>
+                            @foreach($templates as $kunci => $label)
+                            @continue($kunci === 'default')
+                            <option value="{{ $kunci }}" {{ old('template_cetak', $company->template_cetak ?? '') === $kunci ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-gray-400 mt-1">PT baru otomatis memakai Default. Template baru dibuat dengan menyalin folder <code>resources/views/cetak/default</code>.</p>
+                        @error('template_cetak')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+            </div>
 
                 {{-- Lokasi GPS --}}
                 <div class="border-t pt-3 mt-3">

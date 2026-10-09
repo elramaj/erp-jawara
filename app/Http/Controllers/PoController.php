@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Po;
+use App\Support\CetakTemplate;
 use App\Models\PoDetail;
 use App\Models\Fb;
 use App\Models\FbBayar;
@@ -82,12 +83,12 @@ class PoController extends Controller
         return view('keuangan.po.show', compact('po'));
     }
 
-    // Cetak Purchase Order (template: resources/views/cetak/po.blade.php)
+    // Cetak Purchase Order (template: resources/views/cetak/<template PT>/po.blade.php)
     public function cetak(Po $po)
     {
         $this->cekAkses();
         $po->load(['supplier', 'detail.barang', 'creator', 'proyek', 'company']);
-        return view('cetak.po', ['po' => $po, 'perusahaan' => $po->company]);
+        return CetakTemplate::view('po', $po->company, ['po' => $po]);
     }
 
     // Catat barang datang → auto update stok gudang

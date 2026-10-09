@@ -181,6 +181,7 @@ Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.de
 
     // Komplain
     Route::resource('komplain', KomplainController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('/komplain/{komplain}/tanda-terima', [KomplainController::class, 'simpanTandaTerima'])->name('komplain.tanda_terima');
     Route::get('/komplain/{komplain}/cetak-terima', [KomplainController::class, 'cetakTerima'])->name('komplain.cetak');
     Route::post('/komplain/{komplain}/status', [KomplainController::class, 'updateStatus'])->name('komplain.status');
 

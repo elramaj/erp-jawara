@@ -17,8 +17,7 @@
 </div>
 @endif
 
-<form method="POST" action="{{ route('produk.store') }}" class="space-y-6 max-w-4xl"
-      x-data='{ rows: @json($barisAwal) }'>
+<form method="POST" action="{{ route('produk.store') }}" class="space-y-6 max-w-4xl" id="form-permintaan">
     @csrf
 
     <div class="bg-white rounded-xl shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,9 +46,9 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Sumber / Jenis Pengadaan</label>
-            <input type="text" name="sumber" list="daftar-sumber" value="{{ old('sumber') }}" placeholder="Mis. e-catalog, tender, penunjukan langsung"
+            <input type="text" name="sumber" list="daftar-sumber" value="{{ old('sumber') }}" placeholder="Pilih / ketik: E-Catalog, Mini Kompetisi (Mikom), Tender..."
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            <datalist id="daftar-sumber"><option value="E-Catalog"><option value="Tender"><option value="Penunjukan Langsung"><option value="Pengadaan Langsung"><option value="Swasta"></datalist>
+            <datalist id="daftar-sumber"><option value="E-Catalog"><option value="Mini Kompetisi (Mikom)"><option value="Tender"><option value="Penunjukan Langsung"><option value="Pengadaan Langsung"><option value="Swasta"></datalist>
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Opsi dibutuhkan paling lambat</label>
@@ -65,38 +64,17 @@
     <div class="bg-white rounded-xl shadow p-6">
         <div class="flex justify-between items-center mb-3">
             <h2 class="font-semibold text-gray-800">Daftar Kebutuhan</h2>
-            <button type="button" @click="rows.push({nama_kebutuhan:'', spesifikasi:'', jumlah:1, satuan:''})"
+            <button type="button" id="btn-tambah-item"
                 class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">+ Tambah Item</button>
         </div>
-        <div class="space-y-4">
-            <template x-for="(row, i) in rows" :key="i">
-                <div class="border rounded-lg p-4 grid grid-cols-1 md:grid-cols-6 gap-3">
-                    <div class="md:col-span-3">
-                        <label class="block text-xs text-gray-500 mb-1">Nama kebutuhan *</label>
-                        <input type="text" required x-model="row.nama_kebutuhan" :name="'item[' + i + '][nama_kebutuhan]'"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">Jumlah *</label>
-                        <input type="number" min="1" required x-model="row.jumlah" :name="'item[' + i + '][jumlah]'"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">Satuan</label>
-                        <input type="text" x-model="row.satuan" :name="'item[' + i + '][satuan]'" placeholder="unit / pcs"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="button" x-show="rows.length > 1" @click="rows.splice(i, 1)" class="text-red-500 hover:text-red-700 text-xs font-semibold">Hapus</button>
-                    </div>
-                    <div class="md:col-span-6">
-                        <label class="block text-xs text-gray-500 mb-1">Spesifikasi dari customer</label>
-                        <textarea rows="3" x-model="row.spesifikasi" :name="'item[' + i + '][spesifikasi]'" placeholder="Tempel spesifikasi yang diminta (prosesor, RAM, ukuran, TKDN, dll)"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
-                    </div>
-                </div>
-            </template>
+        <div class="space-y-4" id="baris-item">
+            @foreach($barisAwal as $i => $row)
+                @include('produk._item_row', ['i' => $i, 'row' => $row])
+            @endforeach
         </div>
+        <template id="tpl-item">
+            @include('produk._item_row', ['i' => '__I__', 'row' => ['nama_kebutuhan' => '', 'spesifikasi' => '', 'jumlah' => 1, 'satuan' => '']])
+        </template>
     </div>
 
     <div class="flex gap-3">
@@ -104,4 +82,44 @@
         <a href="{{ route('produk.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-lg text-sm font-semibold transition">Batal</a>
     </div>
 </form>
+
+{{-- Tambah/hapus baris item pakai JavaScript biasa (tanpa Alpine) supaya tidak terpengaruh Alpine yang ter-load dobel di layout --}}
+<script>
+(function () {
+    var wadah = document.getElementById('baris-item');
+    var tpl = document.getElementById('tpl-item');
+    var tombolTambah = document.getElementById('btn-tambah-item');
+
+    function nomori() {
+        var baris = wadah.querySelectorAll('.item-row');
+        baris.forEach(function (row, i) {
+            row.querySelectorAll('[data-f]').forEach(function (el) {
+                el.name = 'item[' + i + '][' + el.dataset.f + ']';
+            });
+            var judul = row.querySelector('.item-no');
+            if (judul) judul.textContent = 'Item ' + (i + 1);
+            var hapus = row.querySelector('.btn-hapus-item');
+            if (hapus) hapus.style.visibility = baris.length > 1 ? 'visible' : 'hidden';
+        });
+    }
+
+    tombolTambah.addEventListener('click', function () {
+        wadah.insertAdjacentHTML('beforeend', tpl.innerHTML);
+        nomori();
+        var terakhir = wadah.querySelectorAll('.item-row');
+        terakhir[terakhir.length - 1].querySelector('input').focus();
+    });
+
+    wadah.addEventListener('click', function (e) {
+        var tombol = e.target.closest('.btn-hapus-item');
+        if (!tombol) return;
+        if (wadah.querySelectorAll('.item-row').length > 1) {
+            tombol.closest('.item-row').remove();
+            nomori();
+        }
+    });
+
+    nomori();
+})();
+</script>
 @endsection
