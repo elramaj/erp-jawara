@@ -26,7 +26,7 @@ class PengaturanController extends Controller
             ->sortBy(fn($j) => ($j->company_id ?? 0) * 10 + ($urutanHari[strtolower($j->hari)] ?? 99));
         $companies    = Company::withCount('users')->orderBy('nama')->get();
         $lokasiKantor = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
-        return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor'));
+        return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor') + ['templates' => \App\Support\CetakTemplate::daftar()]);
     }
 
     // Department

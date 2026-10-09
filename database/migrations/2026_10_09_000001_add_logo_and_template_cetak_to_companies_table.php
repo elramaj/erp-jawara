@@ -14,15 +14,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->string('logo')->nullable();
-            $table->string('template_cetak', 50)->nullable();
+            // Idempotent: kolom `logo` sudah ada di database lama (dari dump), jadi cek dulu.
+            if (! Schema::hasColumn('companies', 'logo')) {
+                $table->string('logo')->nullable();
+            }
+            if (! Schema::hasColumn('companies', 'template_cetak')) {
+                $table->string('template_cetak', 50)->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->dropColumn(['logo', 'template_cetak']);
+            if (Schema::hasColumn('companies', 'template_cetak')) {
+                $table->dropColumn('template_cetak');
+            }
         });
     }
 };

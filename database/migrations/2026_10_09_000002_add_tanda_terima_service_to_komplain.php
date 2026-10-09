@@ -13,15 +13,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('komplain', function (Blueprint $table) {
-            $table->date('tanggal_terima_service')->nullable();
-            $table->text('kelengkapan_service')->nullable();
-            $table->text('kondisi_fisik')->nullable();
-            $table->string('penyerah_nama')->nullable();
-            $table->string('penyerah_kontak', 100)->nullable();
+        $kolom = [
+            'tanggal_terima_service' => fn(Blueprint $t) => $t->date('tanggal_terima_service')->nullable(),
+            'kelengkapan_service'    => fn(Blueprint $t) => $t->text('kelengkapan_service')->nullable(),
+            'kondisi_fisik'          => fn(Blueprint $t) => $t->text('kondisi_fisik')->nullable(),
+            'penyerah_nama'          => fn(Blueprint $t) => $t->string('penyerah_nama')->nullable(),
+            'penyerah_kontak'        => fn(Blueprint $t) => $t->string('penyerah_kontak', 100)->nullable(),
+        ];
+        Schema::table('komplain', function (Blueprint $table) use ($kolom) {
+            foreach ($kolom as $nama => $buat) {
+                if (! Schema::hasColumn('komplain', $nama)) {
+                    $buat($table);
+                }
+            }
         });
 
-        Schema::create('komplain_barang_service', function (Blueprint $table) {
+        if (! Schema::hasTable('komplain_barang_service')) Schema::create('komplain_barang_service', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('komplain_id')->index();
             $table->string('nama_barang');

@@ -148,7 +148,7 @@
         {{-- Form Tambah/Edit PT --}}
         <div id="form-pt" class="border border-indigo-100 bg-indigo-50 rounded-lg p-4 mb-4 hidden">
             <p class="text-sm font-medium text-gray-700 mb-3" id="form-pt-title">+ Tambah PT Baru</p>
-            <form method="POST" id="pt-form" action="{{ route('company.store') }}">
+            <form method="POST" id="pt-form" action="{{ route('company.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="pt-method" value="POST">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -202,6 +202,36 @@
                             <svg class="w-3.5 h-3.5 inline-block -mt-0.5 mr-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>Ambil koordinat dari <a href="https://maps.google.com" target="_blank" class="underline font-semibold">Google Maps</a>
                             → klik kanan lokasi kantor → "What's here?" → salin angka koordinatnya.
                         </p>
+                    </div>
+
+                    {{-- Logo & template cetak --}}
+                    <div class="md:col-span-3 border-t pt-3">
+                        <p class="text-xs font-semibold text-gray-600 mb-2">Kop Surat &amp; Template Cetak</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-500">Logo PT (PNG/JPG/WEBP, maks 2 MB)</label>
+                                <div id="pt-logo-saat-ini" class="hidden items-center gap-3 my-2">
+                                    <img id="pt-logo-img" src="" alt="Logo" class="h-12 w-auto border rounded bg-white p-1">
+                                    <label class="flex items-center gap-1 text-xs text-red-600 cursor-pointer">
+                                        <input type="checkbox" name="hapus_logo" value="1" class="rounded"> Hapus logo
+                                    </label>
+                                </div>
+                                <input type="file" name="logo" id="pt-logo" accept="image/png,image/jpeg,image/webp"
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">Template Cetak (SO, PO, DO, Tanda Terima)</label>
+                                <select name="template_cetak" id="pt-template"
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                                    <option value="">Default (sama seperti PT pertama)</option>
+                                    @foreach($templates as $kodeTpl => $labelTpl)
+                                        @if($kodeTpl !== 'default')
+                                        <option value="{{ $kodeTpl }}">{{ $labelTpl }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- TAMBAHAN: Status Aktif --}}
@@ -263,7 +293,7 @@
                         <td class="px-4 py-3 text-center">
                             <div class="flex gap-2 justify-center">
                                 {{-- TAMBAHAN: parameter is_active --}}
-                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }})"
+                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }}, @js($c->logo ? $c->logo_url : ''), @js($c->template_cetak ?? ''))"
                                     class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
                                     onsubmit="return confirm('Yakin hapus PT ini?')">
@@ -331,6 +361,22 @@ function toggleFormPT() {
     }
 }
 
+function pasangLogoTemplate(logoUrl, tpl) {
+    const box = document.getElementById('pt-logo-saat-ini');
+    const hapus = document.querySelector('#pt-form input[name="hapus_logo"]');
+    if (hapus) hapus.checked = false;
+    document.getElementById('pt-logo').value = '';
+    if (logoUrl) {
+        document.getElementById('pt-logo-img').src = logoUrl;
+        box.classList.remove('hidden'); box.classList.add('flex');
+    } else {
+        box.classList.add('hidden'); box.classList.remove('flex');
+    }
+    const sel = document.getElementById('pt-template');
+    sel.value = tpl || '';
+    if (sel.value !== (tpl || '')) sel.value = '';
+}
+
 function resetFormPT() {
     document.getElementById('form-pt-title').textContent = '+ Tambah PT Baru';
     document.getElementById('pt-form').action = '{{ route('company.store') }}';
@@ -345,11 +391,12 @@ function resetFormPT() {
     document.getElementById('pt-radius').value = '100';
     {{-- TAMBAHAN: reset checkbox --}}
     document.getElementById('pt-is-active').checked = true;
+    pasangLogoTemplate('', '');
     document.getElementById('form-pt').classList.add('hidden');
 }
 
 {{-- TAMBAHAN: parameter isActive --}}
-function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive) {
+function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive, logoUrl, templateCetak) {
     document.getElementById('form-pt-title').textContent = 'Edit PT';
     document.getElementById('pt-form').action = '/company/' + id;
     document.getElementById('pt-method').value = 'PUT';
@@ -362,6 +409,7 @@ function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, rad
     document.getElementById('pt-longitude').value = longitude ?? '';
     document.getElementById('pt-radius').value = radius ?? 100;
     document.getElementById('pt-is-active').checked = isActive == 1;
+    pasangLogoTemplate(logoUrl, templateCetak);
     document.getElementById('form-pt').classList.remove('hidden');
     document.getElementById('form-pt').scrollIntoView({ behavior: 'smooth' });
 }
