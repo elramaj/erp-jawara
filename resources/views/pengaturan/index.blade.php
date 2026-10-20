@@ -423,7 +423,8 @@ function resetFormPT() {
     document.getElementById('pt-longitude').value = '';
     document.getElementById('pt-radius').value = '100';
     {{-- TAMBAHAN: reset checkbox --}}
-    document.getElementById('pt-is-active').checked = true;
+    const aktif = document.getElementById('pt-is-active'); // tidak ada untuk Admin PT (hanya Super Admin)
+    if (aktif) aktif.checked = true;
     pasangLogoTemplate('', '');
     pasangIdentitas({});
     document.getElementById('form-pt').classList.add('hidden');
@@ -442,7 +443,8 @@ function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, rad
     document.getElementById('pt-latitude').value = latitude ?? '';
     document.getElementById('pt-longitude').value = longitude ?? '';
     document.getElementById('pt-radius').value = radius ?? 100;
-    document.getElementById('pt-is-active').checked = isActive == 1;
+    const aktifEl = document.getElementById('pt-is-active'); // tidak ada untuk Admin PT
+    if (aktifEl) aktifEl.checked = isActive == 1;
     pasangLogoTemplate(logoUrl, templateCetak);
     pasangIdentitas(identitas);
     document.getElementById('form-pt').classList.remove('hidden');
