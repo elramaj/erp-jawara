@@ -24,7 +24,11 @@ class PengaturanController extends Controller
         $urutanHari   = array_flip(JamKerja::HARI); // minggu=0 ... sabtu=6
         $jamKerja     = JamKerja::with('company')->get()
             ->sortBy(fn($j) => ($j->company_id ?? 0) * 10 + ($urutanHari[strtolower($j->hari)] ?? 99));
-        $companies    = Company::withCount('users')->orderBy('nama')->get();
+        $user         = auth()->user();
+        // Super Admin melihat semua PT; Admin per PT hanya PT-nya sendiri.
+        $companies    = Company::withCount('users')
+            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('id', $user->company_id))
+            ->orderBy('nama')->get();
         $lokasiKantor = DB::table('pengaturan_lokasi')->where('is_active', 1)->first();
         return view('pengaturan.index', compact('departments', 'jamKerja', 'companies', 'lokasiKantor') + ['templates' => \App\Support\CetakTemplate::daftar()]);
     }

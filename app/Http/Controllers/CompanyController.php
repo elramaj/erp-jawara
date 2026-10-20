@@ -46,7 +46,10 @@ class CompanyController extends Controller
     public function index()
     {
         $this->cekAkses();
-        $companies = Company::withCount('users')->orderBy('nama')->get();
+        $user = auth()->user();
+        $companies = Company::withCount('users')
+            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('id', $user->company_id))
+            ->orderBy('nama')->get();
         return view('pengaturan.company.index', compact('companies'));
     }
 
@@ -102,21 +105,26 @@ class CompanyController extends Controller
     {
         $this->cekAkses();
         $this->cekAksesCompany($company);
+        $super = auth()->user()->isSuperAdmin();
         $request->validate([
             'nama'         => 'required|string|max:150',
-            'kode'         => 'required|unique:companies,kode,' . $company->id,
+            'kode'         => ($super ? 'required' : 'nullable') . '|unique:companies,kode,' . $company->id,
             'latitude'     => 'nullable|numeric|between:-90,90',
             'longitude'    => 'nullable|numeric|between:-180,180',
             'radius_meter' => 'nullable|integer|min:10|max:5000',
         ] + $this->aturanCetak());
 
         $data = $request->only([
-            'nama', 'kode', 'alamat', 'telepon', 'email',
+            'nama', 'alamat', 'telepon', 'email',
             'latitude', 'longitude', 'radius_meter',
         ]) + [
-            'is_active'      => $request->has('is_active') ? 1 : 0,
             'template_cetak' => $request->filled('template_cetak') ? $request->template_cetak : null,
         ];
+        // Kode PT & status aktif hanya boleh diubah Super Admin (Admin PT tidak bisa menonaktifkan PT-nya sendiri).
+        if ($super) {
+            $data['kode']      = $request->kode;
+            $data['is_active'] = $request->has('is_active') ? 1 : 0;
+        }
 
         if ($request->hasFile('logo')) {
             if ($company->logo) {

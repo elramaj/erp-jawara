@@ -12,7 +12,7 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Kode PT *</label>
-                    <input type="text" name="kode" value="{{ old('kode', $company->kode) }}"
+                    <input type="text" name="kode" value="{{ old('kode', $company->kode) }}" @unless(auth()->user()->isSuperAdmin()) readonly @endunless
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
                 </div>
                 <div>
@@ -100,6 +100,7 @@
                     @endif
                 </div>
 
+@if(auth()->user()->isSuperAdmin())
                 {{-- Status Aktif --}}
                 <div class="border-t pt-3">
                     {{-- Hidden input sebagai fallback kalau checkbox tidak dicentang --}}
@@ -111,6 +112,7 @@
                         <span class="text-sm font-medium text-gray-700">PT Aktif</span>
                     </label>
                 </div>
+                @endif
             </div>
 
             <div class="flex gap-3 mt-5">
