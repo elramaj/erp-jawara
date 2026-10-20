@@ -18,6 +18,14 @@ class CompanyController extends Controller
         }
     }
 
+    /** Tambah/hapus PT hanya untuk Super Admin (Admin biasa cuma mengubah PT-nya sendiri). */
+    private function cekSuperAdmin(): void
+    {
+        if (!auth()->user()->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang boleh menambah atau menghapus PT.');
+        }
+    }
+
     /** Admin biasa hanya boleh mengubah PT-nya sendiri; Super Admin boleh semua PT. */
     private function cekAksesCompany(Company $company): void
     {
@@ -45,12 +53,14 @@ class CompanyController extends Controller
     public function create()
     {
         $this->cekAkses();
+        $this->cekSuperAdmin();
         return view('pengaturan.company.create', ['templates' => CetakTemplate::daftar()]);
     }
 
     public function store(Request $request)
     {
         $this->cekAkses();
+        $this->cekSuperAdmin();
         $request->validate([
             'nama'         => 'required|string|max:150',
             'kode'         => 'required|unique:companies,kode|max:20',
@@ -126,6 +136,7 @@ class CompanyController extends Controller
     public function destroy(Company $company)
     {
         $this->cekAkses();
+        $this->cekSuperAdmin();
         if ($company->users()->count() > 0) {
             return redirect()->route('pengaturan.index')
                 ->with('error', 'Tidak bisa hapus PT yang masih punya karyawan!');

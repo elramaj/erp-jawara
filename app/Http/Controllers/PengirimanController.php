@@ -129,6 +129,7 @@ class PengirimanController extends Controller
             'pengiriman'    => $pengiriman,
             'kel'           => $kel,
             'kelola'        => PengirimanService::bisaKelola($user),
+            'bisaBerangkat' => PengirimanService::bisaBerangkatkan($user),
             'bisaKonfirmasi' => PengirimanService::bisaKonfirmasi($user, $pengiriman->proyek),
         ]);
     }
@@ -234,7 +235,10 @@ class PengirimanController extends Controller
     // Barang berangkat
     public function kirim(Pengiriman $pengiriman)
     {
-        $this->cekKelola();
+        $this->cekLihat();
+        if (!PengirimanService::bisaBerangkatkan(auth()->user())) {
+            abort(403, 'Akses ditolak.');
+        }
         if ($pengiriman->status !== 'terjadwal') {
             return back()->with('error', 'Hanya jadwal yang sudah dikonfirmasi Sales yang bisa diberangkatkan.');
         }

@@ -100,16 +100,16 @@
             <p class="text-sm text-gray-500">Menunggu konfirmasi dari Sales pemilik paket atau tim Gudang.</p>
             @endif
 
-            @if($kelola)
-                @if(in_array($s, ['diusulkan', 'revisi', 'terjadwal']))
-                <a href="{{ route('pengiriman.edit', $pengiriman) }}" class="block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Ubah Jadwal</a>
-                @endif
-
-                @if($s === 'terjadwal')
+            @if($s === 'terjadwal' && $bisaBerangkat)
                 <form method="POST" action="{{ route('pengiriman.kirim', $pengiriman) }}" onsubmit="return confirm('Tandai barang sudah berangkat?')">
                     @csrf
                     <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Barang Berangkat</button>
                 </form>
+            @endif
+
+            @if($kelola)
+                @if(in_array($s, ['diusulkan', 'revisi', 'terjadwal']))
+                <a href="{{ route('pengiriman.edit', $pengiriman) }}" class="block text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Ubah Jadwal</a>
                 @endif
 
                 @if($s === 'dikirim')
@@ -129,7 +129,7 @@
                 @endif
             @endif
 
-            @if(in_array($s, ['diterima', 'dibatalkan']) || (!$kelola && !($s === 'diusulkan' && $bisaKonfirmasi) && $s !== 'diusulkan'))
+            @if(in_array($s, ['diterima', 'dibatalkan']) || (!$kelola && !($s === 'diusulkan' && $bisaKonfirmasi) && !($s === 'terjadwal' && $bisaBerangkat) && $s !== 'diusulkan'))
             <p class="text-sm text-gray-400">Tidak ada aksi tersedia.</p>
             @endif
         </div>

@@ -139,10 +139,12 @@
     <div class="bg-white rounded-xl shadow p-6 lg:col-span-2">
         <div class="flex justify-between items-center mb-4">
             <h2 class="font-semibold text-gray-700 flex items-center gap-2"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 21v-4.5m0 4.5h3.75m-3.75 0h-9m9-4.5V9m0 7.5H12m3.75-7.5V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H12m0 0V4.875c0-.621-.504-1.125-1.125-1.125h-3.75c-.621 0-1.125.504-1.125 1.125V9m4.5 0H8.25M12 9v7.5m0-7.5H8.25m4.5 7.5H8.25m0-7.5V21m0-11.625v11.625m0 0H4.875c-.621 0-1.125-.504-1.125-1.125V9.375c0-.621.504-1.125 1.125-1.125H8.25" /></svg>Manajemen PT / Perusahaan</h2>
+            @if(auth()->user()->isSuperAdmin())
             <button onclick="toggleFormPT()"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
                 + Tambah PT
             </button>
+            @endif
         </div>
 
         {{-- Form Tambah/Edit PT --}}
@@ -295,11 +297,13 @@
                                 {{-- TAMBAHAN: parameter is_active --}}
                                 <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }}, @js($c->logo ? $c->logo_url : ''), @js($c->template_cetak ?? ''))"
                                     class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
+                                @if(auth()->user()->isSuperAdmin())
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
                                     onsubmit="return confirm('Yakin hapus PT ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="bg-red-100 text-red-700 hover:bg-red-200 px-2 py-1 rounded text-xs font-semibold transition">Hapus</button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

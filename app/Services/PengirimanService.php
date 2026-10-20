@@ -34,6 +34,12 @@ class PengirimanService
         return $user->isSuperAdmin() || in_array((int) $user->role_id, [1, 6, 11], true);
     }
 
+    /** Menandai barang berangkat: tim kelola + Gudang (yang melepas barang dari gudang). */
+    public static function bisaBerangkatkan(User $user): bool
+    {
+        return self::bisaKelola($user) || (int) $user->role_id === 4;
+    }
+
     /** Melihat SEMUA jadwal di PT-nya: tim kelola + Gudang (barang fisik keluar dari gudang). */
     public static function lihatSemua(User $user): bool
     {
