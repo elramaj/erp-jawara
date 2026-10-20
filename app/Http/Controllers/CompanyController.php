@@ -35,9 +35,18 @@ class CompanyController extends Controller
         }
     }
 
+    private const FIELD_DOKUMEN = ['npwp', 'bank_nama', 'bank_rekening', 'bank_atas_nama', 'penandatangan_nama', 'penandatangan_jabatan', 'footer_dokumen'];
+
     private function aturanCetak(): array
     {
         return [
+            'npwp'                  => 'nullable|string|max:30',
+            'bank_nama'             => 'nullable|string|max:100',
+            'bank_rekening'         => 'nullable|string|max:50',
+            'bank_atas_nama'        => 'nullable|string|max:150',
+            'penandatangan_nama'    => 'nullable|string|max:150',
+            'penandatangan_jabatan' => 'nullable|string|max:100',
+            'footer_dokumen'        => 'nullable|string|max:1000',
             'logo'           => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
             'template_cetak' => ['nullable', Rule::in(array_keys(CetakTemplate::daftar()))],
         ];
@@ -78,7 +87,7 @@ class CompanyController extends Controller
         $data = $request->only([
             'nama', 'kode', 'alamat', 'telepon', 'email',
             'latitude', 'longitude', 'radius_meter', 'template_cetak',
-        ]) + ['is_active' => 1];
+        ] ) + $request->only(self::FIELD_DOKUMEN) + ['is_active' => 1];
         // Kosong = pakai template "default" (desain PT pertama)
         $data['template_cetak'] = $request->filled('template_cetak') ? $request->template_cetak : null;
         if ($request->hasFile('logo')) {
@@ -117,7 +126,7 @@ class CompanyController extends Controller
         $data = $request->only([
             'nama', 'alamat', 'telepon', 'email',
             'latitude', 'longitude', 'radius_meter',
-        ]) + [
+        ]) + $request->only(self::FIELD_DOKUMEN) + [
             'template_cetak' => $request->filled('template_cetak') ? $request->template_cetak : null,
         ];
         // Kode PT & status aktif hanya boleh diubah Super Admin (Admin PT tidak bisa menonaktifkan PT-nya sendiri).

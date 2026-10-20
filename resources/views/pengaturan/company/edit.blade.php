@@ -37,6 +37,7 @@
                 </div>
 
 
+            @include('pengaturan.company._identitas')
             <div class="border-t pt-3 mt-3">
                 <p class="text-sm font-semibold text-gray-600 mb-2">Kop Surat & Template Cetak</p>
                 <div class="grid grid-cols-1 gap-4">

@@ -34,6 +34,8 @@
         .ttd { width: 100%; margin-top: 26px; border-collapse: collapse; page-break-inside: avoid; }
         .ttd td { text-align: center; vertical-align: top; width: 33.33%; padding: 0 6px; }
         .ttd .ruang { height: 62px; }
+        .ttd .jabatan { font-size: 11px; color: #444; margin-top: 2px; }
+        .footer-dok { margin-top: 18px; padding-top: 8px; border-top: 1px solid #bbb; font-size: 11px; color: #444; white-space: pre-line; }
         .ttd .nama { border-top: 1px solid #111; display: inline-block; min-width: 130px; padding-top: 3px; }
         .catatan { margin-top: 10px; font-size: 10.5px; color: #333; }
         @media print {
@@ -60,6 +62,7 @@
                     {{ $perusahaan->alamat ?? '' }}<br>
                     @if(!empty($perusahaan->telepon))Telp. {{ $perusahaan->telepon }}@endif
                     @if(!empty($perusahaan->email)) &nbsp;|&nbsp; {{ $perusahaan->email }}@endif
+                    @if(!empty($perusahaan->npwp))<br>NPWP: {{ $perusahaan->npwp }}@endif
                 </div>
             </div>
         </div>
@@ -68,6 +71,8 @@
         <div class="nomor">No. @yield('nomor')</div>
 
         @yield('isi')
+
+        @include('cetak._footer')
     </div>
 </body>
 </html>

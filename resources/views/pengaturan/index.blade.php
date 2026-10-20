@@ -236,6 +236,27 @@
                         </div>
                     </div>
 
+                    {{-- Identitas & rekening dokumen --}}
+                    <div class="md:col-span-3 border-t pt-3">
+                        <p class="text-xs font-semibold text-gray-600 mb-2">Identitas &amp; Rekening untuk Dokumen Cetak</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div><label class="text-xs text-gray-500">NPWP</label>
+                                <input type="text" name="npwp" id="pt-npwp" maxlength="150" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div><label class="text-xs text-gray-500">Nama Bank</label>
+                                <input type="text" name="bank_nama" id="pt-bank-nama" maxlength="150" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div><label class="text-xs text-gray-500">No. Rekening</label>
+                                <input type="text" name="bank_rekening" id="pt-bank-rekening" maxlength="150" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div class="md:col-span-3"><label class="text-xs text-gray-500">Atas Nama Rekening</label>
+                                <input type="text" name="bank_atas_nama" id="pt-bank-atas-nama" maxlength="150" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div class="md:col-span-2"><label class="text-xs text-gray-500">Nama Penandatangan</label>
+                                <input type="text" name="penandatangan_nama" id="pt-ttd-nama" maxlength="150" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div><label class="text-xs text-gray-500">Jabatan Penandatangan</label>
+                                <input type="text" name="penandatangan_jabatan" id="pt-ttd-jabatan" maxlength="150" placeholder="Direktur" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></div>
+                            <div class="md:col-span-3"><label class="text-xs text-gray-500">Footer Dokumen (syarat pembayaran, garansi, dll.)</label>
+                                <textarea name="footer_dokumen" id="pt-footer" rows="2" maxlength="1000" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea></div>
+                        </div>
+                    </div>
+
                     {{-- TAMBAHAN: Status Aktif --}}
 @if(auth()->user()->isSuperAdmin())
                     <div class="md:col-span-3 border-t pt-3">
@@ -297,7 +318,7 @@
                         <td class="px-4 py-3 text-center">
                             <div class="flex gap-2 justify-center">
                                 {{-- TAMBAHAN: parameter is_active --}}
-                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }}, @js($c->logo ? $c->logo_url : ''), @js($c->template_cetak ?? ''))"
+                                <button onclick="editPT({{ $c->id }}, '{{ $c->kode }}', '{{ addslashes($c->nama) }}', '{{ $c->telepon }}', '{{ $c->email }}', '{{ addslashes($c->alamat) }}', '{{ $c->latitude }}', '{{ $c->longitude }}', '{{ $c->radius_meter }}', {{ $c->is_active ? 1 : 0 }}, @js($c->logo ? $c->logo_url : ''), @js($c->template_cetak ?? ''), @js($c->only(['npwp','bank_nama','bank_rekening','bank_atas_nama','penandatangan_nama','penandatangan_jabatan','footer_dokumen'])))"
                                     class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-2 py-1 rounded text-xs font-semibold transition">Edit</button>
                                 @if(auth()->user()->isSuperAdmin())
                                 <form method="POST" action="{{ route('company.destroy', $c) }}"
@@ -367,6 +388,12 @@ function toggleFormPT() {
     }
 }
 
+const PT_FIELD_DOK = {npwp:'pt-npwp', bank_nama:'pt-bank-nama', bank_rekening:'pt-bank-rekening', bank_atas_nama:'pt-bank-atas-nama', penandatangan_nama:'pt-ttd-nama', penandatangan_jabatan:'pt-ttd-jabatan', footer_dokumen:'pt-footer'};
+function pasangIdentitas(d) {
+    d = d || {};
+    for (const k in PT_FIELD_DOK) document.getElementById(PT_FIELD_DOK[k]).value = d[k] ?? '';
+}
+
 function pasangLogoTemplate(logoUrl, tpl) {
     const box = document.getElementById('pt-logo-saat-ini');
     const hapus = document.querySelector('#pt-form input[name="hapus_logo"]');
@@ -398,11 +425,12 @@ function resetFormPT() {
     {{-- TAMBAHAN: reset checkbox --}}
     document.getElementById('pt-is-active').checked = true;
     pasangLogoTemplate('', '');
+    pasangIdentitas({});
     document.getElementById('form-pt').classList.add('hidden');
 }
 
 {{-- TAMBAHAN: parameter isActive --}}
-function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive, logoUrl, templateCetak) {
+function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, radius, isActive, logoUrl, templateCetak, identitas) {
     document.getElementById('form-pt-title').textContent = 'Edit PT';
     document.getElementById('pt-form').action = '/company/' + id;
     document.getElementById('pt-method').value = 'PUT';
@@ -416,6 +444,7 @@ function editPT(id, kode, nama, telepon, email, alamat, latitude, longitude, rad
     document.getElementById('pt-radius').value = radius ?? 100;
     document.getElementById('pt-is-active').checked = isActive == 1;
     pasangLogoTemplate(logoUrl, templateCetak);
+    pasangIdentitas(identitas);
     document.getElementById('form-pt').classList.remove('hidden');
     document.getElementById('form-pt').scrollIntoView({ behavior: 'smooth' });
 }

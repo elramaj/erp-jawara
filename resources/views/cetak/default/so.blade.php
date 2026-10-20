@@ -44,5 +44,7 @@
 <div class="catatan"><strong>Catatan:</strong> {{ $so->catatan }}</div>
 @endif
 
-@include('cetak._ttd', ['kolom' => [['Pelanggan', ''], ['Sales', $so->creator->name ?? ''], ['Mengetahui', '']]])
+@include('cetak._rekening')
+
+@include('cetak._ttd', ['kolom' => [['Pelanggan', ''], ['Sales', $so->creator->name ?? ''], ['Mengetahui', $perusahaan->penandatangan_nama ?? '', $perusahaan->penandatangan_jabatan ?? '']]])
 @endsection

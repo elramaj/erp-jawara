@@ -34,6 +34,7 @@
                 <textarea name="alamat" rows="2"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">{{ old('alamat') }}</textarea>
             </div>
+            @include('pengaturan.company._identitas')
             <div class="md:col-span-2 border-t pt-3">
                 <p class="text-sm font-semibold text-gray-600 mb-2">Kop Surat & Template Cetak</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

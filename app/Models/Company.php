@@ -9,6 +9,7 @@ class Company extends Model
     'nama', 'kode', 'alamat', 'telepon', 'email',
     'latitude', 'longitude', 'radius_meter', 'is_active',
     'logo', 'template_cetak',
+    'npwp', 'bank_nama', 'bank_rekening', 'bank_atas_nama', 'penandatangan_nama', 'penandatangan_jabatan', 'footer_dokumen',
     ];
 
     /** URL logo PT untuk kop surat; kalau belum diunggah pakai logo bawaan aplikasi. */
