@@ -200,9 +200,20 @@
            onmouseover="{{ request()->routeIs('gudang.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
            onmouseout="{{ request()->routeIs('gudang.*') ? '' : "this.style.background=''" }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg> Gudang
-                    @php $n_po_gudang = \App\Services\TugasService::jumlah(auth()->user(), 'po'); @endphp
-            @if($n_po_gudang > 0)
-            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_po_gudang }}</span>
+        </a>
+    </li>
+    @endif
+    @if(auth()->user()->isSuperAdmin() || in_array(auth()->user()->role_id, [1, 3, 4, 11]))
+    <li>
+        <a href="{{ route('penerimaan.index') }}"
+           style="{{ request()->routeIs('penerimaan.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('penerimaan.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('penerimaan.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg> Penerimaan Barang
+            @php $n_penerimaan = \App\Services\TugasService::jumlah(auth()->user(), 'po'); @endphp
+            @if($n_penerimaan > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_penerimaan }}</span>
             @endif
         </a>
     </li>
@@ -250,7 +261,7 @@
            onmouseover="{{ request()->routeIs('po.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
            onmouseout="{{ request()->routeIs('po.*') ? '' : "this.style.background=''" }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" /></svg> Purchase Order
-                    @php $n_po_menu = \App\Services\TugasService::jumlah(auth()->user(), 'tagihan_beli', 'po'); @endphp
+                    @php $n_po_menu = \App\Services\TugasService::jumlah(auth()->user(), 'tagihan_beli'); @endphp
             @if($n_po_menu > 0)
             <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_po_menu }}</span>
             @endif

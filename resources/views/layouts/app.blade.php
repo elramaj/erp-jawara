@@ -268,7 +268,7 @@
                         </a>
                         @endforeach
                         @foreach($notifTugas['po'] as $nt2)
-                        <a href="{{ in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]) || auth()->user()->isSuperAdmin() ? route('po.show', $nt2) : route('gudang.index') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                        <a href="{{ route('penerimaan.show', $nt2) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
                             <svg class="w-5 h-5 flex-shrink-0 text-sky-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $nt2->no_po }}{{ optional($nt2->supplier)->nama ? ' · ' . $nt2->supplier->nama : '' }}</p>

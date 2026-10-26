@@ -19,6 +19,7 @@ use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\PermintaanProdukController;
 use App\Http\Controllers\TayangController;
 use App\Http\Controllers\DesainController;
+use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanDokumenController;
 use App\Http\Controllers\DokumenArsipController;
 use App\Http\Controllers\PoController;
@@ -191,6 +192,11 @@ Route::delete('/aset/{aset}', [AsetController::class, 'destroy'])->name('aset.de
     Route::resource('po', PoController::class)->only(['index', 'create', 'store', 'show']);
     Route::get('/po/{po}/cetak', [PoController::class, 'cetak'])->name('po.cetak');
     Route::post('/po/{po}/barang-datang', [PoController::class, 'storeBarangDatang'])->name('po.barang_datang');
+
+    // Penerimaan Barang (Gudang mencatat barang datang dari PO tanpa membuka halaman PO penuh)
+    Route::get('/penerimaan-barang', [PenerimaanController::class, 'index'])->name('penerimaan.index');
+    Route::get('/penerimaan-barang/{po}', [PenerimaanController::class, 'show'])->name('penerimaan.show');
+    Route::post('/penerimaan-barang/{po}', [PenerimaanController::class, 'store'])->name('penerimaan.store');
     Route::post('/po/{po}/fb', [PoController::class, 'storeFb'])->name('po.fb.store');
     Route::post('/fb/{fb}/bayar', [PoController::class, 'storeBayarFb'])->name('fb.bayar');
 

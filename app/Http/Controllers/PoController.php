@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Po;
+use App\Services\PenerimaanBarangService;
 use App\Support\CetakTemplate;
 use App\Models\PoDetail;
 use App\Models\Fb;
@@ -101,30 +102,13 @@ class PoController extends Controller
             'jumlah'    => 'required|array',
         ]);
 
+        $baris = [];
         foreach ($request->barang_id as $i => $barangId) {
-            $jumlah = (int) $request->jumlah[$i];
-            if ($jumlah <= 0) continue;
-
-            $detail = PoDetail::where('po_id', $po->id)
-                ->where('barang_id', $barangId)->first();
-            if ($detail) {
-                $detail->increment('jumlah_diterima', $jumlah);
-            }
-
-            GudangStokMasuk::create([
-                'barang_id'  => $barangId,
-                'tanggal'    => $request->tanggal,
-                'jumlah'     => $jumlah,
-                'sisa'       => $jumlah,
-                'supplier'   => $po->supplier->nama ?? null,
-                'no_dokumen' => $po->no_po,
-                'keterangan' => 'Auto dari PO: ' . $po->no_po,
-                'created_by' => auth()->id(),
-            ]);
+            $baris[] = ['barang_id' => $barangId, 'jumlah' => $request->jumlah[$i] ?? 0];
         }
 
-        $allDone = $po->detail->every(fn($d) => $d->jumlah_diterima >= $d->jumlah);
-        $po->update(['status' => $allDone ? 'selesai' : 'partial']);
+        // Logika pencatatan dipakai bersama dengan halaman Penerimaan Barang (Gudang)
+        PenerimaanBarangService::catat($po, $request->tanggal, $baris, auth()->id());
 
         return back()->with('success', 'Barang datang berhasil dicatat & stok gudang otomatis ditambah!');
     }
