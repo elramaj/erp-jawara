@@ -33,6 +33,10 @@ class KomplainController extends Controller
                 ->where(function($q) use ($user) {
                     $q->where('created_by', $user->id)
                       ->orWhere('handled_by', $user->id);
+                    // Teknisi juga melihat komplain baru yang belum ditugaskan (sama dengan yang di lonceng)
+                    if ((int) $user->role_id === 7) {
+                        $q->orWhere(fn($w) => $w->whereNull('handled_by')->where('status', 'open'));
+                    }
                 })
                 ->orderBy('created_at', 'desc')->get();
         }

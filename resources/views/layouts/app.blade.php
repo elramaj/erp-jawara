@@ -81,10 +81,10 @@
                 if (in_array(auth()->user()->role_id, [1, 11])) {
                     $notifIzin = \App\Models\PengajuanIzin::where('status','pending')->count();
                 }
-                $notifDeadline = \App\Models\Proyek::whereNotIn('status', ['selesai','dibatalkan'])
-                    ->whereNotNull('deadline')
-                    ->where('deadline', '<=', now()->addDays(7))
-                    ->count();
+                $notifTugas = \App\Services\TugasService::ringkasan(auth()->user());
+                $notifDeadline = $notifTugas['deadline']->count();
+                $notifTugasLain = $notifTugas['reimburse']->count() + $notifTugas['tagihan_jual']->count() + $notifTugas['tagihan_beli']->count()
+                    + $notifTugas['komplain']->count() + $notifTugas['po']->count();
                 $notifKomplain = \App\Models\Komplain::where('handled_by', auth()->id())
                     ->where('status', '!=', 'resolved')
                     ->count();
@@ -95,7 +95,7 @@
                 $notifDesain = \App\Services\DesainService::ringkasan(auth()->user());
                 $notifDokumen = \App\Services\DokumenService::ringkasan(auth()->user());
                 $notifDesainTotal = collect($notifDesain)->sum(fn($c) => $c->count()) + collect($notifDokumen)->sum(fn($c) => $c->count());
-                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain + $notifPengirimanTotal + $notifPTTotal + $notifDesainTotal;
+                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain + $notifPengirimanTotal + $notifPTTotal + $notifDesainTotal + $notifTugasLain;
             @endphp
             <div class="relative" x-data="{ open: false }" @click.away="open = false">
                 <button @click="open = !open" class="relative p-1">
@@ -231,11 +231,52 @@
                             </div>
                         </a>
                         @endforeach
-                        @php
-                        $proyekDeadline = \App\Models\Proyek::whereNotIn('status', ['selesai','dibatalkan'])
-                            ->whereNotNull('deadline')->where('deadline', '<=', now()->addDays(7))
-                            ->orderBy('deadline')->get();
-                        @endphp
+                        @foreach($notifTugas['reimburse'] as $nt2)
+                        <a href="{{ route('reimburse.review') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-teal-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">Reimburse {{ $nt2->user->name ?? '-' }} · Rp {{ number_format($nt2->nominal, 0, ',', '.') }}</p>
+                                <p class="text-xs text-teal-600">Menunggu persetujuan</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifTugas['tagihan_jual'] as $nt2)
+                        <a href="{{ $nt2->so_id ? route('so.show', $nt2->so_id) : route('so.index') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">Tagihan customer {{ $nt2->no_fj }}</p>
+                                <p class="text-xs text-green-600">{{ $nt2->jatuh_tempo->isPast() && !$nt2->jatuh_tempo->isToday() ? 'Lewat jatuh tempo ' . (int) abs($nt2->jatuh_tempo->diffInDays(now()->startOfDay())) . ' hari' : 'Jatuh tempo ' . $nt2->jatuh_tempo->format('d M') }} · sisa Rp {{ number_format($nt2->sisa, 0, ',', '.') }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifTugas['tagihan_beli'] as $nt2)
+                        <a href="{{ $nt2->po_id ? route('po.show', $nt2->po_id) : route('po.index') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">Tagihan supplier {{ $nt2->no_fb }}{{ optional(optional($nt2->po)->supplier)->nama ? ' · ' . $nt2->po->supplier->nama : '' }}</p>
+                                <p class="text-xs text-rose-600">{{ $nt2->jatuh_tempo->isPast() && !$nt2->jatuh_tempo->isToday() ? 'Lewat jatuh tempo ' . (int) abs($nt2->jatuh_tempo->diffInDays(now()->startOfDay())) . ' hari' : 'Jatuh tempo ' . $nt2->jatuh_tempo->format('d M') }} · sisa Rp {{ number_format($nt2->sisa, 0, ',', '.') }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifTugas['komplain'] as $nt2)
+                        <a href="{{ route('komplain.show', $nt2) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nt2->judul }}</p>
+                                <p class="text-xs text-purple-600">Komplain baru, belum ditugaskan · {{ $nt2->no_komplain }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifTugas['po'] as $nt2)
+                        <a href="{{ in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]) || auth()->user()->isSuperAdmin() ? route('po.show', $nt2) : route('gudang.index') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-sky-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nt2->no_po }}{{ optional($nt2->supplier)->nama ? ' · ' . $nt2->supplier->nama : '' }}</p>
+                                <p class="text-xs text-sky-600">{{ $nt2->status === 'partial' ? 'Barang datang sebagian, menunggu sisanya' : 'Menunggu barang datang' }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @php $proyekDeadline = $notifTugas['deadline']; @endphp
                         @foreach($proyekDeadline as $pd)
                         <a href="{{ route('proyek.show', $pd) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
                             <svg class="w-5 h-5 flex-shrink-0 {{ $pd->deadline->isPast() ? 'text-red-500' : 'text-orange-500' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
