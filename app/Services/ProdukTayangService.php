@@ -93,9 +93,9 @@ class ProdukTayangService
             ? Tayang::whereIn('status', ['antrian', 'disiapkan'])->orderBy('created_at')->get()
             : $kosong;
 
-        $desain = self::role($u) === 12 || $u->isSuperAdmin()
-            ? Tayang::where('perlu_desain', true)->whereIn('status', ['antrian', 'disiapkan'])->orderBy('created_at')->get()
-            : $kosong;
+        // Notifikasi kebutuhan desain kini lewat modul Desain (DesainService::ringkasan);
+        // key 'desain' dipertahankan kosong supaya tampilan lama tidak error.
+        $desain = $kosong;
 
         return compact('produk', 'konfirmasi', 'tayang', 'desain');
     }

@@ -18,6 +18,9 @@ use App\Http\Controllers\SoController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\PermintaanProdukController;
 use App\Http\Controllers\TayangController;
+use App\Http\Controllers\DesainController;
+use App\Http\Controllers\PermintaanDokumenController;
+use App\Http\Controllers\DokumenArsipController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\PengeluaranController;
@@ -100,6 +103,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/permintaan-produk/{permintaan}/konfirmasi', [PermintaanProdukController::class, 'konfirmasi'])->name('produk.konfirmasi');
     Route::post('/permintaan-produk/{permintaan}/opsi-lain', [PermintaanProdukController::class, 'mintaOpsiLain'])->name('produk.opsi_lain');
     Route::post('/permintaan-produk/{permintaan}/batalkan', [PermintaanProdukController::class, 'batalkan'])->name('produk.batalkan');
+
+    // Desain (permintaan desain -> Desain -> review peminta)
+    Route::get('/desain', [DesainController::class, 'index'])->name('desain.index');
+    Route::get('/desain/buat', [DesainController::class, 'create'])->name('desain.create');
+    Route::post('/desain', [DesainController::class, 'store'])->name('desain.store');
+    Route::get('/desain/{desain}', [DesainController::class, 'show'])->name('desain.show');
+    Route::post('/desain/{desain}/ambil', [DesainController::class, 'ambil'])->name('desain.ambil');
+    Route::post('/desain/{desain}/kirim-hasil', [DesainController::class, 'kirimHasil'])->name('desain.kirim');
+    Route::post('/desain/{desain}/setujui', [DesainController::class, 'setujui'])->name('desain.setujui');
+    Route::post('/desain/{desain}/revisi', [DesainController::class, 'mintaRevisi'])->name('desain.revisi');
+    Route::post('/desain/{desain}/batalkan', [DesainController::class, 'batalkan'])->name('desain.batalkan');
+    Route::get('/desain/{desain}/file/{file}', [DesainController::class, 'file'])->name('desain.file');
+
+    // Dokumen: permintaan dokumen + arsip legalitas PT
+    Route::get('/permintaan-dokumen', [PermintaanDokumenController::class, 'index'])->name('dokumen.index');
+    Route::get('/permintaan-dokumen/buat', [PermintaanDokumenController::class, 'create'])->name('dokumen.create');
+    Route::post('/permintaan-dokumen', [PermintaanDokumenController::class, 'store'])->name('dokumen.store');
+    Route::get('/permintaan-dokumen/{dokumen}', [PermintaanDokumenController::class, 'show'])->name('dokumen.show');
+    Route::post('/permintaan-dokumen/{dokumen}/ambil', [PermintaanDokumenController::class, 'ambil'])->name('dokumen.ambil');
+    Route::post('/permintaan-dokumen/{dokumen}/selesai', [PermintaanDokumenController::class, 'selesaikan'])->name('dokumen.selesai');
+    Route::post('/permintaan-dokumen/{dokumen}/batalkan', [PermintaanDokumenController::class, 'batalkan'])->name('dokumen.batalkan');
+    Route::get('/permintaan-dokumen/{dokumen}/file/{file}', [PermintaanDokumenController::class, 'file'])->name('dokumen.file');
+
+    Route::get('/arsip-legalitas', [DokumenArsipController::class, 'index'])->name('arsip.index');
+    Route::get('/arsip-legalitas/tambah', [DokumenArsipController::class, 'create'])->name('arsip.create');
+    Route::post('/arsip-legalitas', [DokumenArsipController::class, 'store'])->name('arsip.store');
+    Route::get('/arsip-legalitas/{arsip}/edit', [DokumenArsipController::class, 'edit'])->name('arsip.edit');
+    Route::put('/arsip-legalitas/{arsip}', [DokumenArsipController::class, 'update'])->name('arsip.update');
+    Route::delete('/arsip-legalitas/{arsip}', [DokumenArsipController::class, 'destroy'])->name('arsip.destroy');
+    Route::get('/arsip-legalitas/{arsip}/file', [DokumenArsipController::class, 'file'])->name('arsip.file');
 
     Route::get('/tayang', [TayangController::class, 'index'])->name('tayang.index');
     Route::get('/tayang/{tayang}', [TayangController::class, 'show'])->name('tayang.show');

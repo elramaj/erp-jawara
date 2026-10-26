@@ -62,7 +62,7 @@
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
            onmouseover="{{ request()->routeIs('profil.index') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
            onmouseout="{{ request()->routeIs('profil.index') ? '' : "this.style.background=''" }}">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> Profil
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> Profil Saya
         </a>
     </li>
     <li>
@@ -71,7 +71,7 @@
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
            onmouseover="{{ request()->routeIs('reimburse.index') || request()->routeIs('reimburse.create') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
            onmouseout="{{ request()->routeIs('reimburse.index') || request()->routeIs('reimburse.create') ? '' : "this.style.background=''" }}">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg> Reimburse
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" /></svg> Reimburse Saya
         </a>
     </li>
     <li>
@@ -109,6 +109,51 @@
             @php $n_tayang_index = collect(\App\Services\ProdukTayangService::ringkasan(auth()->user()))->only(['tayang','desain'])->sum(fn($c) => $c->count()); @endphp
             @if($n_tayang_index > 0)
             <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_tayang_index }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
+    @if(\App\Services\DesainService::lihat(auth()->user()))
+    <li>
+        <a href="{{ route('desain.index') }}"
+           style="{{ request()->routeIs('desain.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('desain.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('desain.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg> Desain
+            @php $n_desain = collect(\App\Services\DesainService::ringkasan(auth()->user()))->sum(fn($c) => $c->count()); @endphp
+            @if($n_desain > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_desain }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
+    @if(\App\Services\DokumenService::lihatPermintaan(auth()->user()))
+    <li>
+        <a href="{{ route('dokumen.index') }}"
+           style="{{ request()->routeIs('dokumen.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('dokumen.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('dokumen.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg> Permintaan Dokumen
+            @php $n_dokumen = collect(\App\Services\DokumenService::ringkasan(auth()->user()))->only(['siapkan','selesai'])->sum(fn($c) => $c->count()); @endphp
+            @if($n_dokumen > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_dokumen }}</span>
+            @endif
+        </a>
+    </li>
+    @endif
+    @if(\App\Services\DokumenService::lihatArsip(auth()->user()))
+    <li>
+        <a href="{{ route('arsip.index') }}"
+           style="{{ request()->routeIs('arsip.*') ? 'background:#dc2626;color:white;' : '' }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition text-gray-300 hover:text-white"
+           onmouseover="{{ request()->routeIs('arsip.*') ? '' : "this.style.background='rgba(220,38,38,0.15)'" }}"
+           onmouseout="{{ request()->routeIs('arsip.*') ? '' : "this.style.background=''" }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg> Arsip Legalitas
+            @php $n_arsip = \App\Services\DokumenService::kelola(auth()->user()) ? \App\Services\DokumenService::ringkasan(auth()->user())['arsip']->count() : 0; @endphp
+            @if($n_arsip > 0)
+            <span class="ml-auto text-white text-xs rounded-full px-1.5 py-0.5 font-bold" style="background:#dc2626;">{{ $n_arsip }}</span>
             @endif
         </a>
     </li>

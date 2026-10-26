@@ -102,6 +102,22 @@
             </dl>
             @endif
         </div>
+
+        {{-- Status permintaan desain (otomatis dari centang "Butuh Desain") --}}
+        @if(!empty($desainTerkait))
+        <div class="bg-white rounded-xl shadow p-5 flex items-center justify-between gap-3">
+            <div>
+                <p class="text-xs text-gray-400">Permintaan Desain</p>
+                <p class="text-sm font-medium text-gray-800">{{ $desainTerkait->no_desain }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+                @include('desain._badge', ['status' => $desainTerkait->status])
+                @if(\App\Services\DesainService::lihat(auth()->user()) && \App\Services\DesainService::bisaLihatPermintaan(auth()->user(), $desainTerkait))
+                <a href="{{ route('desain.show', $desainTerkait) }}" class="text-xs text-indigo-600 hover:underline font-semibold">Buka</a>
+                @endif
+            </div>
+        </div>
+        @endif
     </div>
 
     <div class="space-y-6">

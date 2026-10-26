@@ -70,6 +70,7 @@ class TayangController extends Controller
 
         $user = auth()->user();
         return view('tayang.show', [
+            'desainTerkait'  => \App\Models\PermintaanDesain::where('tayang_id', $tayang->id)->latest('id')->first(),
             't'              => $tayang,
             'kelola'         => Akses::kelolaTayang($user),
             'lihatHargaBeli' => Akses::lihatHargaBeli($user),
@@ -104,7 +105,14 @@ class TayangController extends Controller
         $data['perlu_desain'] = $request->boolean('perlu_desain');
 
         $tayang->update($data);
-        return back()->with('success', 'Data tayang disimpan.');
+
+        // Kebutuhan desain otomatis menjadi permintaan di modul Desain
+        $desain = \App\Services\DesainService::selaraskanDariTayang($tayang->fresh(), auth()->user());
+        $pesan = 'Data tayang disimpan.';
+        if ($desain && $desain->wasRecentlyCreated) {
+            $pesan .= ' Permintaan desain ' . $desain->no_desain . ' dikirim ke tim Desain.';
+        }
+        return back()->with('success', $pesan);
     }
 
     public function tayangkan(Request $request, Tayang $tayang)

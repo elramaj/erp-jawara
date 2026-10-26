@@ -92,7 +92,10 @@
                 $notifPengirimanTotal = collect($notifPengirimanData)->sum(fn($c) => $c->count());
                 $notifPT = \App\Services\ProdukTayangService::ringkasan(auth()->user());
                 $notifPTTotal = collect($notifPT)->sum(fn($c) => $c->count());
-                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain + $notifPengirimanTotal + $notifPTTotal;
+                $notifDesain = \App\Services\DesainService::ringkasan(auth()->user());
+                $notifDokumen = \App\Services\DokumenService::ringkasan(auth()->user());
+                $notifDesainTotal = collect($notifDesain)->sum(fn($c) => $c->count()) + collect($notifDokumen)->sum(fn($c) => $c->count());
+                $totalNotif = $notifIzin + $notifDeadline + $notifKomplain + $notifPengirimanTotal + $notifPTTotal + $notifDesainTotal;
             @endphp
             <div class="relative" x-data="{ open: false }" @click.away="open = false">
                 <button @click="open = !open" class="relative p-1">
@@ -153,6 +156,51 @@
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $nd->judul }}</p>
                                 <p class="text-xs text-purple-600">Butuh desain untuk tayang</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifDesain['tugas'] as $nx)
+                        <a href="{{ route('desain.show', $nx) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-purple-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nx->judul }}</p>
+                                <p class="text-xs text-purple-600">{{ $nx->status === 'baru' ? 'Permintaan desain baru' : ($nx->status === 'revisi' ? 'Perlu direvisi' : 'Sedang kamu kerjakan') }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifDesain['review'] as $nx)
+                        <a href="{{ route('desain.show', $nx) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nx->judul }}</p>
+                                <p class="text-xs text-yellow-600">Hasil desain siap, menunggu review kamu</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifDokumen['siapkan'] as $nx)
+                        <a href="{{ route('dokumen.show', $nx) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nx->jenis_dokumen }}</p>
+                                <p class="text-xs text-blue-600">{{ $nx->status === 'baru' ? 'Permintaan dokumen baru' : 'Sedang disiapkan' }}{{ $nx->deadline ? ' · deadline ' . $nx->deadline->format('d M') : '' }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifDokumen['selesai'] as $nx)
+                        <a href="{{ route('dokumen.show', $nx) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nx->jenis_dokumen }}</p>
+                                <p class="text-xs text-green-600">Dokumen sudah siap diunduh</p>
+                            </div>
+                        </a>
+                        @endforeach
+                        @foreach($notifDokumen['arsip'] as $nx)
+                        <a href="{{ route('arsip.index', ['tampil' => $nx->status_masa === 'kedaluwarsa' ? 'kedaluwarsa' : 'segera']) }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
+                            <svg class="w-5 h-5 flex-shrink-0 {{ $nx->status_masa === 'kedaluwarsa' ? 'text-red-500' : 'text-orange-500' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ $nx->nama }}</p>
+                                <p class="text-xs {{ $nx->status_masa === 'kedaluwarsa' ? 'text-red-500 font-semibold' : 'text-orange-500' }}">{{ $nx->status_masa === 'kedaluwarsa' ? 'Sudah kedaluwarsa' : 'Berakhir ' . $nx->tanggal_kedaluwarsa->format('d M Y') . ' (' . $nx->sisa_hari . ' hari)' }}</p>
                             </div>
                         </a>
                         @endforeach
