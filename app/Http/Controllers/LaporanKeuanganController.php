@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Fj;
 use App\Models\FjBayar;
 use App\Models\Fb;
@@ -17,7 +18,7 @@ class LaporanKeuanganController extends Controller
 {
     private function cekAkses()
 {
-    if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+    if (!HakAkses::bisa('laporan.keuangan')) {
         abort(403, 'Akses ditolak.');
     }
 }

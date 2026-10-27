@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Aset;
 use App\Models\AsetKategori;
 use App\Models\AsetRiwayat;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AsetController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 4, 11])) {
+        if (!HakAkses::bisa('aset')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -50,7 +52,7 @@ class AsetController extends Controller
     {
         $this->cekAkses();
         $kategori = AsetKategori::orderBy('nama')->get();
-        $karyawan = User::where('is_active', true)->orderBy('name')->get();
+        $karyawan = User::where('is_active', true)->forCurrentCompany()->orderBy('name')->get();
         return view('aset.create', compact('kategori', 'karyawan'));
     }
 
@@ -58,8 +60,9 @@ class AsetController extends Controller
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
-            'kode_aset'      => 'required|string|max:100|unique:aset,kode_aset',
+            'kode_aset'      => ['required', 'string', 'max:100', Rule::unique('aset', 'kode_aset')->where('company_id', $companyId)],
             'nama_aset'      => 'required|string|max:255',
             'kategori_id'    => 'nullable|exists:aset_kategori,id',
             'merk'           => 'nullable|string|max:150',
@@ -69,14 +72,14 @@ class AsetController extends Controller
             'tanggal_beli'   => 'nullable|date',
             'harga_beli'     => 'nullable|numeric|min:0',
             'kondisi'        => 'required|in:baik,rusak_ringan,rusak_berat,hilang',
-            'dipegang_oleh'  => 'nullable|exists:users,id',
+            'dipegang_oleh'  => ['nullable', Rule::exists('users', 'id')->where('company_id', $companyId)],
             'catatan'        => 'nullable|string',
         ]);
 
         $status = $request->dipegang_oleh ? 'dipakai' : 'tersedia';
 
         $aset = Aset::create([
-            'company_id'     => auth()->user()->company_id,
+            'company_id'     => $companyId,
             'kode_aset'      => $request->kode_aset,
             'nama_aset'      => $request->nama_aset,
             'kategori_id'    => $request->kategori_id,
@@ -111,7 +114,7 @@ class AsetController extends Controller
     {
         $this->cekAkses();
         $aset->load(['kategori', 'pemegang', 'company', 'riwayat.user', 'riwayat.creator']);
-        $karyawan = User::where('is_active', true)->orderBy('name')->get();
+        $karyawan = User::where('is_active', true)->forCurrentCompany()->orderBy('name')->get();
         return view('aset.show', compact('aset', 'karyawan'));
     }
 
@@ -128,7 +131,7 @@ class AsetController extends Controller
     {
         $this->cekAkses();
         $request->validate([
-            'kode_aset'      => 'required|string|max:100|unique:aset,kode_aset,' . $aset->id,
+            'kode_aset'      => ['required', 'string', 'max:100', Rule::unique('aset', 'kode_aset')->where('company_id', $aset->company_id)->ignore($aset->id)],
             'nama_aset'      => 'required|string|max:255',
             'kategori_id'    => 'nullable|exists:aset_kategori,id',
             'merk'           => 'nullable|string|max:150',
@@ -156,7 +159,7 @@ class AsetController extends Controller
         $this->cekAkses();
         $request->validate([
             'status_baru'   => 'required|in:dipakai,gudang,diperbaiki,hilang',
-            'user_id'       => 'nullable|exists:users,id|required_if:status_baru,dipakai',
+            'user_id'       => ['nullable', 'required_if:status_baru,dipakai', Rule::exists('users', 'id')->where('company_id', $aset->company_id)],
             'catatan'       => 'nullable|string',
         ]);
 

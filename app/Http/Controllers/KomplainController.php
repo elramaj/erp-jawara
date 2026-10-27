@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Komplain;
 use App\Models\KomplainTimeline;
 use App\Models\Proyek;
@@ -9,13 +10,39 @@ use App\Models\User;
 use App\Support\CetakTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class KomplainController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 4, 5, 7, 11])) {
+        if (!HakAkses::bisa('komplain')) {
             abort(403, 'Akses ditolak.');
+        }
+    }
+
+    /**
+     * Boleh membuka/mengubah SATU komplain? Aturannya sama persis dengan daftar (index):
+     * Direktur & Admin semua; role lain hanya yang dibuat/ditangani sendiri,
+     * Teknisi juga komplain baru yang belum ditugaskan.
+     */
+    private function cekAksesData(Komplain $komplain): void
+    {
+        $user = auth()->user();
+
+        if ($user->isSuperAdmin() || HakAkses::bisa('komplain.semua', $user)) {
+            return;
+        }
+
+        $miliknya = (int) $komplain->created_by === (int) $user->id
+            || (int) $komplain->handled_by === (int) $user->id;
+
+        $antrianTeknisi = (int) $user->role_id === HakAkses::TEKNISI
+            && $komplain->handled_by === null
+            && $komplain->status === 'open';
+
+        if (!$miliknya && !$antrianTeknisi) {
+            abort(403, 'Anda tidak punya akses ke komplain ini.');
         }
     }
 
@@ -25,7 +52,7 @@ class KomplainController extends Controller
         $user = auth()->user();
 
         // Admin & bos lihat semua, lainnya hanya yang dibuat sendiri atau di-handle
-        if (in_array($user->role_id, [1, 11])) {
+        if (HakAkses::bisa('komplain.semua', $user)) {
             $komplain = Komplain::with(['proyek', 'creator', 'handler'])
                 ->orderBy('created_at', 'desc')->get();
         } else {
@@ -34,7 +61,7 @@ class KomplainController extends Controller
                     $q->where('created_by', $user->id)
                       ->orWhere('handled_by', $user->id);
                     // Teknisi juga melihat komplain baru yang belum ditugaskan (sama dengan yang di lonceng)
-                    if ((int) $user->role_id === 7) {
+                    if ((int) $user->role_id === HakAkses::TEKNISI) {
                         $q->orWhere(fn($w) => $w->whereNull('handled_by')->where('status', 'open'));
                     }
                 })
@@ -61,11 +88,13 @@ class KomplainController extends Controller
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
             'judul'      => 'required|string|max:255',
             'jenis'      => 'required|in:barang,dokumen',
             'prioritas'  => 'required|in:low,medium,high,critical',
-            'proyek_id'  => 'nullable|exists:proyek,id',
+            // Proyek harus milik PT yang sama (exists biasa tidak ikut global scope PT).
+            'proyek_id'  => ['nullable', Rule::exists('proyek', 'id')->where('company_id', $companyId)],
             'deskripsi'  => 'nullable|string',
         ]);
 
@@ -74,7 +103,7 @@ class KomplainController extends Controller
         );
 
         $komplain = Komplain::create([
-            'company_id'    => auth()->user()->company_id,
+            'company_id'    => $companyId,
             'no_komplain'   => $no_komplain,
             'proyek_id'     => $request->proyek_id,
             'jenis'         => $request->jenis,
@@ -100,6 +129,7 @@ class KomplainController extends Controller
     public function show(Komplain $komplain)
     {
         $this->cekAkses();
+        $this->cekAksesData($komplain);
         $komplain->load(['proyek', 'creator', 'handler', 'timeline.creator']);
         $users = User::where('is_active', 1)->forCurrentCompany()->orderBy('name')->get();
         return view('komplain.show', compact('komplain', 'users'));
@@ -109,6 +139,7 @@ class KomplainController extends Controller
     public function cetakTerima(Komplain $komplain)
     {
         $this->cekAkses();
+        $this->cekAksesData($komplain);
         $komplain->load(['proyek', 'handler', 'company', 'barangService']);
         return CetakTemplate::view('tanda-terima-service', $komplain->company, ['komplain' => $komplain]);
     }
@@ -117,6 +148,7 @@ class KomplainController extends Controller
     public function simpanTandaTerima(Request $request, Komplain $komplain)
     {
         $this->cekAkses();
+        $this->cekAksesData($komplain);
 
         $data = $request->validate([
             'tanggal_terima_service'  => 'nullable|date',
@@ -163,13 +195,15 @@ class KomplainController extends Controller
         return back()->with('success', 'Data tanda terima service disimpan.');
     }
 
-        public function updateStatus(Request $request, Komplain $komplain)
+    public function updateStatus(Request $request, Komplain $komplain)
     {
         $this->cekAkses();
+        $this->cekAksesData($komplain);
         $request->validate([
             'status'      => 'required|in:open,in_progress,resolved',
             'keterangan'  => 'required|string',
-            'handled_by'  => 'nullable|exists:users,id',
+            // Penanggung jawab harus karyawan PT yang sama dengan komplainnya.
+            'handled_by'  => ['nullable', Rule::exists('users', 'id')->where('company_id', $komplain->company_id)],
             'no_servisan' => 'nullable|string|max:100',
         ]);
 

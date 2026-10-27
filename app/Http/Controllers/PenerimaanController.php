@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Po;
 use App\Services\PenerimaanBarangService;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class PenerimaanController extends Controller
     private function cekAkses(): void
     {
         $u = auth()->user();
-        abort_unless($u->isSuperAdmin() || in_array((int) $u->role_id, [1, 3, 4, 11], true), 403, 'Akses ditolak.');
+        abort_unless(HakAkses::bisa('penerimaan', $u), 403, 'Akses ditolak.');
     }
 
     public function index(Request $request)

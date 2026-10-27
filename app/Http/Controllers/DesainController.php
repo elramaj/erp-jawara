@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\DesainFile;
 use App\Models\PermintaanDesain;
 use App\Models\Proyek;
@@ -59,7 +60,7 @@ class DesainController extends Controller
     {
         $this->cekLihat();
         $user = auth()->user();
-        $filter = $request->query('tampil', $user->role_id == 12 ? 'tugas' : 'proses');
+        $filter = $request->query('tampil', $user->role_id == HakAkses::DESAIN ? 'tugas' : 'proses');
 
         $q = PermintaanDesain::with(['creator', 'desainer', 'proyek'])->orderByRaw('deadline is null')->orderBy('deadline')->orderBy('created_at', 'desc');
         if (!Akses::lihatSemua($user)) {
@@ -93,7 +94,7 @@ class DesainController extends Controller
     {
         $user = auth()->user();
         $q = Proyek::whereNotIn('status', ['selesai', 'dibatalkan'])->orderBy('nama_proyek');
-        if ((int) $user->role_id === 5 && !$user->isSuperAdmin()) {
+        if ((int) $user->role_id === HakAkses::SALES && !$user->isSuperAdmin()) {
             $q->whereHas('anggota', fn($a) => $a->where('user_id', $user->id));
         }
         return $q->get(['id', 'kode_proyek', 'nama_proyek']);

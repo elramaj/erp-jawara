@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Tayang;
 use App\Services\ProdukTayangService as Akses;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class TayangController extends Controller
     {
         $this->cekLihat();
         $user = auth()->user();
-        if ((int) $user->role_id === 5 && !$user->isSuperAdmin() && !Akses::kelolaTayang($user)) {
+        if ((int) $user->role_id === HakAkses::SALES && !$user->isSuperAdmin() && !Akses::kelolaTayang($user)) {
             if ((int) optional($tayang->permintaan)->created_by !== (int) $user->id) {
                 abort(403, 'Akses ditolak.');
             }
@@ -41,10 +42,10 @@ class TayangController extends Controller
         $filter = $request->query('tampil', 'proses');
 
         $q = Tayang::with(['permintaan.creator', 'proyek', 'penangan'])->orderBy('created_at', 'desc');
-        if ((int) $user->role_id === 5 && !$user->isSuperAdmin()) {
+        if ((int) $user->role_id === HakAkses::SALES && !$user->isSuperAdmin()) {
             $q->whereHas('permintaan', fn($p) => $p->where('created_by', $user->id));
         }
-        if ((int) $user->role_id === 12 && !$user->isSuperAdmin()) {
+        if ((int) $user->role_id === HakAkses::DESAIN && !$user->isSuperAdmin()) {
             $filter = $request->query('tampil', 'desain');
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\DokumenArsip;
 use App\Models\PermintaanDokumen;
 use App\Models\PermintaanDokumenFile;
@@ -67,7 +68,7 @@ class PermintaanDokumenController extends Controller
     {
         $user = auth()->user();
         $q = Proyek::whereNotIn('status', ['selesai', 'dibatalkan'])->orderBy('nama_proyek');
-        if ((int) $user->role_id === 5 && !$user->isSuperAdmin()) {
+        if ((int) $user->role_id === HakAkses::SALES && !$user->isSuperAdmin()) {
             $q->whereHas('anggota', fn($a) => $a->where('user_id', $user->id));
         }
         return $q->get(['id', 'kode_proyek', 'nama_proyek']);

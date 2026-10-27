@@ -11,7 +11,7 @@
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5V21h3.75v-7.5H3ZM10.125 9v12H13.5V9h-3.375ZM17.25 3v18H21V3h-3.75Z" /></svg> Dashboard
         </a>
     </li>
-    @if(auth()->user()->role_id == 11 || auth()->user()->role_id == 1)
+    @if(\App\Support\HakAkses::bisa('izin.review'))
     <li>
         <a href="{{ route('izin.review') }}"
            style="{{ request()->routeIs('izin.review') ? 'background:#dc2626;color:white;' : '' }}"
@@ -28,7 +28,7 @@
         </a>
     </li>
     @endif
-    @if(in_array(auth()->user()->role_id, [1, 2, 11]))
+    @if(\App\Support\HakAkses::bisa('reimburse.review'))
     <li>
         <a href="{{ route('reimburse.review') }}"
            style="{{ request()->routeIs('reimburse.review') ? 'background:#dc2626;color:white;' : '' }}"
@@ -45,7 +45,7 @@
         </a>
     </li>
     @endif
-    @if(auth()->user()->role_id == 11)
+    @if(\App\Support\HakAkses::bisa('rekap_absensi'))
     <li>
         <a href="{{ route('rekap.index') }}"
            style="{{ request()->routeIs('rekap.index') ? 'background:#dc2626;color:white;' : '' }}"
@@ -177,7 +177,7 @@
         </a>
     </li>
     @endif
-    @if(in_array(auth()->user()->role_id, [1, 4, 5, 7, 11]))
+    @if(\App\Support\HakAkses::bisa('komplain'))
     <li>
         <a href="{{ route('komplain.index') }}"
            style="{{ request()->routeIs('komplain.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -192,7 +192,7 @@
         </a>
     </li>
     @endif
-    @if(in_array(auth()->user()->role_id, [1, 2, 3, 4, 11]))
+    @if(\App\Support\HakAkses::bisa('gudang'))
     <li>
         <a href="{{ route('gudang.index') }}"
            style="{{ request()->routeIs('gudang.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -203,7 +203,7 @@
         </a>
     </li>
     @endif
-    @if(auth()->user()->isSuperAdmin() || in_array(auth()->user()->role_id, [1, 3, 4, 11]))
+    @if(\App\Support\HakAkses::bisa('penerimaan'))
     <li>
         <a href="{{ route('penerimaan.index') }}"
            style="{{ request()->routeIs('penerimaan.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -218,7 +218,7 @@
         </a>
     </li>
     @endif
-    @if(in_array(auth()->user()->role_id, [1, 2, 3, 4, 11]))
+    @if(\App\Support\HakAkses::bisa('aset'))
     <li>
         <a href="{{ route('aset.index') }}"
            style="{{ request()->routeIs('aset.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -232,12 +232,12 @@
 </ul>
 
 {{-- Keuangan --}}
-@if(in_array(auth()->user()->role_id, [1, 2, 3, 5, 11, 14]))
+@if(\App\Support\HakAkses::bisa('menu.keuangan'))
 <div class="px-4 py-3 mt-4 mb-2">
     <p class="text-xs uppercase tracking-widest font-semibold" style="color:rgba(255,255,255,0.3);">Keuangan</p>
 </div>
 <ul class="space-y-0.5 px-3">
-    @if(in_array(auth()->user()->role_id, [1, 2, 3, 5, 11]))
+    @if(\App\Support\HakAkses::bisa('so'))
     <li>
         <a href="{{ route('so.index') }}"
            style="{{ request()->routeIs('so.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -253,7 +253,7 @@
     </li>
     @endif
     {{-- PO, Customer, Supplier: Sales (5) tidak ikut, cuma butuh SO --}}
-    @if(in_array(auth()->user()->role_id, [1, 2, 3, 11, 14]))
+    @if(\App\Support\HakAkses::bisa('po') || \App\Support\HakAkses::bisa('customer') || \App\Support\HakAkses::bisa('supplier'))
     <li>
         <a href="{{ route('po.index') }}"
            style="{{ request()->routeIs('po.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -286,7 +286,7 @@
         </a>
     </li>
     @endif
-    @if(in_array(auth()->user()->role_id, [1, 2, 11]))
+    @if(\App\Support\HakAkses::bisa('laporan.keuangan'))
     <li>
         <a href="{{ route('laporan.keuangan') }}"
            style="{{ request()->routeIs('laporan.*') ? 'background:#dc2626;color:white;' : '' }}"
@@ -310,7 +310,7 @@
 @endif
 
 {{-- Admin --}}
-@if(auth()->user()->role_id == 11)
+@if(\App\Support\HakAkses::bisa('menu.admin'))
 <div class="px-4 py-3 mt-4 mb-2">
     <p class="text-xs uppercase tracking-widest font-semibold" style="color:rgba(255,255,255,0.3);">Admin</p>
 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Department;
 use App\Models\JamKerja;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class PengaturanController extends Controller
 {
     private function cekAkses()
     {
-        if (auth()->user()->role_id != 11) {
+        if (!HakAkses::bisa('pengaturan')) {
             abort(403, 'Akses ditolak.');
         }
     }

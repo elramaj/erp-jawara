@@ -10,6 +10,7 @@ use App\Models\GudangStokMasuk;
 use App\Models\GudangStokKeluar;
 use App\Models\GudangFifoDetail;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class GudangController extends Controller
 {
@@ -45,7 +46,7 @@ class GudangController extends Controller
     public function storeBarang(Request $request)
     {
         $request->validate([
-            'kode_barang'  => 'required|string|max:100|unique:gudang_barang,kode_barang',
+            'kode_barang'  => ['required', 'string', 'max:100', Rule::unique('gudang_barang', 'kode_barang')->where('company_id', $request->user()->company_id)],
             'nama_barang'  => 'required|string|max:255',
             'kategori_id'  => 'nullable|exists:gudang_kategori,id',
             'satuan'       => 'required|string|max:50',
@@ -156,7 +157,7 @@ class GudangController extends Controller
     public function storeMasuk(Request $request)
     {
         $request->validate([
-            'barang_id'      => 'required|exists:gudang_barang,id',
+            'barang_id'      => ['required', Rule::exists('gudang_barang', 'id')->where('company_id', $request->user()->company_id)],
             'jumlah'         => 'required|integer|min:1',
             'tanggal'        => 'required|date',
             'serial_numbers' => 'nullable|array',
@@ -198,7 +199,7 @@ class GudangController extends Controller
     public function storeKeluar(Request $request)
     {
         $request->validate([
-            'barang_id'      => 'required|exists:gudang_barang,id',
+            'barang_id'      => ['required', Rule::exists('gudang_barang', 'id')->where('company_id', $request->user()->company_id)],
             'jumlah'         => 'required|integer|min:1',
             'tanggal'        => 'required|date',
             'serial_numbers' => 'nullable|array',
@@ -240,6 +241,7 @@ class GudangController extends Controller
         // Update SN
         if ($barang->has_sn && !empty($request->serial_numbers)) {
             GudangSerialNumber::whereIn('id', $request->serial_numbers)
+                ->where('barang_id', $barang->id)
                 ->update(['status' => 'terjual', 'keluar_id' => $keluar->id]);
         }
 

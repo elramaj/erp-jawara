@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Department;
@@ -18,7 +19,7 @@ class KaryawanController extends Controller
     private function cekAkses()
     {
         $u = auth()->user();
-        if (!$u->isSuperAdmin() && $u->role_id != 11) {
+        if (!HakAkses::bisa('karyawan.kelola', $u)) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -29,7 +30,7 @@ class KaryawanController extends Controller
      */
     private function cekAksesCompany(User $user)
     {
-        if (!auth()->user()->isSuperAdmin() && $user->company_id !== auth()->user()->company_id) {
+        if (!auth()->user()->isSuperAdmin() && (int) $user->company_id !== (int) auth()->user()->company_id) {
             abort(403, 'Akses ditolak.');
         }
     }

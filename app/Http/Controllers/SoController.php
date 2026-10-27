@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\So;
 use App\Models\SoDetail;
 use App\Models\Sj;
@@ -15,13 +16,14 @@ use App\Models\GudangStokKeluar;
 use App\Models\GudangFifoDetail;
 use App\Models\GudangStokMasuk;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Support\CetakTemplate;
 
 class SoController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 5, 11])) {
+        if (!HakAkses::bisa('so')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -51,17 +53,22 @@ class SoController extends Controller
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
-            'no_so'       => 'required|unique:so,no_so',
+            'no_so'       => ['required', Rule::unique('so', 'no_so')->where('company_id', $companyId)],
             'tanggal'     => 'required|date',
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => ['required', Rule::exists('customers', 'id')->where('company_id', $companyId)],
+            'proyek_id'   => ['nullable', Rule::exists('proyek', 'id')->where('company_id', $companyId)],
             'barang_id'   => 'required|array|min:1',
+            'barang_id.*' => ['required', Rule::exists('gudang_barang', 'id')->where('company_id', $companyId)],
             'jumlah'      => 'required|array',
+            'jumlah.*'    => 'required|integer|min:1',
             'harga'       => 'required|array',
+            'harga.*'     => 'required|numeric|min:0',
         ]);
 
         $so = So::create([
-            'company_id'  => auth()->user()->company_id,
+            'company_id'  => $companyId,
             'no_so'       => $request->no_so,
             'tanggal'     => $request->tanggal,
             'customer_id' => $request->customer_id,
@@ -103,10 +110,22 @@ class SoController extends Controller
     {
         $this->cekAkses();
         $request->validate([
-            'tanggal'   => 'required|date',
-            'barang_id' => 'required|array',
-            'jumlah'    => 'required|array',
+            'tanggal'     => 'required|date',
+            'barang_id'   => 'required|array',
+            'barang_id.*' => 'required|integer',
+            'jumlah'      => 'required|array',
+            'jumlah.*'    => 'nullable|integer|min:0',
         ]);
+
+        // Surat Jalan hanya boleh berisi barang yang memang ada di SO ini.
+        // Tanpa ini, ID barang bisa dikarang (bahkan milik PT lain) dan stok
+        // gudang yang bersangkutan ikut berkurang.
+        $barangDiSo = $so->detail()->pluck('barang_id')->map(fn($v) => (int) $v)->all();
+        foreach ($request->barang_id as $barangId) {
+            if (!in_array((int) $barangId, $barangDiSo, true)) {
+                return back()->withErrors(['barang_id' => 'Ada barang yang bukan bagian dari SO ini.']);
+            }
+        }
 
         // Nomor SJ di-scope per company (pakai company_id milik SO-nya) supaya
         // tidak tabrakan urutan kalau ada lebih dari 1 company aktif dalam sistem.

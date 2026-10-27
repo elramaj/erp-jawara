@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Company;
 use App\Models\User;
 use App\Support\CetakTemplate;
@@ -13,7 +14,7 @@ class CompanyController extends Controller
 {
     private function cekAkses()
     {
-        if (auth()->user()->role_id != 11) {
+        if (!HakAkses::bisa('perusahaan')) {
             abort(403, 'Akses ditolak.');
         }
     }

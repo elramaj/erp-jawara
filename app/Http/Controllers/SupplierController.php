@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Company;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ class SupplierController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 11, 14])) {
+        if (!HakAkses::bisa('supplier')) {
             abort(403, 'Akses ditolak.');
         }
     }

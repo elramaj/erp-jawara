@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Absensi;
 use App\Models\User;
 use App\Models\PengajuanIzin;
@@ -51,7 +52,7 @@ class DashboardController extends Controller
         $hadirHariIni = 0;
         $izinPendingAdmin = 0;
 
-        if ($user->role_id == 11) {
+        if (HakAkses::bisa('dashboard.admin', $user)) {
             $totalKaryawanQuery = User::where('is_active', 1);
             $hadirHariIniQuery = Absensi::whereDate('tanggal', $today)
                 ->whereIn('status', ['hadir', 'terlambat']);

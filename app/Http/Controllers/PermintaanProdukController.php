@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Customer;
 use App\Models\PermintaanProduk;
 use App\Models\PermintaanProdukItem;
@@ -31,7 +32,7 @@ class PermintaanProdukController extends Controller
     private function cekBuat(): void
     {
         $u = auth()->user();
-        if (!($u->isSuperAdmin() || in_array((int) $u->role_id, [1, 5, 11], true))) {
+        if (!HakAkses::bisa('permintaan_produk.buat', $u)) {
             abort(403, 'Hanya Sales yang bisa membuat permintaan produk.');
         }
     }
@@ -63,7 +64,7 @@ class PermintaanProdukController extends Controller
         return view('produk.index', [
             'permintaan' => $q->get(),
             'filter'     => $filter,
-            'bisaBuat'   => $user->isSuperAdmin() || in_array((int) $user->role_id, [1, 5, 11], true),
+            'bisaBuat'   => HakAkses::bisa('permintaan_produk.buat', $user),
         ]);
     }
 
@@ -77,7 +78,7 @@ class PermintaanProdukController extends Controller
     {
         $user = auth()->user();
         $proyek = Proyek::whereNotIn('status', ['selesai', 'dibatalkan'])->orderBy('nama_proyek');
-        if ((int) $user->role_id === 5 && !$user->isSuperAdmin()) {
+        if ((int) $user->role_id === HakAkses::SALES && !$user->isSuperAdmin()) {
             $proyek->whereHas('anggota', fn($a) => $a->where('user_id', $user->id));
         }
         return [

@@ -78,7 +78,7 @@
             {{-- Notifikasi --}}
                         @php
                 $notifIzin = 0;
-                if (in_array(auth()->user()->role_id, [1, 11])) {
+                if (\App\Support\HakAkses::bisa('izin.review')) {
                     $notifIzin = \App\Models\PengajuanIzin::where('status','pending')->count();
                 }
                 $notifTugas = \App\Services\TugasService::ringkasan(auth()->user());
@@ -114,7 +114,7 @@
                         Notifikasi
                     </div>
                     <div class="max-h-72 overflow-y-auto divide-y divide-gray-100">
-                        @if(in_array(auth()->user()->role_id, [1, 11]) && $notifIzin > 0)
+                        @if(\App\Support\HakAkses::bisa('izin.review') && $notifIzin > 0)
                         <a href="{{ route('izin.review') }}" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
                             <svg class="w-5 h-5 flex-shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             <div>

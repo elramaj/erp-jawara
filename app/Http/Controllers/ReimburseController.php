@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\BebanOperasional;
 use App\Models\Reimburse;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class ReimburseController extends Controller
     // Sama kayak akses Laporan Keuangan & Pengeluaran (admin/finance/bos).
     private function cekAksesKeuangan()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+        if (!HakAkses::bisa('reimburse.review')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -35,6 +36,7 @@ class ReimburseController extends Controller
     // Simpan pengajuan
     public function store(Request $request)
     {
+        $companyId = $this->companyIdUntukSimpan(); // sebelum menyimpan berkas, supaya tidak ada berkas yatim
         $request->validate([
             'kategori'            => 'required|in:' . implode(',', array_keys(Reimburse::KATEGORI)),
             'tanggal_pengeluaran' => 'required|date',
@@ -49,7 +51,7 @@ class ReimburseController extends Controller
         }
 
         Reimburse::create([
-            'company_id'          => auth()->user()->company_id,
+            'company_id'          => $companyId,
             'user_id'             => auth()->id(),
             'kategori'            => $request->kategori,
             'tanggal_pengeluaran' => $request->tanggal_pengeluaran,

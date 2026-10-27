@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\PengajuanIzin;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,7 @@ class IzinController extends Controller
     // hanya boleh mengajukan izin, bukan mereview punya orang lain.
     private function cekAksesReview()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+        if (!HakAkses::bisa('izin.review')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -42,7 +43,7 @@ class IzinController extends Controller
         ]);
 
         PengajuanIzin::create([
-            'company_id'       => auth()->user()->company_id,
+            'company_id'       => $this->companyIdUntukSimpan(),
             'user_id'          => auth()->id(),
             'jenis'            => $request->jenis,
             'tanggal_mulai'    => $request->tanggal_mulai,

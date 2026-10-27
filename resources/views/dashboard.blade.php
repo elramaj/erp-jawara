@@ -57,7 +57,7 @@
 </div>
 
 {{-- Statistik Kantor (khusus admin) --}}
-@if(auth()->user()->role_id == 11)
+@if(\App\Support\HakAkses::bisa('dashboard.admin'))
 <div class="grid grid-cols-1 gap-3 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
     <div class="bg-indigo-600 rounded-xl shadow p-4 text-white">
         <p class="text-indigo-200 text-xs">Total Karyawan Aktif</p>

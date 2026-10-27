@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Absensi;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class RekapAbsensiController extends Controller
 {
     public function index(Request $request)
     {
-        if (auth()->user()->role_id != 11) {
+        if (!HakAkses::bisa('rekap_absensi')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -32,7 +33,7 @@ class RekapAbsensiController extends Controller
 
     public function detail(Request $request, User $user)
     {
-        if (auth()->user()->role_id != 11) {
+        if (!HakAkses::bisa('rekap_absensi')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -96,7 +97,7 @@ class RekapAbsensiController extends Controller
 
     public function export(Request $request)
     {
-        if (auth()->user()->role_id != 11) {
+        if (!HakAkses::bisa('rekap_absensi')) {
             abort(403, 'Akses ditolak.');
         }
 

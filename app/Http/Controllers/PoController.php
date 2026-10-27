@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Po;
 use App\Services\PenerimaanBarangService;
 use App\Support\CetakTemplate;
@@ -13,12 +14,13 @@ use App\Models\Proyek;
 use App\Models\GudangBarang;
 use App\Models\GudangStokMasuk;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PoController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 11, 14])) {
+        if (!HakAkses::bisa('po')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -45,17 +47,24 @@ class PoController extends Controller
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
-            'no_po'       => 'required|unique:po,no_po',
+            // Nomor unik PER PT (penomoran otomatis dihitung per PT, jadi PT lain boleh punya nomor sama).
+            'no_po'       => ['required', Rule::unique('po', 'no_po')->where('company_id', $companyId)],
             'tanggal'     => 'required|date',
-            'supplier_id' => 'required|exists:suppliers,id',
+            // exists biasa tidak ikut filter PT, jadi dibatasi manual ke PT sendiri.
+            'supplier_id' => ['required', Rule::exists('suppliers', 'id')->where('company_id', $companyId)],
+            'proyek_id'   => ['nullable', Rule::exists('proyek', 'id')->where('company_id', $companyId)],
             'barang_id'   => 'required|array|min:1',
+            'barang_id.*' => ['required', Rule::exists('gudang_barang', 'id')->where('company_id', $companyId)],
             'jumlah'      => 'required|array',
+            'jumlah.*'    => 'required|integer|min:1',
             'harga'       => 'required|array',
+            'harga.*'     => 'required|numeric|min:0',
         ]);
 
         $po = Po::create([
-            'company_id'  => auth()->user()->company_id,
+            'company_id'  => $companyId,
             'no_po'       => $request->no_po,
             'tanggal'     => $request->tanggal,
             'supplier_id' => $request->supplier_id,

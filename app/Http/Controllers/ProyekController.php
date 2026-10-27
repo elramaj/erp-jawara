@@ -2,21 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\Proyek;
 use App\Models\ProyekAnggota;
 use App\Models\ProyekMilestone;
 use App\Models\ProyekDokumen;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProyekController extends Controller
 {
+    /** Yang boleh membuat/mengatur/menghapus proyek (sama dengan tombol yang tampil di halaman). */
+    private function cekKelola(): void
+    {
+        $user = auth()->user();
+        if (!HakAkses::bisa('proyek.kelola', $user)) {
+            abort(403, 'Akses ditolak.');
+        }
+    }
+
+    /** Boleh melihat/ikut mengerjakan proyek ini: pengelola, atau anggota proyek. */
+    private function cekAksesProyek(Proyek $proyek): void
+    {
+        $user = auth()->user();
+        if (HakAkses::bisa('proyek.kelola', $user)) {
+            return;
+        }
+        $anggota = ProyekAnggota::where('proyek_id', $proyek->id)->where('user_id', $user->id)->exists();
+        if (!$anggota) {
+            abort(403, 'Akses ditolak.');
+        }
+    }
+
     // Daftar proyek
 public function index()
 {
     $user = auth()->user();
 
-    if (in_array($user->role_id, [1, 10, 11])) {
+    if (HakAkses::bisa('proyek.kelola', $user)) {
         $proyek = Proyek::with(['creator', 'anggota', 'company'])
             ->orderBy('created_at', 'desc')->get();
     } else {
@@ -33,7 +57,7 @@ public function index()
     // Form tambah proyek
     public function create()
     {
-        if (!in_array(auth()->user()->role_id, [1, 10, 11])) {
+        if (!HakAkses::bisa('proyek.kelola')) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -44,8 +68,10 @@ public function index()
     // Simpan proyek baru
     public function store(Request $request)
     {
+        $this->cekKelola();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
-            'kode_proyek'  => 'required|unique:proyek,kode_proyek',
+            'kode_proyek'  => ['required', Rule::unique('proyek', 'kode_proyek')->where('company_id', $companyId)],
             'nama_proyek'  => 'required|string|max:255',
             'klien'        => 'required|string|max:150',
             'nilai_kontrak'=> 'nullable|numeric',
@@ -54,10 +80,11 @@ public function index()
             'status'       => 'required|in:draft,bola_liar,aktif,selesai,dibatalkan',
             'deskripsi'    => 'nullable|string',
             'anggota'      => 'nullable|array',
+            'anggota.*'    => [Rule::exists('users', 'id')->where('company_id', $companyId)],
         ]);
 
         $proyek = Proyek::create([
-            'company_id'    => auth()->user()->company_id,
+            'company_id'    => $companyId,
             'kode_proyek'   => $request->kode_proyek,
             'nama_proyek'   => $request->nama_proyek,
             'klien'         => $request->klien,
@@ -115,7 +142,7 @@ public function index()
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1, 10, 11])) {
+        if (!HakAkses::bisa('proyek.kelola', $user)) {
             $isAnggota = ProyekAnggota::where('proyek_id', $proyek->id)
                 ->where('user_id', $user->id)->exists();
             if (!$isAnggota) abort(403, 'Akses ditolak.');
@@ -130,6 +157,7 @@ public function index()
     // Update progress & status
     public function updateProgress(Request $request, Proyek $proyek)
     {
+        $this->cekKelola();
         $request->validate([
             'progress' => 'required|integer|min:0|max:100',
             'status'   => 'required|in:draft,bola_liar,aktif,selesai,dibatalkan',
@@ -146,6 +174,7 @@ public function index()
     // Tambah milestone
     public function storeMilestone(Request $request, Proyek $proyek)
     {
+        $this->cekKelola();
         $request->validate([
             'judul'          => 'required|string|max:255',
             'tanggal_target' => 'required|date',
@@ -169,6 +198,10 @@ public function index()
     // Update status milestone
     public function updateMilestone(Request $request, ProyekMilestone $milestone)
     {
+        // ProyekMilestone tidak punya filter PT sendiri; lewat proyek-nya (yang terfilter PT)
+        // milestone milik PT lain jadi 404, dan role/keanggotaan dicek seperti halaman proyek.
+        $proyek = Proyek::findOrFail($milestone->proyek_id);
+        $this->cekAksesProyek($proyek);
         $request->validate([
             'status' => 'required|in:belum,proses,selesai',
         ]);
@@ -184,6 +217,7 @@ public function index()
     // Upload dokumen
     public function uploadDokumen(Request $request, Proyek $proyek)
     {
+        $this->cekAksesProyek($proyek);
         $request->validate([
             'nama_dokumen' => 'required|string|max:255',
             'jenis'        => 'nullable|string|max:100',
@@ -206,6 +240,7 @@ public function index()
     // Hapus proyek
     public function destroy(Proyek $proyek)
     {
+        $this->cekKelola();
         $proyek->delete();
         return redirect()->route('proyek.index')
             ->with('success', 'Proyek berhasil dihapus!');

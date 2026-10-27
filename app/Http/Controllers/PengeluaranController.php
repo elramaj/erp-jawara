@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\BebanOperasional;
 use App\Models\Reimburse;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PengeluaranController extends Controller
 {
     // Sama kayak akses Laporan Keuangan (admin/finance/bos).
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 11])) {
+        if (!HakAkses::bisa('pengeluaran')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -48,17 +50,18 @@ class PengeluaranController extends Controller
     public function store(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
             'kategori'    => 'required|in:' . implode(',', array_keys(BebanOperasional::KATEGORI)),
             'tanggal'     => 'required|date',
             'nominal'     => 'required|numeric|min:1',
             'keterangan'  => 'nullable|string|max:255',
             // Wajib pilih karyawan cuma kalau kategorinya reimburse.
-            'user_id'     => 'required_if:kategori,reimburse|nullable|exists:users,id',
+            'user_id'     => ['required_if:kategori,reimburse', 'nullable', Rule::exists('users', 'id')->where('company_id', $companyId)],
         ]);
 
         BebanOperasional::create([
-            'company_id'  => auth()->user()->company_id,
+            'company_id'  => $companyId,
             'user_id'     => $request->kategori === 'reimburse' ? $request->user_id : null,
             'kategori'    => $request->kategori,
             'tanggal'     => $request->tanggal,

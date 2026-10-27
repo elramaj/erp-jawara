@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\HakAkses;
 use App\Models\GudangBarang;
 use App\Models\GudangKategori;
 use App\Models\GudangStokMasuk;
@@ -10,13 +11,14 @@ use App\Models\GudangFifoDetail;
 use App\Models\GudangSerialNumber;
 use App\Models\Proyek;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class GudangController extends Controller
 {
     private function cekAkses()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3, 4, 11])) {
+        if (!HakAkses::bisa('gudang')) {
             abort(403, 'Akses ditolak.');
         }
     }
@@ -46,8 +48,9 @@ class GudangController extends Controller
     public function storeBarang(Request $request)
     {
         $this->cekAkses();
+        $companyId = $this->companyIdUntukSimpan();
         $request->validate([
-            'kode_barang'  => 'required|unique:gudang_barang,kode_barang',
+            'kode_barang'  => ['required', Rule::unique('gudang_barang', 'kode_barang')->where('company_id', $companyId)],
             'nama_barang'  => 'required|string|max:255',
             'kategori_id'  => 'nullable|exists:gudang_kategori,id',
             'satuan'       => 'required|string|max:50',
@@ -55,7 +58,7 @@ class GudangController extends Controller
         ]);
 
         GudangBarang::create([
-            'company_id'   => auth()->user()->company_id,
+            'company_id'   => $companyId,
             'kode_barang'  => $request->kode_barang,
             'nama_barang'  => $request->nama_barang,
             'kategori_id'  => $request->kategori_id,
@@ -136,10 +139,11 @@ class GudangController extends Controller
             'jumlah'         => 'required|integer|min:1',
             'harga_jual'     => 'nullable|numeric',
             'tujuan'         => 'nullable|string|max:255',
-            'proyek_id'      => 'nullable|exists:proyek,id',
+            'proyek_id'      => ['nullable', Rule::exists('proyek', 'id')->where('company_id', $barang->company_id)],
             'no_dokumen'     => 'nullable|string|max:100',
             'keterangan'     => 'nullable|string',
             'serial_numbers' => 'nullable|array',
+            'serial_numbers.*' => 'integer',
         ]);
 
         $totalStok = $barang->total_stok;
@@ -151,6 +155,13 @@ class GudangController extends Controller
             $snDipilih = $request->serial_numbers ?? [];
             if (count($snDipilih) != $request->jumlah) {
                 return back()->withErrors(['jumlah' => "Jumlah SN dipilih harus sama dengan jumlah keluar ({$request->jumlah})!"]);
+            }
+
+            // SN yang dipilih harus benar-benar milik barang ini & masih tersedia.
+            $valid = GudangSerialNumber::whereIn('id', $snDipilih)
+                ->where('barang_id', $barang->id)->where('status', 'tersedia')->count();
+            if ($valid !== count(array_unique($snDipilih))) {
+                return back()->withErrors(['serial_numbers' => 'Ada serial number yang tidak valid atau sudah tidak tersedia.']);
             }
         }
 
@@ -185,6 +196,7 @@ class GudangController extends Controller
 
         if ($barang->has_sn && !empty($request->serial_numbers)) {
             GudangSerialNumber::whereIn('id', $request->serial_numbers)
+                ->where('barang_id', $barang->id)
                 ->update([
                     'status'    => 'terjual',
                     'keluar_id' => $keluar->id,
@@ -212,11 +224,13 @@ class GudangController extends Controller
         $this->cekAkses();
         $request->validate([
             'barang_id'  => 'required|array',
+            'barang_id.*' => 'required|integer',
             'stok_fisik' => 'required|array',
         ]);
 
         foreach ($request->barang_id as $i => $barangId) {
-            $barang     = GudangBarang::find($barangId);
+            // findOrFail ikut filter PT: barang milik PT lain -> 404, bukan error 500.
+            $barang     = GudangBarang::findOrFail($barangId);
             $stokSistem = $barang->total_stok;
             $stokFisik  = (int) $request->stok_fisik[$i];
             $selisih    = $stokFisik - $stokSistem;

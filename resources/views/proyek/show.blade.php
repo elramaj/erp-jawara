@@ -83,7 +83,7 @@
             @endif
 
             {{-- Update Progress (admin/bos) --}}
-            @if(in_array(auth()->user()->role_id, [1, 10, 11]))
+            @if(\App\Support\HakAkses::bisa('proyek.kelola'))
             <form method="POST" action="{{ route('proyek.progress', $proyek) }}" class="mt-4 border-t pt-4">
                 @csrf
                 <p class="text-sm font-medium text-gray-700 mb-2">Update Progress & Status</p>
@@ -173,7 +173,7 @@
             </div>
 
             {{-- Tambah Milestone --}}
-            @if(in_array(auth()->user()->role_id, [1, 10, 11]))
+            @if(\App\Support\HakAkses::bisa('proyek.kelola'))
             <div class="border-t pt-4 mt-2">
                 <p class="text-sm font-medium text-gray-700 mb-2">+ Tambah Milestone</p>
                 <form method="POST" action="{{ route('proyek.milestone', $proyek) }}">
@@ -263,7 +263,7 @@
         </div>
 
         {{-- Hapus Proyek --}}
-        @if(in_array(auth()->user()->role_id, [1, 10, 11]))
+        @if(\App\Support\HakAkses::bisa('proyek.kelola'))
         <div class="bg-white rounded-xl shadow p-6">
             <h2 class="font-semibold text-red-600 mb-3 flex items-center gap-2"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg> Danger Zone</h2>
             <form method="POST" action="{{ route('proyek.destroy', $proyek) }}"
